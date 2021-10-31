@@ -14,6 +14,7 @@ connectDB();
 
 // routes
 const authRoutes = require("./routes/auth.js");
+const postRoutes = require("./routes/post.js");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
@@ -22,7 +23,9 @@ app.use(
     })
 );
 
+app.use("/public/", express.static(path.join(__dirname, "uploads")));
 app.use("/api", authRoutes);
+app.use("/api", postRoutes);
 
 app.get("/", (req, res) => {
     res.status(200).json({
