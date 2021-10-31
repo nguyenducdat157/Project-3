@@ -21,12 +21,13 @@ const userSchema = new mongoose.Schema({
     following:[{type:ObjectId,ref:"User"}],
     notifications: [{type:ObjectId, ref: "Notification"}],
     role: {
-        type: number,
+        type: Number,
         default: 0,
-        required
+        required: true
+        // 0: user, 1: admin,
     },
     status: {
-        type: number,
+        type: Number,
         default: 0,
         enum: [
             0, // public
@@ -37,4 +38,5 @@ const userSchema = new mongoose.Schema({
     
 })
 
-mongoose.model("User",userSchema)
+var User = mongoose.model("User", userSchema, "User");
+module.exports = User;
