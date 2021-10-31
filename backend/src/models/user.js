@@ -34,9 +34,10 @@ const userSchema = new mongoose.Schema({
             1, //private
             2, //blocked 
         ]
-    }
+    },
+    createAt: Date
     
-})
+}, {timestamps: true});
 
 var User = mongoose.model("User", userSchema, "User");
 module.exports = User;
