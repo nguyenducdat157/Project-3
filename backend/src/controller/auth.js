@@ -47,15 +47,21 @@ module.exports.signIn = async (req, res) => {
 
 module.exports.signUp = async (req, res) => {
     try {
-        const {name, email, password} = req.body;
-        const user = await User.findOne({email: email});
+        const {fullName, userName, email, password} = req.body;
+        const user = await User.findOne({
+            $or: [
+                {email: email},
+                {userName: userName}
+            ]
+        });
         if(user) return res.status(400).json({
-            message: 'email is exists'
+            message: 'email or username is exists'
         })
         else {
             const hash_password = await bcrypt.hash(password, 10);
             const _user = new User({
-                name: name,
+                fullName: fullName,
+                userName: userName,
                 email: email,
                 password: hash_password,
             });
