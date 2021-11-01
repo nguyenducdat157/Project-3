@@ -14,12 +14,12 @@ module.exports.signIn = async (req, res) => {
         }
         else {
             const hash_password = user.password;
-            const right_pass = await bcrypt.compare(password, hash_password);
+            const right_pass = await bcrypt.compare( password, hash_password );
             if(!right_pass) {
                 return res.status(404).json({
                     error: 'Password incorrect'
                 })
-            }
+            }    
             else {
                 const token = jwt.sign(
                     { _id: user._id, role: user.role },
@@ -28,7 +28,7 @@ module.exports.signIn = async (req, res) => {
                 ); 
                 res.cookie("token", token, { expiresIn: "1d" });
                 const {_id, email, name, role} = user;
-                return res.status(200).json({
+                return res.status( 200 ).json( {
                     code: 0,
                     data: {
                         _id, name, email, role
@@ -47,6 +47,7 @@ module.exports.signIn = async (req, res) => {
 
 module.exports.signUp = async (req, res) => {
     try {
+        console.log('okokokokko')
         const {fullName, userName, email, password} = req.body;
         const user = await User.findOne({
             $or: [
@@ -54,7 +55,7 @@ module.exports.signUp = async (req, res) => {
                 {userName: userName}
             ]
         });
-        if(user) return res.status(400).json({
+        if (user) return res.status(400).json({
             message: 'email or username is exists'
         })
         else {
@@ -72,7 +73,8 @@ module.exports.signUp = async (req, res) => {
                     });
                 }
                 if (data) {
-                    return res.status(200).json({
+                    return res.status( 200 ).json( {
+                        code: 0,
                         data: data,
                     });
                 }
