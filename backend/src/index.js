@@ -24,8 +24,8 @@ app.use(
 );
 
 app.use("/public/", express.static(path.join(__dirname, "uploads")));
-app.use("/api", authRoutes);
-app.use("/api", postRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/post", postRoutes);
 
 app.get("/", (req, res) => {
     res.status(200).json({
