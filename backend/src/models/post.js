@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
         default: 0
         // 0: public
         // 1: private
+
     },
     pictures: [
         {
