@@ -13,11 +13,11 @@ const LoginPage = () => {
                 <Grid item xs={6}>
                     <div className="loginpage__main">
                         <div>
-                        <img src={inst_image} width="454px" className="loginpage__img__phone"/>
+                        <img src={inst_image} alt="element" width="454px" className="loginpage__img__phone"/>
                         </div>
                         <div>
                             <div className="loginpage_rightcomponent">
-                                <img className="loginpage__logo" src={insta_logo} />
+                                <img className="loginpage__logo" alt="element" src={insta_logo} />
                                 <div className="loginPage__signin">
                                  <SignIn/>
                                 </div>

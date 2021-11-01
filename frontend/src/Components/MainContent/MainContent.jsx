@@ -1,7 +1,7 @@
 import React from 'react';
 import "./MainContent.css";
 import Grid  from '@material-ui/core/Grid';
-import uploadImage from '../../images/upload.png'
+// import uploadImage from '../../images/upload.png'
 import PostItem from '../PostItem/PostItem';
 import InfoSection from '../InfoSuggestion/InfoSection';
 import Suggestion from '../Suggestions/Suggestion';

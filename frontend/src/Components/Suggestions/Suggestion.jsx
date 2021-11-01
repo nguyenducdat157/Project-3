@@ -9,7 +9,7 @@ const Suggestion = () => {
         return (
             <div className="suggestions__friends">
             <Avatar src={imageSrc} className="suggestions__image"/>
-            <a className="suggestions__username" href="">{username}</a>
+            <a className="suggestions__username" href="localhost:3000/#">{username}</a>
             {
                 followed ? <div className="suggestions__follow" style={{color: '#262626'}}>Đang theo dõi</div> : 
                            <div className="suggestions__follow">Theo dõi</div>

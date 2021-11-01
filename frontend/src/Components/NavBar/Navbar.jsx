@@ -8,7 +8,7 @@ import Avatar from '@material-ui/core/Avatar';
 import pp from '../../images/avt-ins.jpg';
 import add from '../../images/add.png';
 import reactClick from '../../images/blacklove.png';
-import { useHistory } from "react-router";
+// import { useHistory } from "react-router";
 const NavBar = () => {
     return (
         <div style={{zIndex: "999", width: '100%',position: 'fixed'}}>
@@ -16,17 +16,17 @@ const NavBar = () => {
                 <Grid container>
                     <Grid item xs={2}> </Grid>
                     <Grid item xs={3}>
-                        <a href='/'> <img className="navbar_logo" src={insta_log} width="105px" /></a>   
+                        <a href='/'> <img className="navbar_logo" src={insta_log} alt="element" width="105px" /></a>   
                     </Grid>
                     <Grid item xs={3}>
                     <input text="text" className="navbar__searchBar" placeholder="Search" />
                     </Grid>
                     <Grid item xs={3} style={{"display":"flex"}}>
-                        <a href='/'><img className="navbar__img" src={home} width="25px"/></a>
-                        <img className="navbar__img" src={add} width="25px" height="25px" style={{borderRadius: '1px'}}/>
+                        <a href='/'><img className="navbar__img" src={home} alt="element" width="25px"/></a>
+                        <img className="navbar__img" src={add} alt="element" width="25px" height="25px" style={{borderRadius: '1px'}}/>
                         {
-                            true ? <img className="navbar__img" src={react} width="25px" /> :
-                                    <img className="navbar__img" src={reactClick} width="25px" height="25px"/>
+                            true ? <img className="navbar__img" src={react} alt="element" width="25px" /> :
+                                    <img className="navbar__img" src={reactClick} alt="element" width="25px" height="25px"/>
                         }
                         <Avatar src={pp} className="navbar__img" style={{"maxWidth":"25px","maxHeight":"25px"}} />
                     </Grid>

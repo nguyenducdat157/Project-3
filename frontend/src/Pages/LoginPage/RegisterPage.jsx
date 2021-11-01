@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import './LoginPage.css'
 import Grid from '@material-ui/core/Grid';
 import inst_image from '../../images/9364675fb26a.svg';
@@ -13,11 +13,11 @@ const RegisterPage = () => {
                 <Grid item xs={6}>
                     <div className="loginpage__main">
                         <div>
-                        <img src={inst_image} width="454px" className="loginpage__img__phone"/>
+                        <img src={inst_image} alt="element" width="454px" className="loginpage__img__phone"/>
                         </div>
                         <div>
                             <div className="loginpage_rightcomponent">
-                                <img className="loginpage__logo" src={insta_logo} />
+                                <img className="loginpage__logo" alt="element" src={insta_logo} />
                                 <div className="loginPage__signin">
                                 <SignUp/>
                                 </div>
