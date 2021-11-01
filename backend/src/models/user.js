@@ -1,7 +1,11 @@
 const mongoose = require('mongoose')
 const {ObjectId} = mongoose.Schema.Types
 const userSchema = new mongoose.Schema({
-    name:{
+    fullName:{
+        type:String,
+        required:true
+    },
+    userName:{
         type:String,
         required:true
     },
