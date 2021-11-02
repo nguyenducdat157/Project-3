@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './LoginPage.css';
 import Grid from '@material-ui/core/Grid';
 import inst_image from '../../images/9364675fb26a.svg';
