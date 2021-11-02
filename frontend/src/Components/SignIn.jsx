@@ -18,6 +18,7 @@ const SignIn = () => {
     };
     const res = await dispatch(signIn(body));
     if (res?.payload?.data?.code === 0) {
+      localStorage.setItem('token', res.payload.data.token);
       history.push('/');
     }
   };

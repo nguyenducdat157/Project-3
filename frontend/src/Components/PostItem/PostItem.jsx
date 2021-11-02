@@ -8,7 +8,6 @@ import edit from '../../images/threedot.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 const PostItem = (props) => {
-  console.log(props);
   const commentList = [
     {
       userName: 'DucDatChelsea',

@@ -9,6 +9,7 @@
 
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { authReducer } from '../redux/auth/auth.slice';
+import { postReducer } from '../redux/post/post.slice';
 
 import { combineReducers } from 'redux';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
@@ -16,6 +17,7 @@ import storage from 'redux-persist/lib/storage';
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  post: postReducer,
 });
 
 const persistConfig = {
