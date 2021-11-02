@@ -21,12 +21,16 @@ module.exports.signIn = async (req, res) => {
       } else {
         const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
         res.cookie('token', token, { expiresIn: '1d' });
-        const { _id, email, name, role } = user;
+        const { _id, email, role, fullName, avatar, following, followers, userName } = user;
         return res.status(200).json({
           code: 0,
           data: {
             _id,
-            name,
+            fullName,
+            avatar,
+            following,
+            followers,
+            userName,
             email,
             role,
           },
@@ -49,6 +53,7 @@ module.exports.signUp = async (req, res) => {
     });
     if (user)
       return res.status(400).json({
+        code: 1,
         message: 'email or username is exists',
       });
     else {
@@ -62,6 +67,7 @@ module.exports.signUp = async (req, res) => {
       _user.save((err, data) => {
         if (err) {
           return res.status(404).json({
+            code: 1,
             error: 'bad request',
           });
         }
@@ -75,6 +81,7 @@ module.exports.signUp = async (req, res) => {
     }
   } catch (err) {
     return res.status(500).json({
+      code: 1,
       error: 'Server error',
     });
   }
