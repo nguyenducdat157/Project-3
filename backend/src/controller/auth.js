@@ -19,7 +19,13 @@ module.exports.signIn = async (req, res) => {
           error: 'Password incorrect',
         });
       } else {
-        const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign(
+          { _id: user._id, role: user.role, following: user.following, followers: user.followers },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: '1d',
+          },
+        );
         res.cookie('token', token, { expiresIn: '1d' });
         const { _id, email, role, fullName, avatar, following, followers, userName } = user;
         return res.status(200).json({
