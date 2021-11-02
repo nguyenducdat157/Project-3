@@ -8,14 +8,14 @@
 // });
 
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-import { userReducer } from '../redux/user/user.slice';
+import { authReducer } from '../redux/auth/auth.slice';
 
 import { combineReducers } from 'redux';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
 const rootReducer = combineReducers({
-  user: userReducer,
+  auth: authReducer,
 });
 
 const persistConfig = {
