@@ -1,4 +1,5 @@
 const Post = require('../models/post.js');
+const User = require('../models/user.js');
 
 module.exports.createPost = (req, res) => {
   try {
@@ -32,11 +33,26 @@ module.exports.createPost = (req, res) => {
 
 module.exports.getPosts = async (req, res) => {
   try {
-    const posts = await Post.find();
-    if (posts)
+    const listPost = [];
+    const result = [];
+    const listFollowing = req.user.following; //followwing = [userId: {ObjectID}]
+    for (let i = 0; i < listFollowing.length; i++) {
+      let post = await Post.find({ postBy: listFollowing[i].userId });
+      if (post.length > 0) {
+        listPost.push(post);
+      }
+    }
+    for (let i = 0; i < listPost.length; i++) {
+      for (let j = 0; j < listPost[i].length; j++) {
+        result.push(listPost[i][j]);
+      }
+    }
+    if (result.length > 0)
       return res.status(200).json({
         code: 0,
-        data: posts,
+        data: result.sort((a, b) => {
+          return b.updatedAt - a.updatedAt;
+        }),
       });
   } catch (err) {
     return res.status(500).json({ error: 'Server error' });
