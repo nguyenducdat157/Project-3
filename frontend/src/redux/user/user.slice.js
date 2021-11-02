@@ -2,12 +2,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../services/config.js';
 
 export const signUp = createAsyncThunk('auth/sign-up', async (body) => {
-    try {
-        return await axiosInstance.post(`/api/auth/sign-up`, body);
-    } catch (error) {
-      throw error;
-    }
-} );
+  try {
+    return await axiosInstance.post(`/api/auth/sign-up`, body);
+  } catch (error) {
+    throw error;
+  }
+});
 
 const initialState = {
   loading: false,
@@ -35,5 +35,3 @@ const userSlice = createSlice({
 });
 export const { reducer: userReducer } = userSlice;
 export default userReducer;
-
-
