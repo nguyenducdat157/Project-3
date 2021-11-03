@@ -16,7 +16,7 @@ const initialState = {
 };
 
 const postSlice = createSlice({
-  name: 'auth',
+  name: 'post',
   initialState: initialState,
   reducers: {},
   extraReducers: {},

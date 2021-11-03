@@ -16,6 +16,7 @@ const MainContent = () => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await dispatch(getPosts());
+      console.log('res: ', res);
       if (res?.payload?.data?.code === 0) {
         setListPost(res.payload.data.data);
       }
@@ -23,8 +24,6 @@ const MainContent = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  console.log(listPost);
 
   return (
     <div>

@@ -1,9 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../../services/config.js';
 
-export const signUp = createAsyncThunk('auth/sign-up', async (body) => {
+export const getListUserSuggestion = createAsyncThunk('user/get-user-suggest', async () => {
   try {
-    return await axiosInstance.post(`/api/auth/sign-up`, body);
+    return await axiosInstance.get(`/api/user/get-user-suggest`);
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const followApi = createAsyncThunk('user/follow', async (body) => {
+  try {
+    return await axiosInstance.post(`/api/user/follow/${body}`);
   } catch (error) {
     throw error;
   }
@@ -13,6 +21,7 @@ const initialState = {
   loading: false,
   error: '',
   user: { code: 0, data: {} },
+  userSuggest: { code: 0, data: {} },
 };
 
 const userSlice = createSlice({
@@ -20,16 +29,16 @@ const userSlice = createSlice({
   initialState: initialState,
   reducers: {},
   extraReducers: {
-    [`${signUp.pending}`]: (state) => {
+    [`${getListUserSuggestion.pending}`]: (state) => {
       state.loading = true;
     },
-    [`${signUp.rejected}`]: (state, action) => {
+    [`${getListUserSuggestion.rejected}`]: (state, action) => {
       state.loading = false;
       state.error = action.error;
     },
-    [`${signUp.fulfilled}`]: (state, action) => {
+    [`${getListUserSuggestion.fulfilled}`]: (state, action) => {
       state.loading = false;
-      state.user = action.payload;
+      state.userSuggest = action.payload;
     },
   },
 });

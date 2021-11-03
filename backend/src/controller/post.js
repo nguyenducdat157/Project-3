@@ -35,9 +35,9 @@ module.exports.getPosts = async (req, res) => {
   try {
     const listPost = [];
     const result = [];
-    const listFollowing = req.user.following; //followwing = [userId: {ObjectID}]
-    for (let i = 0; i < listFollowing.length; i++) {
-      let post = await Post.find({ postBy: listFollowing[i].userId });
+    const listFollower = req.user.following; //followwing = [userId: {ObjectID}]
+    for (let i = 0; i < listFollower.length; i++) {
+      let post = await Post.find({ postBy: listFollower[i].userId });
       if (post.length > 0) {
         listPost.push(post);
       }
