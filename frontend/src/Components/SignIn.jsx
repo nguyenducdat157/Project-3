@@ -18,7 +18,10 @@ const SignIn = () => {
     };
     const res = await dispatch(signIn(body));
     if (res?.payload?.data?.code === 0) {
-      localStorage.setItem('token', res.payload.data.token);
+      await localStorage.setItem('token', res.payload.data.token);
+      setTimeout(function () {
+        console.log('doi nhe');
+      }, 5000);
       history.push('/');
     }
   };
