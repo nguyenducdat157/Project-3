@@ -47,7 +47,6 @@ module.exports.getListUserSuggestion = async (req, res) => {
 
       result = await User.find({ _id: { $nin: list } });
     } else {
-      console.log('<= 0');
       result = await User.find({ _id: { $ne: currentId } });
     }
     return res.status(200).json({
