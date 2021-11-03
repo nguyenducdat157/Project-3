@@ -23,7 +23,7 @@ const LoginPage = () => {
               </div>
               <div className="loginpage__signupoption">
                 <div className="loginPage__signin">
-                  Don't have an account? <span style={{ fontWeight: 'bold', color: '#0395F6' }}>Sign up</span>
+                  Don't have an account? <a href='/register' style={{ fontWeight: 'bold', color: '#0395F6', textDecoration: 'none' }}>Sign up</a>
                 </div>
               </div>
             </div>

@@ -5,7 +5,7 @@ export const getPosts = createAsyncThunk('post/get-posts', async () => {
   try {
     return await axiosInstance.get(`/api/post/get-posts`);
   } catch (error) {
-    throw error;
+    console.log(error);
   }
 });
 

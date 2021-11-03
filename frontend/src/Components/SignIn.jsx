@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import '../Pages/LoginPage/LoginPage.css';
 import { signIn } from '../redux/auth/auth.slice';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
+import { getPosts } from '../redux/post/post.slice';
 
-const SignIn = () => {
+const SignIn = (props) => {
+  const {logined, setLogined} = props;
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -19,10 +20,8 @@ const SignIn = () => {
     const res = await dispatch(signIn(body));
     if (res?.payload?.data?.code === 0) {
       await localStorage.setItem('token', res.payload.data.token);
-      setTimeout(function () {
-        console.log('doi nhe');
-      }, 5000);
-      history.push('/');
+      setLogined(true);
+      await history.push('/');
     }
   };
 
@@ -34,6 +33,7 @@ const SignIn = () => {
         className="logipage__text"
         type="text"
         placeholder="Phone number, username, or email"
+        type="email"
       />
       <input
         value={password}

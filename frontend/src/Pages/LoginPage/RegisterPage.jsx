@@ -24,7 +24,7 @@ const RegisterPage = () => {
               <div className="loginpage__signupoption">
                 {
                   <div className="loginPage__signup">
-                    Have an account? <span style={{ fontWeight: 'bold', color: '#0395F6' }}>Sign in</span>
+                    Have an account? <a href="/login" style={{ fontWeight: 'bold', color: '#0395F6', textDecoration: 'none' }}>Sign in</a>
                   </div>
                 }
               </div>
