@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Suggestion.css';
 import { Avatar } from '@material-ui/core';
-import { getListUserSuggestion, followApi } from '../../redux/user/user.slice';
+import { getListUserSuggestion, followApi, unFollowApi } from '../../redux/user/user.slice';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Suggestion = () => {
@@ -15,20 +15,24 @@ const Suggestion = () => {
     suggestion();
   }, []);
 
-  const SuggestItem = (id, imageSrc, username) => {
+  console.log('suggestion: ', listSuggest);
+
+  const SuggestItem = (props) => {
     const [followed, setFollowed] = useState(false);
     const handleFollow = async () => {
-      await dispatch(followApi(id.id));
+      await dispatch(followApi(props.id));
       setFollowed(true);
     };
-    const handleUnFollow = () => {
+    const handleUnFollow = async () => {
+      await dispatch(unFollowApi(props.id));
       setFollowed(false);
     };
+
     return (
       <div className="suggestions__friends">
-        <Avatar src={imageSrc} className="suggestions__image" />
+        <Avatar src={props.imageSrc} className="suggestions__image" />
         <a className="suggestions__username" href="localhost:3000/#">
-          {username}
+          {props.username}
         </a>
         {followed ? (
           <div onClick={handleUnFollow} className="suggestions__follow" style={{ color: '#262626' }}>
@@ -55,11 +59,6 @@ const Suggestion = () => {
             listSuggest.map((item, index) => (
               <SuggestItem key={index} id={item._id} avatar={item.avatar} username={item.userName} />
             ))}
-          {/* {suggestItem(imageSrc, 'NgocHao2001', true)}
-          {suggestItem(imageSrc, 'Lethuha2000', false)}
-          {suggestItem(imageSrc, 'NgocHao2001', true)}
-          {suggestItem(imageSrc, 'NgocHao2001', true)}
-          {suggestItem(imageSrc, 'NgocHao2001', true)} */}
         </div>
       </div>
     </div>

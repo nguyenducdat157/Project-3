@@ -17,6 +17,22 @@ export const followApi = createAsyncThunk('user/follow', async (body) => {
   }
 });
 
+export const unFollowApi = createAsyncThunk('user/un-follow', async (body) => {
+  try {
+    return await axiosInstance.post(`/api/user/un-follow/${body}`);
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const searchUser = createAsyncThunk('user/search', async (body) => {
+  try {
+    return await axiosInstance.get(`/api/user/search/${body}`);
+  } catch (error) {
+    throw error;
+  }
+});
+
 const initialState = {
   loading: false,
   error: '',

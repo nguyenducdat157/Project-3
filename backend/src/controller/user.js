@@ -30,6 +30,46 @@ module.exports.follow = async (req, res) => {
   }
 };
 
+module.exports.unFollow = async (req, res) => {
+  try {
+    const idFriend = req.params.id;
+    const currentId = req.user._id;
+    const condition1 = {
+      _id: currentId,
+    };
+    const update1 = {
+      $pull: {
+        following: {
+          userId: idFriend,
+        },
+      },
+    };
+    const condition2 = {
+      _id: idFriend,
+    };
+    const update2 = {
+      $pull: {
+        followers: {
+          userId: currentId,
+        },
+      },
+    };
+    const res1 = await User.findOneAndUpdate(condition1, update1);
+    const res2 = await User.findOneAndUpdate(condition2, update2);
+
+    console.log('res1: ', res1);
+
+    if (res1 && res2) {
+      return res.status(200).json({
+        code: 0,
+        message: 'unfollow success',
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
 module.exports.getListUserSuggestion = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -53,6 +93,42 @@ module.exports.getListUserSuggestion = async (req, res) => {
       code: 0,
       data: result,
     });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+};
+
+module.exports.searchUser = async (req, res) => {
+  try {
+    const name = req.params.name;
+    const users = await User.find({
+      $or: [
+        {
+          fullName: {
+            $regex: name,
+            $options: 'i',
+          },
+        },
+        {
+          userName: {
+            $regex: name,
+            $options: 'i',
+          },
+        },
+      ],
+    });
+    if (!users) {
+      return res.status(404).json({
+        code: 0,
+        message: 'user not found',
+      });
+    }
+    if (users) {
+      return res.status(200).json({
+        code: 0,
+        data: users,
+      });
+    }
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
