@@ -70,28 +70,52 @@ module.exports.unFollow = async (req, res) => {
 
 module.exports.getListUserSuggestion = async (req, res) => {
   try {
+    // const currentId = req.user._id;
+    // let listFollowing = [];
+    // let result = [];
+    // const currentUser = await User.findOne({ _id: currentId });
+    // if (currentUser) {
+    //   listFollowing = currentUser.following;
+    // }
+    // if (listFollowing.length > 0) {
+    //   const list = listFollowing.map((item) => {
+    //     return item.userId;
+    //   });
+    //   list.push(req.user._id);
+
+    //   result = await User.find({ _id: { $nin: list } });
+    // } else {
+    //   result = await User.find({ _id: { $ne: currentId } });
+    // }
+    // return res.status(200).json({
+    //   code: 0,
+    //   data: result,
+    // });
     const currentId = req.user._id;
     let listFollowing = [];
+    let list = [];
     let result = [];
+    const mySet = new Set();
     const currentUser = await User.findOne({ _id: currentId });
     if (currentUser) {
       listFollowing = currentUser.following;
     }
     if (listFollowing.length > 0) {
-      const list = listFollowing.map((item) => {
-        return item.userId;
-      });
-      list.push(req.user._id);
-
-      result = await User.find({ _id: { $nin: list } });
+      list = listFollowing.map((item) => item.userId.toString());
+      for (let i = 0; i < listFollowing.length; i++) {
+        const user = await User.findOne({ _id: listFollowing[i].userId });
+        if (user) {
+          user.following.forEach((item) => {
+            if (item.userId.toString() !== currentId && list.includes(item.userId.toString()) === false)
+              mySet.add(item.userId._id.toString());
+          });
+        }
+      }
+      result = await User.find({ _id: { $in: Array.from(mySet) } });
     } else {
       result = await User.find({ _id: { $ne: currentId } });
     }
-    console.log('result: ', result);
-    return res.status(200).json({
-      code: 0,
-      data: result,
-    });
+    return res.status(200).json({ code: 0, data: result });
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
