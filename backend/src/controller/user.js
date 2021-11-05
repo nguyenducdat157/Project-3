@@ -57,8 +57,6 @@ module.exports.unFollow = async (req, res) => {
     const res1 = await User.findOneAndUpdate(condition1, update1);
     const res2 = await User.findOneAndUpdate(condition2, update2);
 
-    console.log('res1: ', res1);
-
     if (res1 && res2) {
       return res.status(200).json({
         code: 0,
@@ -89,6 +87,7 @@ module.exports.getListUserSuggestion = async (req, res) => {
     } else {
       result = await User.find({ _id: { $ne: currentId } });
     }
+    console.log('result: ', result);
     return res.status(200).json({
       code: 0,
       data: result,
