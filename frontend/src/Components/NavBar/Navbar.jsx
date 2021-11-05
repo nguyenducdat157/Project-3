@@ -14,28 +14,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@material-ui/core';
-import InfoSection from '../InfoSuggestion/InfoSection';
 import { searchUser } from '../../redux/user/user.slice';
 import { useDispatch } from 'react-redux';
-
-const top100Films = [
-  {
-    username: 'ducdatchelsea',
-    fullname: 'Đức Đạt Chelsea',
-  },
-  {
-    username: 'hieupc',
-    fullname: 'Phan Chí Hiếu',
-  },
-  {
-    username: 'parkchangel',
-    fullname: 'Hoàng Huy Quân',
-  },
-  {
-    username: 'lkbinh',
-    fullname: 'Lương Khánh Bình',
-  },
-];
 
 const ListNotifi = [
   {
@@ -190,6 +170,7 @@ const NavBar = () => {
                     <img
                       className="navbar__img"
                       src={react}
+                      alt="element"
                       width="25px"
                       onClick={() => {
                         setToggleNoti(!toggleNoti);
@@ -199,6 +180,7 @@ const NavBar = () => {
                     <img
                       className="navbar__img"
                       src={reactClick}
+                      alt="element"
                       width="25px"
                       height="25px"
                       onClick={() => {
@@ -218,7 +200,13 @@ const NavBar = () => {
                               <div style={{ fontWeight: '600' }}>{noti.username}&nbsp;</div>
                               <div>{noti.content}</div>
                               {noti.imgPost && (
-                                <img src={noti.imgPost} width="30px" height="30px" style={{ marginLeft: 'auto' }} />
+                                <img
+                                  src={noti.imgPost}
+                                  alt="element"
+                                  width="30px"
+                                  height="30px"
+                                  style={{ marginLeft: 'auto' }}
+                                />
                               )}
                             </div>
                           );

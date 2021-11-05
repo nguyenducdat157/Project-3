@@ -5,11 +5,9 @@ import Grid from '@material-ui/core/Grid';
 import PostItem from '../PostItem/PostItem';
 import InfoSection from '../InfoSuggestion/InfoSection';
 import Suggestion from '../Suggestions/Suggestion';
-import { useDispatch } from 'react-redux';
 import axios from 'axios';
 
 const MainContent = () => {
-  const dispatch = useDispatch();
   const [listPost, setListPost] = useState([]);
   const prevLink = 'http://localhost:5000/public/';
 
@@ -32,8 +30,6 @@ const MainContent = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  console.log('listPost: ', listPost);
 
   return (
     <div>

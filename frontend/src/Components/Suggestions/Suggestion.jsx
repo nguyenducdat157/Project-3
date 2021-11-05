@@ -1,18 +1,33 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './Suggestion.css';
 import { Avatar } from '@material-ui/core';
-import { getListUserSuggestion, followApi, unFollowApi } from '../../redux/user/user.slice';
-import { useDispatch, useSelector } from 'react-redux';
+import { followApi, unFollowApi } from '../../redux/user/user.slice';
+import { useDispatch } from 'react-redux';
 
 const Suggestion = () => {
-  const listSuggest = useSelector((state) => state.user.userSuggest.data.data);
+  // const listSuggest = useSelector((state) => state.user.userSuggest.data.data);
+  const [listSuggest, setListSuggest] = useState([]);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    const suggestion = async () => {
-      await dispatch(getListUserSuggestion());
+    const fetchData = async () => {
+      axios({
+        method: 'get',
+        url: 'http://localhost:5000/api/user/get-user-suggest',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      }).then((response) => {
+        console.log(response);
+        if (response.status === 200) {
+          setListSuggest(response.data.data);
+        }
+      });
     };
-    suggestion();
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   console.log('suggestion: ', listSuggest);

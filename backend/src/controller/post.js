@@ -38,7 +38,6 @@ module.exports.getPosts = async (req, res) => {
     let listFollower = [];
     const user = await User.findOne({ _id: req.user._id });
     if (user) listFollower = user.following;
-    console.log('listFollower: ', listFollower);
     for (let i = 0; i < listFollower.length; i++) {
       let post = await Post.find({ postBy: listFollower[i].userId });
       if (post.length > 0) {
