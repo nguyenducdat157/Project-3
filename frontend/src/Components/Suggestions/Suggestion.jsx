@@ -4,9 +4,10 @@ import './Suggestion.css';
 import { Avatar } from '@material-ui/core';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router';
 
 const Suggestion = () => {
-  // const listSuggest = useSelector((state) => state.user.userSuggest.data.data);
+  const history = useHistory();
   const [listSuggest, setListSuggest] = useState([]);
 
   const dispatch = useDispatch();
@@ -66,7 +67,14 @@ const Suggestion = () => {
       <div className="suggestions__container">
         <div className="suggestions__header">
           <div>Gợi ý cho bạn</div>
-          <div className="suggestions__header__showall">Xem tất cả</div>
+          <div
+            onClick={() => {
+              history.push('/suggest-detail');
+            }}
+            className="suggestions__header__showall"
+          >
+            Xem tất cả
+          </div>
         </div>
         <div className="suggestions__body">
           {listSuggest &&
