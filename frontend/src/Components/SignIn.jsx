@@ -5,8 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory, Redirect } from 'react-router-dom';
 import { getPosts } from '../redux/post/post.slice';
 
-const SignIn = (props) => {
-  const {logined, setLogined} = props;
+const SignIn = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [email, setEmail] = useState('');
@@ -20,7 +19,6 @@ const SignIn = (props) => {
     const res = await dispatch(signIn(body));
     if (res?.payload?.data?.code === 0) {
       await localStorage.setItem('token', res.payload.data.token);
-      setLogined(true);
       await history.push('/');
     }
   };
