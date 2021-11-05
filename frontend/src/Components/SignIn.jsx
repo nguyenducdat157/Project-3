@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import '../Pages/LoginPage/LoginPage.css';
 import { signIn } from '../redux/auth/auth.slice';
 import { useDispatch } from 'react-redux';
-import { useHistory, Redirect } from 'react-router-dom';
-import { getPosts } from '../redux/post/post.slice';
+import { useHistory } from 'react-router-dom';
 
+<<<<<<< HEAD
 const SignIn = () => {
+=======
+const SignIn = (props) => {
+>>>>>>> 052503d41d835e13e523765ae913e566091c773f
   const dispatch = useDispatch();
   const history = useHistory();
   const [email, setEmail] = useState('');
@@ -29,7 +32,6 @@ const SignIn = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="logipage__text"
-        type="text"
         placeholder="Phone number, username, or email"
         type="email"
       />

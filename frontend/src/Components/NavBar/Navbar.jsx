@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useRef, useState, useEffect } from 'react';
+=======
+import React, { useRef, useState } from 'react';
+>>>>>>> 052503d41d835e13e523765ae913e566091c773f
 import './Navbar.css';
 import insta_log from '../../images/logoinsta.png';
 import home from '../../images/home.svg';
@@ -14,6 +18,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@material-ui/core';
+<<<<<<< HEAD
 import InfoSection from '../InfoSuggestion/InfoSection';
 
 const top100Films = [
@@ -71,6 +76,18 @@ const NavBar = () => {
   const [isOpenCreatePost, setIsOpenCreatePost] = useState(false);
   const [toggleAvatar, setToggleAvatar] = useState(false);
   const [toggleNoti, setToggleNoti] = useState(false);
+=======
+import { searchUser } from '../../redux/user/user.slice';
+import { useDispatch } from 'react-redux';
+
+const NavBar = () => {
+  const dispatch = useDispatch();
+  const ref = useRef();
+  const history = useHistory();
+  const [isOpenCreatePost, setIsOpenCreatePost] = useState(false);
+  const [toggleAvatar, setToggleAvatar] = useState(false);
+  const [listUser, setListUser] = useState([]);
+>>>>>>> 052503d41d835e13e523765ae913e566091c773f
   const addPost = () => {
     setIsOpenCreatePost(true);
   };
@@ -78,6 +95,7 @@ const NavBar = () => {
     setIsOpenCreatePost(false);
   };
 
+<<<<<<< HEAD
   useEffect(() => {
     const checkIfClickedOutside = (e) => {
       if (toggleAvatar && refAvatar.current && !refAvatar.current.contains(e.target)) {
@@ -142,6 +160,57 @@ const NavBar = () => {
                 }}
                 onInputChange={(e) => {
                   console.log(e.nativeEvent.data);
+=======
+  return (
+    <>
+      <div style={{ zIndex: '999', width: '100%', position: 'fixed' }}>
+        <div className="navbar__barContent">
+          <Grid container>
+            <Grid item xs={2}>
+              {' '}
+            </Grid>
+            <Grid item xs={3}>
+              <a href="/">
+                {' '}
+                <img className="navbar_logo" alt="element" src={insta_log} width="105px" />
+              </a>
+            </Grid>
+            <Grid item xs={3}>
+              {/* <input text="text" className="navbar__searchBar" placeholder="Search" /> */}
+              <Autocomplete
+                className="navbar__searchBar__container"
+                freeSolo
+                id="free-solo-2-demo"
+                disableClearable
+                options={listUser.map((option) => option)}
+                getOptionLabel={(option) => option.userName && option.fullName}
+                renderOption={(object, option) => {
+                  return (
+                    <div
+                      className="search__dropdown_item"
+                      onClick={() => {
+                        history.push('/login');
+                      }}
+                    >
+                      <Avatar src={pp} className="search__dropdown_item_avatar" />
+                      <div>
+                        <p className="search__dropdown_item_username">{option.userName}</p>
+                        <p className="search__dropdown_item_fullname">{option.fullName}</p>
+                      </div>
+                    </div>
+                  );
+                }}
+                onInputChange={async (e) => {
+                  const res = await dispatch(searchUser(e.target.value));
+                  if (res?.payload?.data?.code === 0) {
+                    setListUser(res.payload.data.data);
+                  }
+                  if (e.target.value === '') {
+                    setListUser([]);
+                  }
+
+                  console.log('listUser: ', listUser);
+>>>>>>> 052503d41d835e13e523765ae913e566091c773f
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -153,22 +222,35 @@ const NavBar = () => {
                       type: 'search',
                     }}
                     variant="outlined"
+<<<<<<< HEAD
+=======
+                    // onChange={handleSearch}
+>>>>>>> 052503d41d835e13e523765ae913e566091c773f
                   />
                 )}
               />
             </Grid>
             <Grid item xs={3} className="navbar__img__container">
               <a href="/">
+<<<<<<< HEAD
                 <img className="navbar__img" src={home} width="25px" />
               </a>
               <img
                 className="navbar__img"
+=======
+                <img className="navbar__img" alt="element" src={home} width="25px" />
+              </a>
+              <img
+                className="navbar__img"
+                alt="element"
+>>>>>>> 052503d41d835e13e523765ae913e566091c773f
                 src={add}
                 width="25px"
                 height="25px"
                 style={{ borderRadius: '1px' }}
                 onClick={addPost}
               />
+<<<<<<< HEAD
               {
                 <div class="dropdown" ref={refNoti}>
                   {!toggleNoti ? (
@@ -214,6 +296,14 @@ const NavBar = () => {
                 </div>
               }
               <div class="dropdown" ref={refAvatar}>
+=======
+              {true ? (
+                <img className="navbar__img" alt="element" src={react} width="25px" />
+              ) : (
+                <img className="navbar__img" alt="element" src={reactClick} width="25px" height="25px" />
+              )}
+              <div class="dropdown" ref={ref}>
+>>>>>>> 052503d41d835e13e523765ae913e566091c773f
                 <Avatar
                   src={pp}
                   className="navbar__img navbar__avatar"
@@ -222,6 +312,7 @@ const NavBar = () => {
                     setToggleAvatar(!toggleAvatar);
                   }}
                 />
+<<<<<<< HEAD
                 {toggleAvatar && (
                   <>
                     <div className="dropdown__diamond"></div>
@@ -237,6 +328,29 @@ const NavBar = () => {
                       <div className="dropdown__component">Đăng xuất</div>
                     </div>
                   </>
+=======
+                <div className="navbar__number__noti">2</div>
+                {toggleAvatar && (
+                  <div className="dropdown__content">
+                    <div className="dropdown__component">
+                      <AccountCircleIcon style={{ marginRight: '10px' }} />
+                      Trang cá nhân
+                    </div>
+                    <div className="dropdown__component" style={{ marginBottom: '10px' }}>
+                      <SettingsIcon style={{ marginRight: '10px' }} />
+                      Cài đặt
+                    </div>
+                    <div
+                      onClick={() => {
+                        localStorage.removeItem('token');
+                        history.push('/login');
+                      }}
+                      className="dropdown__component"
+                    >
+                      Đăng xuất
+                    </div>
+                  </div>
+>>>>>>> 052503d41d835e13e523765ae913e566091c773f
                 )}
               </div>
             </Grid>
