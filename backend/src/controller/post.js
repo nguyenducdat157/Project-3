@@ -34,7 +34,7 @@ module.exports.createPost = (req, res) => {
 module.exports.getPosts = async (req, res) => {
   try {
     const listPost = [];
-    const result = [];
+    let result = [];
     let listFollower = [];
     const user = await User.findOne({ _id: req.user._id });
     if (user) listFollower = user.following;
@@ -47,6 +47,14 @@ module.exports.getPosts = async (req, res) => {
     for (let i = 0; i < listPost.length; i++) {
       for (let j = 0; j < listPost[i].length; j++) {
         result.push(listPost[i][j]);
+      }
+    }
+
+    for (let i = 0; i < result.length; i++) {
+      let obj = result[i];
+      const isFindUser = await User.findOne({ _id: result[i].postBy });
+      if (isFindUser) {
+        obj.userName = isFindUser.userName;
       }
     }
     if (result.length > 0)
