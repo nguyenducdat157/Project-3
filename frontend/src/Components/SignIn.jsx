@@ -4,7 +4,7 @@ import { signIn } from '../redux/auth/auth.slice';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-const SignIn = () => {
+const SignIn = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [email, setEmail] = useState('');

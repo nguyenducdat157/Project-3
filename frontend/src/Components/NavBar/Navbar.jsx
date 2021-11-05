@@ -15,6 +15,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@material-ui/core';
 import InfoSection from '../InfoSuggestion/InfoSection';
+import { searchUser } from '../../redux/user/user.slice';
+import { useDispatch } from 'react-redux';
 
 const top100Films = [
   {
@@ -65,12 +67,14 @@ const ListNotifi = [
 ];
 
 const NavBar = () => {
+  const dispatch = useDispatch();
   const refAvatar = useRef();
   const refNoti = useRef();
   const history = useHistory();
   const [isOpenCreatePost, setIsOpenCreatePost] = useState(false);
   const [toggleAvatar, setToggleAvatar] = useState(false);
   const [toggleNoti, setToggleNoti] = useState(false);
+  const [listUser, setListUser] = useState([]);
   const addPost = () => {
     setIsOpenCreatePost(true);
   };
@@ -101,6 +105,7 @@ const NavBar = () => {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
   }, [toggleNoti]);
+
   return (
     <>
       <div style={{ zIndex: '999', width: '100%', position: 'fixed' }}>
@@ -112,7 +117,7 @@ const NavBar = () => {
             <Grid item xs={3}>
               <a href="/">
                 {' '}
-                <img className="navbar_logo" src={insta_log} width="105px" />
+                <img className="navbar_logo" alt="element" src={insta_log} width="105px" />
               </a>
             </Grid>
             <Grid item xs={3}>
@@ -122,8 +127,8 @@ const NavBar = () => {
                 freeSolo
                 id="free-solo-2-demo"
                 disableClearable
-                options={top100Films.map((option) => option)}
-                getOptionLabel={(option) => option.username}
+                options={listUser.map((option) => option)}
+                getOptionLabel={(option) => option.userName && option.fullName}
                 renderOption={(object, option) => {
                   return (
                     <div
@@ -134,14 +139,22 @@ const NavBar = () => {
                     >
                       <Avatar src={pp} className="search__dropdown_item_avatar" />
                       <div>
-                        <p className="search__dropdown_item_username">{option.username}</p>
-                        <p className="search__dropdown_item_fullname">{option.fullname}</p>
+                        <p className="search__dropdown_item_username">{option.userName}</p>
+                        <p className="search__dropdown_item_fullname">{option.fullName}</p>
                       </div>
                     </div>
                   );
                 }}
-                onInputChange={(e) => {
-                  console.log(e.nativeEvent.data);
+                onInputChange={async (e) => {
+                  const res = await dispatch(searchUser(e.target.value));
+                  if (res?.payload?.data?.code === 0) {
+                    setListUser(res.payload.data.data);
+                  }
+                  if (e.target.value === '') {
+                    setListUser([]);
+                  }
+
+                  console.log('listUser: ', listUser);
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -153,16 +166,18 @@ const NavBar = () => {
                       type: 'search',
                     }}
                     variant="outlined"
+                    // onChange={handleSearch}
                   />
                 )}
               />
             </Grid>
             <Grid item xs={3} className="navbar__img__container">
               <a href="/">
-                <img className="navbar__img" src={home} width="25px" />
+                <img className="navbar__img" alt="element" src={home} width="25px" />
               </a>
               <img
                 className="navbar__img"
+                alt="element"
                 src={add}
                 width="25px"
                 height="25px"
@@ -224,7 +239,6 @@ const NavBar = () => {
                 />
                 {toggleAvatar && (
                   <>
-                    <div className="dropdown__diamond"></div>
                     <div className="dropdown__content">
                       <div className="dropdown__component">
                         <AccountCircleIcon style={{ marginRight: '10px' }} />
@@ -234,7 +248,15 @@ const NavBar = () => {
                         <SettingsIcon style={{ marginRight: '10px' }} />
                         Cài đặt
                       </div>
-                      <div className="dropdown__component">Đăng xuất</div>
+                      <div
+                        onClick={() => {
+                          localStorage.removeItem('token');
+                          history.push('/login');
+                        }}
+                        className="dropdown__component"
+                      >
+                        Đăng xuất
+                      </div>
                     </div>
                   </>
                 )}
