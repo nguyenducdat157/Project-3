@@ -115,9 +115,37 @@ module.exports.getListUserSuggestion = async (req, res) => {
     } else {
       result = await User.find({ _id: { $ne: currentId } });
     }
-    return res.status(200).json({ code: 0, data: result });
+    return res.status(200).json({ code: 0, data: result.sort(() => Math.random() - Math.random()).slice(0, 5) });
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+};
+
+module.exports.allUserSuggest = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    let listFollowing = [];
+    let result = [];
+    const currentUser = await User.findOne({ _id: currentId });
+    if (currentUser) {
+      listFollowing = currentUser.following;
+    }
+    if (listFollowing.length > 0) {
+      const list = listFollowing.map((item) => {
+        return item.userId;
+      });
+      list.push(req.user._id);
+
+      result = await User.find({ _id: { $nin: list } });
+    } else {
+      result = await User.find({ _id: { $ne: currentId } });
+    }
+    return res.status(200).json({
+      code: 0,
+      data: result,
+    });
+  } catch (err) {
+    return res.status(500).json({ code: 1, message: 'Server error' });
   }
 };
 
