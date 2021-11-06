@@ -1,27 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Grid from '@material-ui/core/Grid';
 import './SuggestDetail.css';
 import { Avatar } from '@material-ui/core';
 import NavBar from '../../Components/NavBar/Navbar';
+import { getAllUserSuggest } from '../../redux/user/user.slice';
+import { followApi, unFollowApi } from '../../redux/user/user.slice';
+import { useDispatch } from 'react-redux';
 
 const SuggestDetail = () => {
-  const listSuggest = [
-    {
-      userName: 'hieu',
-      fullName: 'pch',
-      followers: 5,
-    },
-    {
-      userName: 'hieu',
-      fullName: 'pch',
-      followers: 5,
-    },
-    {
-      userName: 'hieu',
-      fullName: 'pch',
-      followers: 5,
-    },
-  ];
+  const dispatch = useDispatch();
+  const [listSuggest, setListSuggest] = useState([]);
+
+  const SuggestItem = (props) => {
+    const [followed, setFollowed] = useState(false);
+    const handleFollow = async () => {
+      await dispatch(followApi(props.id));
+      setFollowed(true);
+    };
+    const handleUnFollow = async () => {
+      await dispatch(unFollowApi(props.id));
+      setFollowed(false);
+    };
+    console.log('key: ', props.id);
+    return (
+      <div key={props.key} className="element">
+        <div className="data">
+          <Avatar src={props.avatar} className="suggestions__image" />
+          <div className="info">
+            <div className="user-name">{props.userName}</div>
+            <div className="full-name">{props.fullName}</div>
+            <div className="followers">có {props.followers.length} người theo dõi</div>
+          </div>
+        </div>
+        {!followed && (
+          <button className="follow" onClick={handleFollow}>
+            Theo dõi
+          </button>
+        )}
+        {followed && (
+          <button className="followed" onClick={handleUnFollow}>
+            Hủy theo dõi
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      axios({
+        method: 'get',
+        url: 'http://localhost:5000/api/user/get-all-suggest',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+      }).then((response) => {
+        console.log(response);
+        if (response.status === 200) {
+          setListSuggest(response.data.data);
+        }
+      });
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <NavBar />
@@ -30,22 +74,29 @@ const SuggestDetail = () => {
         <Grid item xs={4}>
           <div className="suggest">Gợi ý</div>
           <div className="list-data">
-            {listSuggest.map((item) => (
-              <div className="element">
-                <div className="data">
-                  <Avatar
-                    src="https://scontent-sin6-4.xx.fbcdn.net/v/t1.6435-1/p160x160/150231484_2971872586416946_1647504890189216182_n.jpg?_nc_cat=103&ccb=1-5&_nc_sid=7206a8&_nc_ohc=Nzna_K9JHqEAX8CpAag&_nc_ht=scontent-sin6-4.xx&oh=ea9d947c778d26aa164b1092b059951c&oe=61AB6A5F"
-                    className="suggestions__image"
-                  />
-                  <div className="info">
-                    <div className="user-name">{item.userName}</div>
-                    <div className="full-name">{item.fullName}</div>
-                    <div className="followers">co {item.followers} nguoi theo doi</div>
-                  </div>
-                </div>
-                <button>Theo dõi</button>
-              </div>
-            ))}
+            {listSuggest &&
+              listSuggest.length > 0 &&
+              listSuggest.map((item, index) => (
+                // <div key={item._id} className="element">
+                //   <div className="data">
+                //     <Avatar src={item.avatar} className="suggestions__image" />
+                //     <div className="info">
+                //       <div className="user-name">{item.userName}</div>
+                //       <div className="full-name">{item.fullName}</div>
+                //       <div className="followers">có {item.followers.length} người theo dõi</div>
+                //     </div>
+                //   </div>
+                //   <button>Theo dõi</button>
+                // </div>
+                <SuggestItem
+                  key={index}
+                  id={item._id}
+                  userName={item.userName}
+                  fullName={item.fullName}
+                  avatar={item.avatar}
+                  followers={item.followers}
+                />
+              ))}
           </div>
         </Grid>
         <Grid item xs={4}></Grid>

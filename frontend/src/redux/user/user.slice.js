@@ -9,6 +9,14 @@ export const getListUserSuggestion = createAsyncThunk('user/get-user-suggest', a
   }
 });
 
+export const getAllUserSuggest = createAsyncThunk('user/get-all-user-suggest', async () => {
+  try {
+    return await axiosInstance.get(`/api/user/get-all-suggest`);
+  } catch (error) {
+    throw error;
+  }
+});
+
 export const followApi = createAsyncThunk('user/follow', async (body) => {
   try {
     return await axiosInstance.post(`/api/user/follow/${body}`);
