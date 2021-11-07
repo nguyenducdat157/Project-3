@@ -11,6 +11,7 @@ import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { authReducer } from '../redux/auth/auth.slice';
 import { postReducer } from '../redux/post/post.slice';
 import { userReducer } from '../redux/user/user.slice';
+import {messageReducer} from '../redux/message/message.slice';
 
 import { combineReducers } from 'redux';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   post: postReducer,
   user: userReducer,
+  message: messageReducer,
 });
 
 const persistConfig = {

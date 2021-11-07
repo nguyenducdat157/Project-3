@@ -16,7 +16,7 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title })
           maxHeight: '100%',
           outline: 'none',
           '@media (max-width: 767px)': {
-            width: '335px',
+            width: '400px',
             paddingTop: '13px',
           },
 

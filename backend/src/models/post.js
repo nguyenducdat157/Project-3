@@ -4,11 +4,6 @@ const userSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
-    },
-    body: {
-      type: String,
-      required: true,
     },
     likes: [
       {
@@ -26,8 +21,8 @@ const userSchema = new mongoose.Schema(
     status: {
       type: Number,
       default: 0,
-      // 0: public
-      // 1: private
+      // 0: default
+      // 1: deleted
     },
     pictures: [
       {
