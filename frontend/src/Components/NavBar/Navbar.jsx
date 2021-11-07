@@ -230,7 +230,9 @@ const NavBar = () => {
                     <div className="dropdown__content">
                       <div className="dropdown__component">
                         <AccountCircleIcon style={{ marginRight: '10px' }} />
-                        Trang cá nhân
+                        <a style={{ color: 'black', textDecoration: 'none' }} href="/profile">
+                          Trang cá nhân
+                        </a>
                       </div>
                       <div className="dropdown__component" style={{ marginBottom: '10px' }}>
                         <SettingsIcon style={{ marginRight: '10px' }} />

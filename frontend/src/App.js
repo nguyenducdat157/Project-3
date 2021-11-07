@@ -4,6 +4,7 @@ import HomePage from './Pages/HomePage/HomePage';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import RegisterPage from './Pages/LoginPage/RegisterPage';
 import SuggestDetail from './Pages/SuggestDetail/SuggestDetail';
+import Profile from './Pages/Profile/Profile';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route exact path="/register" component={RegisterPage} />
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/suggest-detail" component={SuggestDetail} />
+        <Route exact path="/profile" component={Profile} />
       </Switch>
     </BrowserRouter>
   );
