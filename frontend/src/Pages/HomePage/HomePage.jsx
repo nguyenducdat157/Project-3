@@ -1,14 +1,16 @@
-import React from "react";
-import MainContent from "../../Components/MainContent/MainContent";
-import NavBar from "../../Components/NavBar/Navbar";
+import React from 'react';
+import MainContent from '../../Components/MainContent/MainContent';
+import NavBar from '../../Components/NavBar/Navbar';
+import { Redirect } from 'react-router-dom';
+const HomePage = (props) => {
+  console.log(props);
+  return (
+    !localStorage.getItem('token') ? <Redirect to="/login" /> :  
+    <div>
+      <NavBar />
+      <MainContent />
+    </div>
+  );
+};
 
-const HomePage = () => {
-    return (
-        <div>
-            <NavBar/>
-            <MainContent/>
-        </div>
-    )
-}
-
-export default HomePage
+export default HomePage;
