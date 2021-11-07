@@ -15,17 +15,11 @@ const CreatePost = (props) => {
     setError(false);
     const selected = e.target.files[0];
     setPictures(selected);
-    const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg'];
-    if (selected && ALLOWED_TYPES.includes(selected.type)) {
-      let reader = new FileReader();
-      reader.onloadend = () => {
-        setImgPreview(reader.result);
-      };
-      reader.readAsDataURL(selected);
-    } else {
-      setError(true);
-      console.log('file not supported');
-    }
+    let reader = new FileReader();
+    reader.onloadend = () => {
+      setImgPreview(reader.result);
+    };
+    reader.readAsDataURL(selected);
   };
 
   const hanldeTitleChange = (e) => {
@@ -39,37 +33,46 @@ const CreatePost = (props) => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('pictures', pictures);
-    axios({
-      method: 'post',
-      url: 'http://localhost:5000/api/post/create-post',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-      data: formData,
-    })
-      .then((response) => {
-        console.log(response);
-        if (response.status === 201) {
-          props.handleClose();
-          dispatch(
-            showModalMessage({
-              type: 'SUCCESS',
-              msg: 'Tao bai viet thanh cong!',
-            }),
-          );
-        } else {
-          dispatch(
-            showModalMessage({
-              type: 'ERROR',
-              msg: 'That bai',
-            }),
-          );
-        }
+    if (pictures === '') {
+      setError(true);
+    } else {
+      axios({
+        method: 'post',
+        url: 'http://localhost:5000/api/post/create-post',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+        data: formData,
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((response) => {
+          console.log(response);
+          if (response.status === 201) {
+            props.handleClose();
+            dispatch(
+              showModalMessage({
+                type: 'SUCCESS',
+                msg: 'Tao bai viet thanh cong!',
+              }),
+            );
+          } else {
+            dispatch(
+              showModalMessage({
+                type: 'ERROR',
+                msg: 'That bai',
+              }),
+            );
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
+  const removeImage = () => {
+    setImgPreview(null);
+    setPictures('');
   };
 
   return (
@@ -89,7 +92,7 @@ const CreatePost = (props) => {
       >
         {title}
       </textarea>
-      {error && <p style={{ color: 'red' }}>File not supported</p>}
+      {error && <p style={{ color: 'red' }}>File is null</p>}
       <div
         className="imgPreview"
         style={{
@@ -101,12 +104,15 @@ const CreatePost = (props) => {
             <label htmlFor="fileUpload" className="customFileUpload">
               Chọn ảnh từ máy
             </label>
-            <input type="file" name="picture" id="fileUpload" onChange={handleImageChange} />
-            <span>(jpg,jpeg or png)</span>
+            <input type="file" name="picture" id="fileUpload" accept=".jpg, .jpeg, .png" onChange={handleImageChange} />
           </>
         )}
       </div>
-      {imgPreview && <button onClick={() => setImgPreview(null)}>Remove image</button>}
+      {imgPreview && (
+        <button className="button__create__post" onClick={removeImage}>
+          Remove image
+        </button>
+      )}
       <button type="submit" className="button__create__post">
         Tạo
       </button>
