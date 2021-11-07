@@ -7,6 +7,7 @@ import NavBar from '../../Components/NavBar/Navbar';
 import { getAllUserSuggest } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { useDispatch } from 'react-redux';
+import pp from '../../images/avt-ins.jpg';
 
 const SuggestDetail = () => {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ const SuggestDetail = () => {
     return (
       <div key={props.key} className="element">
         <div className="data">
-          <Avatar src={props.avatar} className="suggestions__image" />
+          <Avatar src={props.avatar} className="suggestions__image__detail" />
           <div className="info">
             <div className="user-name">{props.userName}</div>
             <div className="full-name">{props.fullName}</div>
