@@ -5,10 +5,14 @@
 }
 .data {
   display: flex;
+  align-items: center;
 }
-.suggestions__image {
+.suggestions__image__detail {
   margin-top: 10px;
+  width: 44px !important;
+  height: 44px !important;
 }
+
 .list-data {
   background-color: white;
   padding: 20px;
