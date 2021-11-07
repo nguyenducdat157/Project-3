@@ -2,8 +2,9 @@ import { Avatar } from '@material-ui/core';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
+import { showModalMessage } from '../../redux/message/message.slice';
 import './CreatePost.css';
-const CreatePost = () => {
+const CreatePost = (props) => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [pictures, setPictures] = useState('');
@@ -50,7 +51,20 @@ const CreatePost = () => {
       .then((response) => {
         console.log(response);
         if (response.status === 201) {
-          alert('Tạo post thành công');
+          props.handleClose();
+          dispatch(
+            showModalMessage({
+              type: 'SUCCESS',
+              msg: 'Tao bai viet thanh cong!',
+            }),
+          );
+        } else {
+          dispatch(
+            showModalMessage({
+              type: 'ERROR',
+              msg: 'That bai',
+            }),
+          );
         }
       })
       .catch((err) => {
@@ -93,7 +107,9 @@ const CreatePost = () => {
         )}
       </div>
       {imgPreview && <button onClick={() => setImgPreview(null)}>Remove image</button>}
-      <button type="submit">Tạo</button>
+      <button type="submit" className="button__create__post">
+        Tạo
+      </button>
     </form>
   );
 };

@@ -50,7 +50,7 @@ textarea {
   line-height: 26px;
 }
 
-button {
+.button__create__post {
   border: none;
   outline: none;
   width: 100%;

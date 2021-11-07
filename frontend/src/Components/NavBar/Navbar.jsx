@@ -256,8 +256,8 @@ const NavBar = () => {
         </div>
       </div>
       {isOpenCreatePost && (
-        <Popup isOpen={isOpenCreatePost} handleClose={handleClose} title={'Tạo bài viết mới'} isIconClose={false}>
-          <CreatePost />
+        <Popup isOpen={isOpenCreatePost} handleClose={handleClose} title={'Tạo bài viết mới'} isIconClose={true}>
+          <CreatePost handleClose={handleClose} />
         </Popup>
       )}
     </>
