@@ -43,9 +43,8 @@ const PostItem = (props) => {
 
       {/* Image */}
       <div>
-        <img src={props.postImage} alt="element" width="100%" />
+        <img src={props.postImage} alt="element" width="100%" style={{ maxHeight: '770px' }} />
       </div>
-
       {/* Analytics */}
       <div>
         <div style={{ marginLeft: '10px' }}>
@@ -59,6 +58,11 @@ const PostItem = (props) => {
         </div>
         <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>{props.likes} likes</div>
       </div>
+      <div style={{ display: 'flex', margin: '10px 10px 0' }}>
+        <p style={{ fontWeight: '600', margin: '0px 0px' }}>ducdatchelsea &nbsp;</p>
+        <p style={{ margin: '0px 0px' }}>Title post</p>
+      </div>
+
       {/* Comment Section */}
       <div>
         {commentList.map((item, index) =>

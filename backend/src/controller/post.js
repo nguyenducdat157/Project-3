@@ -3,7 +3,7 @@ const User = require('../models/user.js');
 
 module.exports.createPost = (req, res) => {
   try {
-    const { title, body } = req.body;
+    const { title } = req.body;
     let pictures = [];
     if (req.files.length > 0) {
       pictures = req.files.map((file) => {
@@ -13,7 +13,6 @@ module.exports.createPost = (req, res) => {
 
     const post = new Post({
       title: title,
-      body: body,
       pictures: pictures,
       postBy: req.user._id,
     });

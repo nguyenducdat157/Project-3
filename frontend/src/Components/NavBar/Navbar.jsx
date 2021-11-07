@@ -16,6 +16,7 @@ import { Autocomplete } from '@mui/material';
 import { TextField } from '@material-ui/core';
 import { searchUser } from '../../redux/user/user.slice';
 import { useDispatch } from 'react-redux';
+import CreatePost from '../CreatePost/CreatePost';
 
 const ListNotifi = [
   {
@@ -257,12 +258,9 @@ const NavBar = () => {
         </div>
       </div>
       {isOpenCreatePost && (
-        <Popup
-          isOpen={isOpenCreatePost}
-          handleClose={handleClose}
-          title={'Tạo bài viết mới'}
-          isIconClose={false}
-        ></Popup>
+        <Popup isOpen={isOpenCreatePost} handleClose={handleClose} title={'Tạo bài viết mới'} isIconClose={true}>
+          <CreatePost handleClose={handleClose} />
+        </Popup>
       )}
     </>
   );
