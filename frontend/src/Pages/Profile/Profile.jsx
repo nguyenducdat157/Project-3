@@ -7,9 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
   root: {
-    '& .MuiGrid-grid-xs-6': {
-      paddingTop: '100px',
-    },
+    '& .MuiGrid-grid-xs-6': {},
   },
 }));
 
