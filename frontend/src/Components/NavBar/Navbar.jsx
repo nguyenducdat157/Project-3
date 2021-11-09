@@ -154,7 +154,7 @@ const NavBar = () => {
             </Grid>
             <Grid item xs={3} className="navbar__img__container">
               <a href="/">
-                <img className="navbar__img" alt="element" src={home} width="25px" />
+                <img className="navbar__img" alt="element" src={home} width="25px" height="25px" />
               </a>
               <img
                 className="navbar__img"
@@ -173,6 +173,7 @@ const NavBar = () => {
                       src={react}
                       alt="element"
                       width="25px"
+                      height="25px"
                       onClick={() => {
                         setToggleNoti(!toggleNoti);
                       }}
@@ -231,7 +232,9 @@ const NavBar = () => {
                     <div className="dropdown__content">
                       <div className="dropdown__component">
                         <AccountCircleIcon style={{ marginRight: '10px' }} />
-                        Trang cá nhân
+                        <a style={{ color: 'black', textDecoration: 'none' }} href="/profile">
+                          Trang cá nhân
+                        </a>
                       </div>
                       <div className="dropdown__component" style={{ marginBottom: '10px' }}>
                         <SettingsIcon style={{ marginRight: '10px' }} />
