@@ -8,6 +8,10 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles(() => ({
   root: {
     '& .MuiGrid-grid-xs-6': {},
+    '@media (max-width: 735px)': {
+      marginLeft: '-140px',
+      minWidth: '500px',
+    },
   },
 }));
 
@@ -20,13 +24,15 @@ const Profile = () => {
       <NavBar />
       <Grid container classes={{ root: classes.root }}>
         <Grid item xs={3}></Grid>
-        <Grid item xs={6}>
+        <Grid item xs={9}>
           <div className="profile-header">
-            <img style={{ height: '150px' }} className="profile-avatar" src={infoUser.avatar} alt="element"></img>
+            <img className="profile-avatar" src={infoUser.avatar} alt="element"></img>
             <div className="profile-info">
               <div className="profile-title">
                 <div className="profile-user-name">{infoUser.userName}</div>
-                <button onClick={() => console.log('hieu')}>Chỉnh sửa trang cá nhân</button>
+                <button className="profile__button__edit" onClick={() => console.log('hieu')}>
+                  Chỉnh sửa trang cá nhân
+                </button>
               </div>
               <div className="profile-info-detail">
                 <div className="profile-post">2 bài viết</div>
@@ -38,7 +44,7 @@ const Profile = () => {
           </div>
           <div className="profile-body"></div>
         </Grid>
-        <Grid item xs={3}></Grid>
+        {/* <Grid item xs={1}></Grid> */}
       </Grid>
     </>
   );

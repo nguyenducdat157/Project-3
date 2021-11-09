@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import '../Pages/LoginPage/LoginPage.css';
 import { signIn } from '../redux/auth/auth.slice';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
+import { getPosts } from '../redux/post/post.slice';
 
 const SignIn = (props) => {
   const dispatch = useDispatch();

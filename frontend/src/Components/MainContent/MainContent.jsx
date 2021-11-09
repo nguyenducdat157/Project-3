@@ -12,6 +12,7 @@ const MainContent = () => {
   const prevLink = 'http://localhost:5000/public/';
 
   useEffect(() => {
+    // window.location.reload();
     const fetchData = async () => {
       axios({
         method: 'get',

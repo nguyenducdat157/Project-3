@@ -18,6 +18,7 @@ function App() {
   return (
     <BrowserRouter>
       <Switch>
+        <Route exact path="/login" component={LoginPage} /> 
         <Route exact path="/" component={HomePage} />
         <Route exact path="/register" component={RegisterPage} />
         <Route exact path="/login" component={LoginPage} />
