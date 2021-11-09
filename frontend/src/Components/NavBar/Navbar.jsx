@@ -105,7 +105,6 @@ const NavBar = () => {
   const keyPress = (e) => {
     if (e.keyCode === 13) {
       console.log('value', e.target.value);
-      // put the login here
     }
   };
 
