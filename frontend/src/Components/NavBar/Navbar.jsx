@@ -131,13 +131,17 @@ const NavBar = () => {
                 id="free-solo-2-demo"
                 disableClearable
                 options={listUser.map((option) => option)}
-                getOptionLabel={(option) => option.userName && option.fullName}
+                // getOptionLabel={(option) => option.userName && option.fullName}
+                filterOptions={(options, state) => options}
                 renderOption={(object, option) => {
                   return (
                     <div
                       className="search__dropdown_item"
                       onClick={() => {
-                        history.push('/login');
+                        history.push({
+                          pathname: '/suggest-detail',
+                          state: { name: 'dat' },
+                        });
                       }}
                     >
                       <Avatar src={pp} className="search__dropdown_item_avatar" />
@@ -158,6 +162,11 @@ const NavBar = () => {
                 }}
                 renderInput={(params) => (
                   <TextField
+                    onKeyDown={(e) => {
+                      if (e.keyCode === 13) {
+                        history.push('/suggest-detail', { name: 'dat' });
+                      }
+                    }}
                     className="navbar__searchBar"
                     {...params}
                     placeholder="Tìm kiếm"
