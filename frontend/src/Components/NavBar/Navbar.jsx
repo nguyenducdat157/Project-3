@@ -14,9 +14,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@material-ui/core';
-import { searchUser } from '../../redux/user/user.slice';
-import { useDispatch } from 'react-redux';
 import CreatePost from '../CreatePost/CreatePost';
+import axios from 'axios';
 
 const ListNotifi = [
   {
@@ -48,7 +47,6 @@ const ListNotifi = [
 ];
 
 const NavBar = () => {
-  const dispatch = useDispatch();
   const refAvatar = useRef();
   const refNoti = useRef();
   const history = useHistory();
@@ -61,6 +59,23 @@ const NavBar = () => {
   };
   const handleClose = () => {
     setIsOpenCreatePost(false);
+  };
+
+  const fetchDataUser = (name) => {
+    axios({
+      method: 'get',
+      url: `http://localhost:5000/api/user/search/${name}`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    }).then((response) => {
+      console.log(response);
+      if (response.status === 200) {
+        console.log(response);
+        setListUser(response.data.data);
+      }
+    });
   };
 
   useEffect(() => {
@@ -86,6 +101,13 @@ const NavBar = () => {
       document.removeEventListener('mousedown', checkIfClickedOutside);
     };
   }, [toggleNoti]);
+
+  const keyPress = (e) => {
+    if (e.keyCode === 13) {
+      console.log('value', e.target.value);
+      // put the login here
+    }
+  };
 
   return (
     <>
@@ -127,10 +149,7 @@ const NavBar = () => {
                   );
                 }}
                 onInputChange={async (e) => {
-                  const res = await dispatch(searchUser(e.target.value));
-                  if (res?.payload?.data?.code === 0) {
-                    setListUser(res.payload.data.data);
-                  }
+                  await fetchDataUser(e.target.value);
                   if (e.target.value === '') {
                     setListUser([]);
                   }
@@ -148,6 +167,7 @@ const NavBar = () => {
                     }}
                     variant="outlined"
                     // onChange={handleSearch}
+                    onKeyDown={keyPress}
                   />
                 )}
               />
