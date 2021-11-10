@@ -13,7 +13,8 @@ export const signIn = createAsyncThunk('auth/sign-in', async (body) => {
   try {
     return await axiosInstance.post(`/api/auth/sign-in`, body);
   } catch (error) {
-    throw error;
+    console.log(error);
+    return error;
   }
 });
 
