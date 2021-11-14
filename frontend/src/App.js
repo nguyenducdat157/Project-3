@@ -9,6 +9,7 @@ import ModalMessage from './Components/ModalMessage/ModalMessage';
 import { useDispatch } from 'react-redux';
 import { hideModalMessage } from './redux/message/message.slice';
 import { useEffect } from 'react';
+import PostDetail from './Pages/PostDetail/PostDetail';
 
 function App() {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ function App() {
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/suggest-detail" component={SuggestDetail} />
         <Route exact path="/profile" component={Profile} />
+        <Route exact path='/post' component={PostDetail} />
       </Switch>
       <ModalMessage />
     </BrowserRouter>

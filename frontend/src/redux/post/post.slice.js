@@ -9,6 +9,24 @@ export const getPosts = createAsyncThunk('post/get-posts', async () => {
   }
 });
 
+export const reactApi = createAsyncThunk('post/like', async (params) => {
+  try {
+    return await axiosInstance.post(`/api/post/like/${params}`);
+  } catch (error) {
+    return error;
+  }
+});
+
+export const commentApi = createAsyncThunk('post/comment', async (data) => {
+ 
+  try {
+    const {postId, userId, content} = await data;
+    return await axiosInstance.post(`/api/post/comment/${postId}`, {userId , content});
+  } catch (error) {
+    return error;
+  }
+});
+
 const initialState = {
   loading: false,
   error: '',

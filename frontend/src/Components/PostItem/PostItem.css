@@ -29,13 +29,31 @@
   cursor: pointer;
 }
 .post_comment {
-  margin: 10px;
+  margin: 5px 10px 0px 10px;
+  font-size: 14px;
 }
 .post__commentbox {
   height: 56px;
   width: 601px;
   border: 0px;
   border-top: 1px solid #dbdbdb;
-  font-size: 16px;
+  font-size: 14px;
   padding-left: 10px;
+  outline: none;
+}
+
+.button_add_comment {
+  border: 0;
+  color: #0095f6;
+  display: inline;
+  padding: 10px;
+  position: relative;
+  background: transparent;
+  border-top: 1px solid #dbdbdb;
+  font-weight: 600;
+  cursor: pointer;
+}
+.button_add_comment:disabled {
+  cursor: auto;
+  opacity: 0.3;
 }
