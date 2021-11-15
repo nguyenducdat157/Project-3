@@ -7,8 +7,12 @@ import edit from '../../images/threedot.svg';
 // import FavoriteIcon from '@mui/icons-material/Favorite';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux';
+import { useState } from 'react';
+
 const PostItem = (props) => {
-  console.log(props);
+  const socket = useSelector((state) => state.socket.socket.payload);
+  // console.log('socket: ', socket);
   const commentList = [
     {
       userName: 'DucDatChelsea',
@@ -54,6 +58,9 @@ const PostItem = (props) => {
             icon={faHeart}
             style={{ color: false ? 'red' : 'black', fontSize: '25px', margin: '8px' }}
             className="post_reactimage"
+            onClick={() => {
+              socket?.emit('like', socket.id);
+            }}
           />
           <img src={comment} alt="element" className="post_reactimage" />
         </div>
