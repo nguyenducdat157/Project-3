@@ -19,7 +19,7 @@ const upload = multer({ storage });
 
 router.post('/create-post', requireSignIn, upload.array('pictures'), controller.createPost);
 
-router.get('/get-posts',requireSignIn, controller.getPosts);
+router.get('/get-posts', requireSignIn, controller.getPosts);
 
 router.delete('/remove-post/:id', requireSignIn, controller.removePost);
 

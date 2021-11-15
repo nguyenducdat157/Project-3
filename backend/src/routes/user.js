@@ -13,4 +13,8 @@ router.get('/get-all-suggest', requireSignIn, controller.allUserSuggest);
 
 router.get('/search/:name', requireSignIn, controller.searchUser);
 
+router.get('/get-all-follower', requireSignIn, controller.getAllUserFollower);
+
+router.get('/get-all-following', requireSignIn, controller.getAllUserFollowing);
+
 module.exports = router;

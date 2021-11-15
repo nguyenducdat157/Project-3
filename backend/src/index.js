@@ -3,6 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
+const { Server } = require('socket.io');
+const http = require('http');
 require('dotenv').config({ path: path.resolve(__dirname, './config/index.env') });
 // require('dotenv').config({path: './config/index.env'})
 
@@ -50,6 +52,27 @@ app.use((req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    method: ['GET', 'POST'],
+  },
+});
+
+io.on('connection', (socket) => {
+  console.log('user connected: ', socket.id);
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected: ', socket.id);
+  });
+
+  socket.on('like', (data) => {
+    console.log(data + ' liked');
+  });
+});
+
+server.listen(PORT, () => {
   console.log('Server on running on PORT ' + PORT);
 });
