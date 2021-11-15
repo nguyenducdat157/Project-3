@@ -1,0 +1,15 @@
+.post_detail_header {
+  display: flex;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.post_detail_username {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.post_detail_comment_container {
+  border: 1px solid #dbdbdb;
+  height: 598px;
+}

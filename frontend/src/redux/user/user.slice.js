@@ -17,25 +17,26 @@ export const getAllUserSuggest = createAsyncThunk('user/get-all-user-suggest', a
   }
 });
 
-export const followApi = createAsyncThunk('user/follow', async (body) => {
+export const followApi = createAsyncThunk('user/follow', async (params) => {
+  console.log(params);
   try {
-    return await axiosInstance.post(`/api/user/follow/${body}`);
+    return await axiosInstance.post(`/api/user/follow/${params}`);
   } catch (error) {
     throw error;
   }
 });
 
-export const unFollowApi = createAsyncThunk('user/un-follow', async (body) => {
+export const unFollowApi = createAsyncThunk('user/un-follow', async (params) => {
   try {
-    return await axiosInstance.post(`/api/user/un-follow/${body}`);
+    return await axiosInstance.post(`/api/user/un-follow/${params}`);
   } catch (error) {
     throw error;
   }
 });
 
-export const searchUser = createAsyncThunk('user/search', async (body) => {
+export const searchUser = createAsyncThunk('user/search', async (params) => {
   try {
-    return await axiosInstance.get(`/api/user/search/${body}`);
+    return await axiosInstance.get(`/api/user/search/${params}`);
   } catch (error) {
     throw error;
   }

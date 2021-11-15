@@ -23,4 +23,8 @@ router.get('/get-posts', requireSignIn, controller.getPosts);
 
 router.delete('/remove-post/:id', requireSignIn, controller.removePost);
 
+router.post('/like/:postId', requireSignIn, controller.likePost);
+
+router.post('/comment/:postId', requireSignIn, controller.addComment);
+
 module.exports = router;

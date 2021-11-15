@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import io from 'socket.io-client';
 import { setSocket } from './redux/socket/socket.slice';
+import PostDetail from './Pages/PostDetail/PostDetail';
 
 const socket = io.connect('http://localhost:5000');
 
@@ -34,6 +35,7 @@ function App() {
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/suggest-detail" component={SuggestDetail} />
         <Route exact path="/profile" component={Profile} />
+        <Route exact path="/post" component={PostDetail} />
       </Switch>
       <ModalMessage />
     </BrowserRouter>
