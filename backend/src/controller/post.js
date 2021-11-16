@@ -16,9 +16,10 @@ module.exports.createPost = (req, res) => {
       pictures: pictures,
       postBy: req.user._id,
     });
-    post.save((error, post) => {
+    post.save(async (error, post) => {
       if (error) return res.status(400).json({ error: 'error when user create post' });
       if (post) {
+        await User.findOneAndUpdate({ _id: req.user._id }, { $push: { posts: { postId: post._id } } });
         res.status(201).json({
           code: 0,
           data: post,
@@ -67,20 +68,20 @@ module.exports.getPosts = async (req, res) => {
   //   console.log(err);
   //   return res.status(500).json({ error: 'Server error' });
   // }
-  Post.find({postedBy:{$in:req.user.following}})
-    .populate("postBy", ['userName', 'avatar'])
-    .populate({path: 'comments', populate : {path: 'userId', select: 'userName'} })
+  Post.find({ postedBy: { $in: req.user.following } })
+    .populate('postBy', ['userName', 'avatar'])
+    .populate({ path: 'comments', populate: { path: 'userId', select: 'userName' } })
     .sort('-updateAt')
-    .then(posts => {
-        res.status(200).json({
-          code: 0,
-          data: posts
-        })
+    .then((posts) => {
+      res.status(200).json({
+        code: 0,
+        data: posts,
+      });
     })
-    .catch(err => {
-        console.log(err)
-        return res.status(500).json({ error: 'Server error' });
-    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json({ error: 'Server error' });
+    });
 };
 
 module.exports.removePost = async (req, res) => {
@@ -106,21 +107,23 @@ module.exports.likePost = async (req, res) => {
   try {
     const postId = req.params.postId;
     const userLike = req.user._id;
-    const checkInList = await Post.findOne({ _id: postId, "likes.userId" : userLike });
-    const update = checkInList ? {
-      $pull: {
-        likes: {
-          userId: userLike,
-        },
-      },
-    } : {
-      $push: {
-        likes: {
-          userId: userLike,
-        },
-      },
-    };
-    const postUpdate = await Post.findOneAndUpdate( {_id: postId } , update);
+    const checkInList = await Post.findOne({ _id: postId, 'likes.userId': userLike });
+    const update = checkInList
+      ? {
+          $pull: {
+            likes: {
+              userId: userLike,
+            },
+          },
+        }
+      : {
+          $push: {
+            likes: {
+              userId: userLike,
+            },
+          },
+        };
+    const postUpdate = await Post.findOneAndUpdate({ _id: postId }, update);
     // console.log(postUpdate);
     if (postUpdate) {
       return res.status(200).json({ code: 0, message: 'react post successfully' });
@@ -139,11 +142,11 @@ module.exports.addComment = async (req, res) => {
       $push: {
         comments: {
           userId: req.body.userId,
-          content: req.body.content
+          content: req.body.content,
         },
       },
     };
-    const postUpdate = await Post.findOneAndUpdate( {_id: postId } , update);
+    const postUpdate = await Post.findOneAndUpdate({ _id: postId }, update);
     if (postUpdate) {
       return res.status(200).json({ code: 0, message: 'add comment successfully' });
     }
@@ -152,4 +155,3 @@ module.exports.addComment = async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 };
-
