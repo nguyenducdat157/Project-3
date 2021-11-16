@@ -13,6 +13,11 @@ const SignIn = (props) => {
   const [password, setPassword] = useState('');
   const [isActive, setIsActive] = useState(false);
 
+  // useEffect(() => {
+  //   // dispatch(setSocket(socket));
+  //   socket.emit('add_socket', socket);
+  // }, []);
+
   const handleLogin = async () => {
     const body = {
       email: email,

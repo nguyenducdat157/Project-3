@@ -16,8 +16,10 @@ import { Autocomplete } from '@mui/material';
 import { TextField } from '@material-ui/core';
 import CreatePost from '../CreatePost/CreatePost';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { getNotifications } from '../../redux/notification/notification.slice';
 
-const ListNotifi = [
+let ListNotifi = [
   {
     userId: '1',
     username: 'hoanghuyquan',
@@ -47,6 +49,7 @@ const ListNotifi = [
 ];
 
 const NavBar = () => {
+  const dispatch = useDispatch();
   const refAvatar = useRef();
   const refNoti = useRef();
   const history = useHistory();
@@ -54,12 +57,25 @@ const NavBar = () => {
   const [toggleAvatar, setToggleAvatar] = useState(false);
   const [toggleNoti, setToggleNoti] = useState(false);
   const [listUser, setListUser] = useState([]);
+  const socket = useSelector((state) => state.socket.socket.payload);
+  const infoUser = useSelector((state) => state.auth.user.data.data);
+  const notifications = useSelector((state) => state.notification.notification?.data.data);
+  const [picture, setPicture] = useState('');
+
+  console.log('notifications: ', notifications);
+
   const addPost = () => {
     setIsOpenCreatePost(true);
   };
   const handleClose = () => {
     setIsOpenCreatePost(false);
   };
+
+  socket?.on('getNoti', async (data) => {
+    if (infoUser.userName === data.userNameCreatePost) {
+      await dispatch(getNotifications());
+    }
+  });
 
   const fetchDataUser = (name) => {
     axios({
@@ -218,20 +234,20 @@ const NavBar = () => {
                       }}
                     />
                   )}
-                  <div className="navbar__number__noti">2</div>
+                  <div className="navbar__number__noti">{notifications?.length ? notifications?.length : ''}</div>
                   {toggleNoti && (
                     <>
                       <div className="dropdown__diamond"></div>
                       <div className="dropdown__content__noti">
-                        {ListNotifi.map((noti) => {
+                        {notifications?.map((noti) => {
                           return (
                             <div className="noti__component">
-                              <Avatar src={pp} style={{ marginRight: '10px' }} />
-                              <div style={{ fontWeight: '600' }}>{noti.username}&nbsp;</div>
+                              <Avatar src={noti.otherUser?.avatar} style={{ marginRight: '10px' }} />
+                              <div style={{ fontWeight: '600' }}>{noti.otherUser?.userName}&nbsp;</div>
                               <div>{noti.content}</div>
-                              {noti.imgPost && (
+                              {noti.post?.pictures[0]?.img && (
                                 <img
-                                  src={noti.imgPost}
+                                  src={`http://localhost:5000/public/${noti.post?.pictures[0]?.img}`}
                                   alt="element"
                                   width="30px"
                                   height="30px"

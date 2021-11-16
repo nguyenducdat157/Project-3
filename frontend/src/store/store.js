@@ -13,6 +13,7 @@ import { postReducer } from '../redux/post/post.slice';
 import { userReducer } from '../redux/user/user.slice';
 import { messageReducer } from '../redux/message/message.slice';
 import { socketReducer } from '../redux/socket/socket.slice';
+import { notificationReducer } from '../redux/notification/notification.slice';
 
 import { combineReducers } from 'redux';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   message: messageReducer,
   socket: socketReducer,
+  notification: notificationReducer,
 });
 
 const persistConfig = {

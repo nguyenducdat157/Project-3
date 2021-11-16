@@ -11,8 +11,8 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { commentApi, reactApi } from '../../redux/post/post.slice';
 import { border } from '@mui/system';
+import { likeNotification, commentNotification } from '../../redux/notification/notification.slice';
 const PostItem = (props) => {
-  // console.log(props);
   const [liked, setLiked] = useState(props.liked);
   const [numberLikes, setNumberLikes] = useState(props.likes);
   const commentList = [...props.comments];
@@ -21,11 +21,20 @@ const PostItem = (props) => {
   const [active, setActive] = useState(false);
   const dispatch = useDispatch();
   const infoUser = useSelector((state) => state.auth.user.data.data);
+  const socket = useSelector((state) => state.socket.socket.payload);
 
   const handleReact = async () => {
     await dispatch(reactApi(props.id));
     setNumberLikes(liked ? numberLikes - 1 : numberLikes + 1);
     setLiked(!liked);
+    if (!liked) {
+      await dispatch(likeNotification(props.id));
+      const data = {
+        idPost: props.id,
+        userNameCreatePost: props.userName,
+      };
+      socket?.emit('like_post', data);
+    }
   };
 
   const handleAddComment = async () => {
@@ -36,9 +45,16 @@ const PostItem = (props) => {
       content: commentValue,
     };
     const res = await dispatch(commentApi(data));
-    if (res) {
+
+    if (res?.payload?.data?.code === 0) {
       const newList = [...commentExtra, { ...data, userName: infoUser.userName }];
       setCommentExtra(newList);
+      await dispatch(commentNotification(props.id));
+      const dataPost = {
+        idPost: props.id,
+        userNameCreatePost: props.userName,
+      };
+      socket?.emit('comment_post', dataPost);
     }
   };
 

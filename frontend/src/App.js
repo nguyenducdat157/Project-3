@@ -9,19 +9,18 @@ import ModalMessage from './Components/ModalMessage/ModalMessage';
 import { hideModalMessage } from './redux/message/message.slice';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import io from 'socket.io-client';
 import { setSocket } from './redux/socket/socket.slice';
 import PostDetail from './Pages/PostDetail/PostDetail';
-
+import io from 'socket.io-client';
 const socket = io.connect('http://localhost:5000');
 
 function App() {
-  const infoUser = useSelector((state) => state.auth.user.data.data);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(setSocket(socket));
-  }, [infoUser]);
+  }, []);
+
   useEffect(() => {
     dispatch(hideModalMessage());
   }, []);
