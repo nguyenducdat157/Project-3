@@ -17,36 +17,7 @@ import { TextField } from '@material-ui/core';
 import CreatePost from '../CreatePost/CreatePost';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { getNotifications } from '../../redux/notification/notification.slice';
-
-let ListNotifi = [
-  {
-    userId: '1',
-    username: 'hoanghuyquan',
-    avatar: 'dlldldldldldldld',
-    content: 'đã theo dõi bạn',
-    imgPost: '',
-    postId: '',
-  },
-  {
-    userId: '2',
-    username: 'phanchihieu',
-    avatar: 'dlldldldldldldld',
-    content: 'đã thích ảnh của bạn',
-    imgPost:
-      'https://scontent.fhan3-3.fna.fbcdn.net/v/t1.6435-9/p552x414/250170656_395700765612419_2940331110762738992_n.jpg?_nc_cat=101&ccb=1-5&_nc_sid=825194&_nc_ohc=dFHxwRNMin8AX_ivKt0&_nc_ht=scontent.fhan3-3.fna&oh=f84910449d7503c1efe90db25e0ee3b4&oe=61A957A7',
-    postId: 'ddjkdl',
-  },
-  {
-    userId: '1',
-    username: 'hoanghuyquan',
-    avatar: 'dlldldldldldldld',
-    content: 'đã bình luận về ảnh của bạn',
-    imgPost:
-      'https://scontent.fhan3-3.fna.fbcdn.net/v/t1.6435-9/p552x414/250170656_395700765612419_2940331110762738992_n.jpg?_nc_cat=101&ccb=1-5&_nc_sid=825194&_nc_ohc=dFHxwRNMin8AX_ivKt0&_nc_ht=scontent.fhan3-3.fna&oh=f84910449d7503c1efe90db25e0ee3b4&oe=61A957A7',
-    postId: 'ddđdd',
-  },
-];
+import { getNotifications, readNotification } from '../../redux/notification/notification.slice';
 
 const NavBar = () => {
   const dispatch = useDispatch();
@@ -60,9 +31,6 @@ const NavBar = () => {
   const socket = useSelector((state) => state.socket.socket.payload);
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const notifications = useSelector((state) => state.notification.notification?.data.data);
-  const [picture, setPicture] = useState('');
-
-  console.log('notifications: ', notifications);
 
   const addPost = () => {
     setIsOpenCreatePost(true);
@@ -122,6 +90,17 @@ const NavBar = () => {
     if (e.keyCode === 13) {
       console.log('value', e.target.value);
     }
+  };
+
+  useEffect(() => {
+    dispatch(getNotifications());
+  }, []);
+
+  console.log('notification: ', notifications);
+  const showNumberNotification = () => {
+    return notifications.filter((item) => {
+      return item.status === 0;
+    }).length;
   };
 
   return (
@@ -191,6 +170,7 @@ const NavBar = () => {
                     }}
                     variant="outlined"
                     // onChange={handleSearch}
+                    // eslint-disable-next-line react/jsx-no-duplicate-props
                     onKeyDown={keyPress}
                   />
                 )}
@@ -220,6 +200,8 @@ const NavBar = () => {
                       height="25px"
                       onClick={() => {
                         setToggleNoti(!toggleNoti);
+                        dispatch(readNotification());
+                        dispatch(getNotifications());
                       }}
                     />
                   ) : (
@@ -234,10 +216,16 @@ const NavBar = () => {
                       }}
                     />
                   )}
-                  <div className="navbar__number__noti">{notifications?.length ? notifications?.length : ''}</div>
+                  <div className="navbar__number__noti">
+                    {showNumberNotification() > 0 ? showNumberNotification() : 0}
+                  </div>
+
+                  {toggleNoti && !notifications?.length && (
+                    <div className="dropdown__content__noti">No notification</div>
+                  )}
+
                   {toggleNoti && (
                     <>
-                      <div className="dropdown__diamond"></div>
                       <div className="dropdown__content__noti">
                         {notifications?.map((noti) => {
                           return (

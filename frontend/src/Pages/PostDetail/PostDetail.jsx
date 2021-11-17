@@ -13,6 +13,7 @@ const PostDetail = () => {
             <div>
               <img
                 height="600px"
+                alt="element"
                 src="https://scontent.fhan3-3.fna.fbcdn.net/v/t39.30808-6/p526x296/256025704_2750629265242960_6161164980374242212_n.jpg?_nc_cat=1&ccb=1-5&_nc_sid=730e14&_nc_ohc=meHsPN1AI3AAX8vgnx_&_nc_ht=scontent.fhan3-3.fna&oh=998fae8c54e3f6d62621ee457887bd3e&oe=619548B1"
               />
             </div>

@@ -41,8 +41,8 @@ const Profile = () => {
   const [isShowFollowers, setIsShowFollowers] = useState(false);
   const [isShowFollowing, setIsShowFollowing] = useState(false);
   const infoUser = useSelector((state) => state.auth.user.data.data);
-  const listFollower = useSelector((state) => state.user.followers.data.data);
-  const listFollowing = useSelector((state) => state.user.following.data.data);
+  const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
+  const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
   console.log(listFollower);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const Profile = () => {
                   style={{ cursor: 'pointer' }}
                   className="profile-followers"
                 >
-                  <b>{listFollower.length}</b> người theo dõi
+                  <b>{listFollower?.length}</b> người theo dõi
                 </div>
                 <div
                   onClick={() => {
@@ -121,7 +121,7 @@ const Profile = () => {
                   style={{ cursor: 'pointer' }}
                   className="profile-following"
                 >
-                  Đang theo dõi <b>{listFollowing.length}</b> người dùng
+                  Đang theo dõi <b>{listFollowing?.length}</b> người dùng
                 </div>
               </div>
               <div className="profile-full-name">{infoUser.fullName}</div>

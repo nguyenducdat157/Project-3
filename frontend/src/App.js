@@ -8,7 +8,7 @@ import Profile from './Pages/Profile/Profile';
 import ModalMessage from './Components/ModalMessage/ModalMessage';
 import { hideModalMessage } from './redux/message/message.slice';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setSocket } from './redux/socket/socket.slice';
 import PostDetail from './Pages/PostDetail/PostDetail';
 import io from 'socket.io-client';

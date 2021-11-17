@@ -1,7 +1,6 @@
 import React from 'react';
 import './InfoSection.css';
 import { Avatar } from '@material-ui/core';
-import pp from '../../images/avt-ins.jpg';
 import { useSelector } from 'react-redux';
 
 const InfoSection = () => {

@@ -3,12 +3,14 @@ import axios from 'axios';
 import './Suggestion.css';
 import { Avatar } from '@material-ui/core';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { followNotification } from '../../redux/notification/notification.slice';
 
 const Suggestion = () => {
   const history = useHistory();
   const [listSuggest, setListSuggest] = useState([]);
+  const socket = useSelector((state) => state.socket.socket.payload);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -31,13 +33,17 @@ const Suggestion = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log('suggestion: ', listSuggest);
-
   const SuggestItem = (props) => {
     const [followed, setFollowed] = useState(false);
     const handleFollow = async () => {
       await dispatch(followApi(props.id));
       setFollowed(true);
+      await dispatch(followNotification(props.id));
+      const data = {
+        idUser: props.id,
+        userNameCreatePost: props.username,
+      };
+      socket?.emit('follow_user', data);
     };
     const handleUnFollow = async () => {
       await dispatch(unFollowApi(props.id));

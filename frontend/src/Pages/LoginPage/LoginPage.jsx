@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import inst_image from '../../images/9364675fb26a.svg';
 import insta_logo from '../../images/logoinsta.png';
 import SignIn from '../../Components/SignIn';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 const LoginPage = () => {
   const [logined, setLogined] = useState(false);
 

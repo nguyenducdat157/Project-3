@@ -6,11 +6,11 @@ import redlove from '../../images/redlove.svg';
 import comment from '../../images/comment.svg';
 import edit from '../../images/threedot.svg';
 // import FavoriteIcon from '@mui/icons-material/Favorite';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { commentApi, reactApi } from '../../redux/post/post.slice';
-import { border } from '@mui/system';
+// import { border } from '@mui/system';
 import { likeNotification, commentNotification } from '../../redux/notification/notification.slice';
 const PostItem = (props) => {
   const [liked, setLiked] = useState(props.liked);
@@ -97,9 +97,9 @@ const PostItem = (props) => {
       <div>
         <div style={{ marginLeft: '10px' }}>
           {liked ? (
-            <img src={redlove} className="post_reactimage" onClick={handleReact} />
+            <img src={redlove} className="post_reactimage" alt="element" onClick={handleReact} />
           ) : (
-            <img src={love} className="post_reactimage" onClick={handleReact} />
+            <img src={love} className="post_reactimage" alt="element" onClick={handleReact} />
           )}
           {/* <FontAwesomeIcon
             icon={faHeart}

@@ -25,6 +25,14 @@ export const followNotification = createAsyncThunk('notification/follow', async 
   }
 });
 
+export const readNotification = createAsyncThunk('notification/read', async () => {
+  try {
+    return await axiosInstance.post(`/api/notification/read-notification`);
+  } catch (error) {
+    throw error;
+  }
+});
+
 export const getNotifications = createAsyncThunk('notification/get', async () => {
   try {
     return await axiosInstance.get(`/api/notification/get`);
@@ -54,6 +62,18 @@ const notificationSlice = createSlice({
     [`${getNotifications.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.notification = action.payload;
+    },
+
+    // read notification
+    [`${readNotification.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${readNotification.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${readNotification.fulfilled}`]: (state, action) => {
+      state.loading = false;
     },
   },
 });
