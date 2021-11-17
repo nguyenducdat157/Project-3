@@ -75,7 +75,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('comment_post', (data) => {
-    console.log('commment');
+    io.emit('getNoti', data);
+  });
+  socket.on('follow_user', (data) => {
+    console.log('follow');
     io.emit('getNoti', data);
   });
 });

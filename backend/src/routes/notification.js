@@ -9,6 +9,8 @@ router.post('/comment/:idPost', requireSignIn, controller.commentNotification);
 
 router.post('/follow/:idUser', requireSignIn, controller.followNotification);
 
+router.post('/read-notification', requireSignIn, controller.readNotification);
+
 router.get('/get', requireSignIn, controller.getNotifications);
 
 module.exports = router;
