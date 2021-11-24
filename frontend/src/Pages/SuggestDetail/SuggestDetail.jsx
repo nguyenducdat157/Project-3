@@ -4,20 +4,26 @@ import Grid from '@material-ui/core/Grid';
 import './SuggestDetail.css';
 import { Avatar } from '@material-ui/core';
 import NavBar from '../../Components/NavBar/Navbar';
-import { getAllUserSuggest } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
-import { useDispatch } from 'react-redux';
-import pp from '../../images/avt-ins.jpg';
+import { useDispatch, useSelector } from 'react-redux';
+import { followNotification } from '../../redux/notification/notification.slice';
 
 const SuggestDetail = () => {
   const dispatch = useDispatch();
   const [listSuggest, setListSuggest] = useState([]);
+  const socket = useSelector((state) => state.socket.socket.payload);
 
   const SuggestItem = (props) => {
     const [followed, setFollowed] = useState(false);
     const handleFollow = async () => {
       await dispatch(followApi(props.id));
       setFollowed(true);
+      await dispatch(followNotification(props.id));
+      const data = {
+        idUser: props.id,
+        userNameCreatePost: props.userName,
+      };
+      socket?.emit('follow_user', data);
     };
     const handleUnFollow = async () => {
       await dispatch(unFollowApi(props.id));

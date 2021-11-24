@@ -6,12 +6,15 @@ import PostItem from '../PostItem/PostItem';
 import InfoSection from '../InfoSuggestion/InfoSection';
 import Suggestion from '../Suggestions/Suggestion';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const MainContent = () => {
   const [listPost, setListPost] = useState([]);
+  const infoUser = useSelector((state) => state.auth.user.data.data);
   const prevLink = 'http://localhost:5000/public/';
 
   useEffect(() => {
+    // window.location.reload();
     const fetchData = async () => {
       axios({
         method: 'get',
@@ -31,6 +34,8 @@ const MainContent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log(listPost);
+
   return (
     <div>
       <Grid container>
@@ -42,20 +47,17 @@ const MainContent = () => {
                 listPost.map((item, index) => (
                   <PostItem
                     id={item._id}
-                    userName={item.userName}
+                    userName={item.postBy?.userName}
+                    avatar={item.postBy?.avatar}
                     postImage={prevLink + item.pictures[0].img}
                     likes={item.likes.length}
+                    title={item.title}
+                    liked={item.likes.find((i) => i.userId === infoUser._id) ? true : false}
+                    comments={item.comments}
                   />
                 ))
               ) : (
-                <PostItem
-                  id={'123'}
-                  userName={'ducdat'}
-                  postImage={
-                    'https://scontent.fhan3-1.fna.fbcdn.net/v/t1.6435-9/p180x540/246717433_3056114554717580_4734206533511619751_n.jpg?_nc_cat=111&ccb=1-5&_nc_sid=8bfeb9&_nc_ohc=pjYZTK7ALcwAX9fvQQF&_nc_ht=scontent.fhan3-1.fna&oh=4c15c1d1fc669a7e0d4da518bf208569&oe=61A6A6F9'
-                  }
-                  likes={4}
-                />
+                <div>Loading...</div>
               )}
             </div>
           </div>

@@ -16,37 +16,11 @@ import { Autocomplete } from '@mui/material';
 import { TextField } from '@material-ui/core';
 import CreatePost from '../CreatePost/CreatePost';
 import axios from 'axios';
-
-const ListNotifi = [
-  {
-    userId: '1',
-    username: 'hoanghuyquan',
-    avatar: 'dlldldldldldldld',
-    content: 'đã theo dõi bạn',
-    imgPost: '',
-    postId: '',
-  },
-  {
-    userId: '2',
-    username: 'phanchihieu',
-    avatar: 'dlldldldldldldld',
-    content: 'đã thích ảnh của bạn',
-    imgPost:
-      'https://scontent.fhan3-3.fna.fbcdn.net/v/t1.6435-9/p552x414/250170656_395700765612419_2940331110762738992_n.jpg?_nc_cat=101&ccb=1-5&_nc_sid=825194&_nc_ohc=dFHxwRNMin8AX_ivKt0&_nc_ht=scontent.fhan3-3.fna&oh=f84910449d7503c1efe90db25e0ee3b4&oe=61A957A7',
-    postId: 'ddjkdl',
-  },
-  {
-    userId: '1',
-    username: 'hoanghuyquan',
-    avatar: 'dlldldldldldldld',
-    content: 'đã bình luận về ảnh của bạn',
-    imgPost:
-      'https://scontent.fhan3-3.fna.fbcdn.net/v/t1.6435-9/p552x414/250170656_395700765612419_2940331110762738992_n.jpg?_nc_cat=101&ccb=1-5&_nc_sid=825194&_nc_ohc=dFHxwRNMin8AX_ivKt0&_nc_ht=scontent.fhan3-3.fna&oh=f84910449d7503c1efe90db25e0ee3b4&oe=61A957A7',
-    postId: 'ddđdd',
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { getNotifications, readNotification } from '../../redux/notification/notification.slice';
 
 const NavBar = () => {
+  const dispatch = useDispatch();
   const refAvatar = useRef();
   const refNoti = useRef();
   const history = useHistory();
@@ -54,12 +28,22 @@ const NavBar = () => {
   const [toggleAvatar, setToggleAvatar] = useState(false);
   const [toggleNoti, setToggleNoti] = useState(false);
   const [listUser, setListUser] = useState([]);
+  const socket = useSelector((state) => state.socket.socket.payload);
+  const infoUser = useSelector((state) => state.auth.user.data.data);
+  const notifications = useSelector((state) => state.notification.notification?.data.data);
+
   const addPost = () => {
     setIsOpenCreatePost(true);
   };
   const handleClose = () => {
     setIsOpenCreatePost(false);
   };
+
+  socket?.on('getNoti', async (data) => {
+    if (infoUser.userName === data.userNameCreatePost) {
+      await dispatch(getNotifications());
+    }
+  });
 
   const fetchDataUser = (name) => {
     axios({
@@ -105,8 +89,18 @@ const NavBar = () => {
   const keyPress = (e) => {
     if (e.keyCode === 13) {
       console.log('value', e.target.value);
-      // put the login here
     }
+  };
+
+  useEffect(() => {
+    dispatch(getNotifications());
+  }, []);
+
+  console.log('notification: ', notifications);
+  const showNumberNotification = () => {
+    return notifications.filter((item) => {
+      return item.status === 0;
+    }).length;
   };
 
   return (
@@ -176,6 +170,7 @@ const NavBar = () => {
                     }}
                     variant="outlined"
                     // onChange={handleSearch}
+                    // eslint-disable-next-line react/jsx-no-duplicate-props
                     onKeyDown={keyPress}
                   />
                 )}
@@ -205,6 +200,8 @@ const NavBar = () => {
                       height="25px"
                       onClick={() => {
                         setToggleNoti(!toggleNoti);
+                        dispatch(readNotification());
+                        dispatch(getNotifications());
                       }}
                     />
                   ) : (
@@ -219,20 +216,26 @@ const NavBar = () => {
                       }}
                     />
                   )}
-                  <div className="navbar__number__noti">2</div>
+                  <div className="navbar__number__noti">
+                    {showNumberNotification() > 0 ? showNumberNotification() : 0}
+                  </div>
+
+                  {toggleNoti && !notifications?.length && (
+                    <div className="dropdown__content__noti">No notification</div>
+                  )}
+
                   {toggleNoti && (
                     <>
-                      <div className="dropdown__diamond"></div>
                       <div className="dropdown__content__noti">
-                        {ListNotifi.map((noti) => {
+                        {notifications?.map((noti) => {
                           return (
                             <div className="noti__component">
-                              <Avatar src={pp} style={{ marginRight: '10px' }} />
-                              <div style={{ fontWeight: '600' }}>{noti.username}&nbsp;</div>
+                              <Avatar src={noti.otherUser?.avatar} style={{ marginRight: '10px' }} />
+                              <div style={{ fontWeight: '600' }}>{noti.otherUser?.userName}&nbsp;</div>
                               <div>{noti.content}</div>
-                              {noti.imgPost && (
+                              {noti.post?.pictures[0]?.img && (
                                 <img
-                                  src={noti.imgPost}
+                                  src={`http://localhost:5000/public/${noti.post?.pictures[0]?.img}`}
                                   alt="element"
                                   width="30px"
                                   height="30px"

@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../Pages/LoginPage/LoginPage.css';
 import { signIn } from '../redux/auth/auth.slice';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { showModalMessage } from '../redux/message/message.slice';
 
 const SignIn = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isActive, setIsActive] = useState(false);
+
+  // useEffect(() => {
+  //   // dispatch(setSocket(socket));
+  //   socket.emit('add_socket', socket);
+  // }, []);
 
   const handleLogin = async () => {
     const body = {
@@ -19,8 +26,19 @@ const SignIn = (props) => {
     if (res?.payload?.data?.code === 0) {
       await localStorage.setItem('token', res.payload.data.token);
       await history.push('/');
+    } else if (res.payload.response.status === 404) {
+      dispatch(
+        showModalMessage({
+          type: 'ERROR',
+          msg: 'Email hoặc mật khẩu của bạn không đúng.\nVui lòng kiểm tra lại',
+        }),
+      );
     }
   };
+
+  useEffect(() => {
+    setIsActive(password.length >= 6 && email !== '');
+  }, [email, password]);
 
   return (
     <div>
@@ -38,7 +56,7 @@ const SignIn = (props) => {
         type="password"
         placeholder="Password"
       />
-      <button style={{ cursor: 'pointer' }} onClick={handleLogin} className="login__button">
+      <button disabled={!isActive} onClick={handleLogin} className="login__button">
         Log In
       </button>
     </div>

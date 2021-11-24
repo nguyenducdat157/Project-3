@@ -3,8 +3,6 @@ import React from 'react';
 import Popup from '../Popup/Popup';
 import { useDispatch, useSelector } from 'react-redux';
 import { hideModalMessage } from '../../redux/message/message.slice';
-import success from '../../../src/images/success.svg';
-import error from '../../../src/images/error.svg';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 const ModalMessage = () => {

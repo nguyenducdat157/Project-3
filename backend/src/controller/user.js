@@ -184,3 +184,45 @@ module.exports.searchUser = async (req, res) => {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
 };
+
+module.exports.getAllUserFollower = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    let result = [];
+    let listFollower = [];
+    if (!user) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    } else {
+      listFollower = user.followers;
+      for (let i = 0; i < listFollower.length; i++) {
+        const userFollowedMe = await User.findOne({ _id: listFollower[i].userId });
+        if (userFollowedMe) result.push(userFollowedMe);
+      }
+    }
+    return res.status(200).json({ code: 0, data: result });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+};
+
+module.exports.getAllUserFollowing = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    let result = [];
+    let listFollowing = [];
+    if (!user) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    } else {
+      listFollowing = user.following;
+      for (let i = 0; i < listFollowing.length; i++) {
+        const userFollowedMe = await User.findOne({ _id: listFollowing[i].userId });
+        if (userFollowedMe) result.push(userFollowedMe);
+      }
+    }
+    return res.status(200).json({ code: 0, data: result });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+};
