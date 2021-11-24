@@ -30,7 +30,24 @@ const NavBar = () => {
   const [listUser, setListUser] = useState([]);
   const socket = useSelector((state) => state.socket.socket.payload);
   const infoUser = useSelector((state) => state.auth.user.data.data);
-  const notifications = useSelector((state) => state.notification.notification?.data.data);
+  // const notifications = useSelector((state) => state.notification.notification?.data.data);
+  const [notifications, setNotifications] = useState([]);
+
+  const fetchNotification = async () => {
+    axios({
+      method: 'get',
+      url: 'http://localhost:5000/api/notification/get',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    }).then((response) => {
+      console.log(response);
+      if (response.status === 200) {
+        setNotifications(response.data.data);
+      }
+    });
+  };
 
   const addPost = () => {
     setIsOpenCreatePost(true);
@@ -41,7 +58,7 @@ const NavBar = () => {
 
   socket?.on('getNoti', async (data) => {
     if (infoUser.userName === data.userNameCreatePost) {
-      await dispatch(getNotifications());
+      await fetchNotification();
     }
   });
 
@@ -93,12 +110,12 @@ const NavBar = () => {
   };
 
   useEffect(() => {
-    dispatch(getNotifications());
+    fetchNotification();
   }, []);
 
   console.log('notification: ', notifications);
   const showNumberNotification = () => {
-    return notifications.filter((item) => {
+    return notifications?.filter((item) => {
       return item.status === 0;
     }).length;
   };
@@ -201,7 +218,7 @@ const NavBar = () => {
                       onClick={() => {
                         setToggleNoti(!toggleNoti);
                         dispatch(readNotification());
-                        dispatch(getNotifications());
+                        fetchNotification();
                       }}
                     />
                   ) : (
