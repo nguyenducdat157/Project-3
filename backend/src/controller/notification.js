@@ -132,7 +132,7 @@ module.exports.getNotifications = async (req, res) => {
 module.exports.readNotification = async (req, res) => {
   try {
     const currentId = req.user._id;
-    const updateStatus = await Notification.update({ userId: currentId }, { status: 1 });
+    const updateStatus = await Notification.updateMany({ userId: currentId, status: 0 }, { status: 1 });
     if (updateStatus) {
       return res.status(200).json({ code: 0, data: updateStatus });
     }

@@ -68,20 +68,25 @@ module.exports.getPosts = async (req, res) => {
   //   console.log(err);
   //   return res.status(500).json({ error: 'Server error' });
   // }
-  Post.find({ postedBy: { $in: req.user.following } })
-    .populate('postBy', ['userName', 'avatar'])
-    .populate({ path: 'comments', populate: { path: 'userId', select: 'userName' } })
-    .sort('-updateAt')
-    .then((posts) => {
-      res.status(200).json({
-        code: 0,
-        data: posts,
+  const user = await User.findOne({ _id: req.user._id });
+  if(user) {
+    const listFollowing = user.following.map((obj) => (obj.userId));
+    Post.find({ 'postBy' : { $in: listFollowing } })
+      .populate('postBy', ['userName', 'avatar'])
+      .populate({ path: 'comments', populate: { path: 'userId', select: 'userName' } })
+      .sort('-updateAt')
+      .then((posts) => {
+        res.status(200).json({
+          code: 0,
+          data: posts,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json({ error: 'Server error' });
       });
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).json({ error: 'Server error' });
-    });
+  }
+  
 };
 
 module.exports.removePost = async (req, res) => {

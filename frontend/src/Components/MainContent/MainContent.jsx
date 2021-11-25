@@ -57,7 +57,7 @@ const MainContent = () => {
                   />
                 ))
               ) : (
-                <div>Loading...</div>
+                <div style={{ fontWeight: '600' }}>Không có bài viết nào ở đây</div>
               )}
             </div>
           </div>

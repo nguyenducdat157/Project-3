@@ -14,7 +14,7 @@ const PostDetail = () => {
               <img
                 height="600px"
                 alt="element"
-                src="https://scontent.fhan3-3.fna.fbcdn.net/v/t39.30808-6/p526x296/256025704_2750629265242960_6161164980374242212_n.jpg?_nc_cat=1&ccb=1-5&_nc_sid=730e14&_nc_ohc=meHsPN1AI3AAX8vgnx_&_nc_ht=scontent.fhan3-3.fna&oh=998fae8c54e3f6d62621ee457887bd3e&oe=619548B1"
+                src="https://scontent.fhan4-1.fna.fbcdn.net/v/t39.30808-6/p526x296/244711233_185380257079635_1099484810878147522_n.jpg?_nc_cat=1&ccb=1-5&_nc_sid=825194&_nc_ohc=-cJhU1AUqG4AX-NOCIh&_nc_ht=scontent.fhan4-1.fna&oh=61c5092b359ace65a1e7e966622b7053&oe=61A35632"
               />
             </div>
             <div className="post_detail_comment_container">

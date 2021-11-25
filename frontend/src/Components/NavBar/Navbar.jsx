@@ -141,7 +141,7 @@ const NavBar = () => {
                 freeSolo
                 id="free-solo-2-demo"
                 disableClearable
-                options={listUser.map((option) => option)}
+                options={listUser?.map((option) => option)}
                 // getOptionLabel={(option) => option.userName && option.fullName}
                 filterOptions={(options, state) => options}
                 renderOption={(object, option) => {
@@ -169,7 +169,7 @@ const NavBar = () => {
                     setListUser([]);
                   }
 
-                  console.log('listUser: ', listUser);
+                  // console.log('listUser: ', listUser);
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -233,35 +233,37 @@ const NavBar = () => {
                       }}
                     />
                   )}
-                  <div className="navbar__number__noti">
+                  {/* <div className="navbar__number__noti">
                     {showNumberNotification() > 0 ? showNumberNotification() : 0}
-                  </div>
-
-                  {toggleNoti && !notifications?.length && (
-                    <div className="dropdown__content__noti">No notification</div>
+                  </div> */}
+                  {showNumberNotification() > 0 && (
+                    <div className="navbar__number__noti">{showNumberNotification()}</div>
                   )}
-
                   {toggleNoti && (
                     <>
                       <div className="dropdown__content__noti">
-                        {notifications?.map((noti) => {
-                          return (
-                            <div className="noti__component">
-                              <Avatar src={noti.otherUser?.avatar} style={{ marginRight: '10px' }} />
-                              <div style={{ fontWeight: '600' }}>{noti.otherUser?.userName}&nbsp;</div>
-                              <div>{noti.content}</div>
-                              {noti.post?.pictures[0]?.img && (
-                                <img
-                                  src={`http://localhost:5000/public/${noti.post?.pictures[0]?.img}`}
-                                  alt="element"
-                                  width="30px"
-                                  height="30px"
-                                  style={{ marginLeft: 'auto' }}
-                                />
-                              )}
-                            </div>
-                          );
-                        })}
+                        {notifications?.length ? (
+                          notifications?.map((noti) => {
+                            return (
+                              <div className="noti__component">
+                                <Avatar src={noti.otherUser?.avatar} style={{ marginRight: '10px' }} />
+                                <div style={{ fontWeight: '600' }}>{noti.otherUser?.userName}&nbsp;</div>
+                                <div>{noti.content}</div>
+                                {noti.post?.pictures[0]?.img && (
+                                  <img
+                                    src={`http://localhost:5000/public/${noti.post?.pictures[0]?.img}`}
+                                    alt="element"
+                                    width="30px"
+                                    height="30px"
+                                    style={{ marginLeft: 'auto' }}
+                                  />
+                                )}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p style={{ textAlign: 'center', fontWeight: '600' }}>No notification</p>
+                        )}
                       </div>
                     </>
                   )}
