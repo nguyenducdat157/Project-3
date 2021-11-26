@@ -3,6 +3,7 @@
   margin-top: 50px;
   padding: 30px;
   /* background-color: red; */
+  border-bottom: 1px solid #e4e4eb;
 }
 .profile-title {
   display: flex;
@@ -52,6 +53,33 @@
 
 .profile-avatar {
   height: 150px;
+}
+
+.profile-body {
+  margin-top: 20px;
+  display: flex;
+}
+.profile_picture_container {
+  position: relative;
+}
+.profile_love {
+  width: 30px;
+  height: 30px;
+}
+.profile_commnet {
+  width: 30px;
+  height: 30px;
+}
+
+.profile_icon_in_picture {
+  position: absolute;
+  top: 45%;
+  left: 35%;
+}
+.profile_picture:hover {
+  cursor: pointer;
+  -webkit-filter: opacity(50%); /* Safari 6.0 - 9.0 */
+  filter: opacity(50%);
 }
 
 @media screen and (max-width: 735px) {
