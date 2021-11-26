@@ -27,4 +27,6 @@ router.post('/like/:postId', requireSignIn, controller.likePost);
 
 router.post('/comment/:postId', requireSignIn, controller.addComment);
 
+router.get('/get-post-for-me', requireSignIn, controller.getPostForMe);
+
 module.exports = router;
