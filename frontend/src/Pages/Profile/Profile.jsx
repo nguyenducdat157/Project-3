@@ -88,6 +88,7 @@ const Profile = () => {
     dispatch(getPostMe());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  console.log('ok');
 
   const FollowerItem = (props) => {
     const [followed, setFollowed] = useState(false);
