@@ -12,7 +12,8 @@ import { useDispatch } from 'react-redux';
 import { setSocket } from './redux/socket/socket.slice';
 import PostDetail from './Pages/PostDetail/PostDetail';
 import io from 'socket.io-client';
-const socket = io.connect('http://localhost:5000');
+import { HOST_URL } from './ultils/constants';
+const socket = io.connect(HOST_URL);
 
 function App() {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ function App() {
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/suggest-detail" component={SuggestDetail} />
         <Route exact path="/profile" component={Profile} />
-        <Route exact path="/post" component={PostDetail} />
+        <Route exact path="/post/:id" component={PostDetail} />
       </Switch>
       <ModalMessage />
     </BrowserRouter>

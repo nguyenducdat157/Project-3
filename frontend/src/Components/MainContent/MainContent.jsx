@@ -7,18 +7,19 @@ import InfoSection from '../InfoSuggestion/InfoSection';
 import Suggestion from '../Suggestions/Suggestion';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { HOST_URL, PREVLINK } from '../../ultils/constants';
 
 const MainContent = () => {
   const [listPost, setListPost] = useState([]);
   const infoUser = useSelector((state) => state.auth.user.data.data);
-  const prevLink = 'http://localhost:5000/public/';
+  const prevLink = PREVLINK;
 
   useEffect(() => {
     // window.location.reload();
     const fetchData = async () => {
       axios({
         method: 'get',
-        url: 'http://localhost:5000/api/post/get-posts',
+        url: `${HOST_URL}/api/post/get-posts`,
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -47,6 +48,7 @@ const MainContent = () => {
                 listPost.map((item, index) => (
                   <PostItem
                     id={item._id}
+                    userId={item.postBy?._id}
                     userName={item.postBy?.userName}
                     avatar={item.postBy?.avatar}
                     postImage={prevLink + item.pictures[0].img}

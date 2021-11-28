@@ -7,6 +7,7 @@ import NavBar from '../../Components/NavBar/Navbar';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { followNotification } from '../../redux/notification/notification.slice';
+import { HOST_URL } from '../../ultils/constants';
 
 const SuggestDetail = () => {
   const dispatch = useDispatch();
@@ -58,7 +59,7 @@ const SuggestDetail = () => {
     const fetchData = async () => {
       axios({
         method: 'get',
-        url: 'http://localhost:5000/api/user/get-all-suggest',
+        url: `${HOST_URL}/api/user/get-all-suggest`,
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + localStorage.getItem('token'),

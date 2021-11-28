@@ -18,6 +18,8 @@ import CreatePost from '../CreatePost/CreatePost';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNotifications, readNotification } from '../../redux/notification/notification.slice';
+import { HOST_URL, PREVLINK } from '../../ultils/constants';
+import { Link } from 'react-router-dom';
 
 const NavBar = () => {
   const dispatch = useDispatch();
@@ -36,7 +38,7 @@ const NavBar = () => {
   const fetchNotification = async () => {
     axios({
       method: 'get',
-      url: 'http://localhost:5000/api/notification/get',
+      url: `${HOST_URL}/api/notification/get`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -65,7 +67,7 @@ const NavBar = () => {
   const fetchDataUser = (name) => {
     axios({
       method: 'get',
-      url: `http://localhost:5000/api/user/search/${name}`,
+      url: `${HOST_URL}/api/user/search/${name}`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -113,7 +115,7 @@ const NavBar = () => {
     fetchNotification();
   }, []);
 
-  console.log('notification: ', notifications);
+  // console.log('notification: ', notifications);
   const showNumberNotification = () => {
     return notifications?.filter((item) => {
       return item.status === 0;
@@ -245,13 +247,30 @@ const NavBar = () => {
                         {notifications?.length ? (
                           notifications?.map((noti) => {
                             return (
-                              <div className="noti__component">
+                              <div
+                                className="noti__component"
+                                onClick={() => {
+                                  if (noti?.post) {
+                                    history.push({
+                                      pathname: `/post/${noti?.post?._id}`,
+                                      state: {
+                                        postId: noti?.post?._id,
+                                        liked: noti?.post?.likes.find((i) => i.userId === infoUser._id) ? true : false,
+                                        numberLikes: noti?.post?.likes?.length,
+                                        followed: infoUser?.following?.find((i) => i.userId === noti?.post?.userId)
+                                          ? true
+                                          : false,
+                                      },
+                                    });
+                                  }
+                                }}
+                              >
                                 <Avatar src={noti.otherUser?.avatar} style={{ marginRight: '10px' }} />
                                 <div style={{ fontWeight: '600' }}>{noti.otherUser?.userName}&nbsp;</div>
                                 <div>{noti.content}</div>
                                 {noti.post?.pictures[0]?.img && (
                                   <img
-                                    src={`http://localhost:5000/public/${noti.post?.pictures[0]?.img}`}
+                                    src={`${PREVLINK}/${noti.post?.pictures[0]?.img}`}
                                     alt="element"
                                     width="30px"
                                     height="30px"

@@ -142,8 +142,9 @@
   margin-top: -4px;
   width: 100%;
   top: 58px;
-  overflow: auto;
+  overflow-y: auto;
   height: 400px;
+  overflow-x: clip;
 }
 
 .noti__component {

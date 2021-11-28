@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { showModalMessage } from '../../redux/message/message.slice';
 import './CreatePost.css';
+import { HOST_URL } from '../../ultils/constants';
 const CreatePost = (props) => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
@@ -38,7 +39,7 @@ const CreatePost = (props) => {
     } else {
       axios({
         method: 'post',
-        url: 'http://localhost:5000/api/post/create-post',
+        url: `${HOST_URL}/api/post/create-post`,
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: 'Bearer ' + localStorage.getItem('token'),

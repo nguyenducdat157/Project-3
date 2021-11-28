@@ -114,7 +114,7 @@ module.exports.getNotifications = async (req, res) => {
     const listNotification = await Notification.find({ userId: currentId })
       .populate({
         path: 'post',
-        select: ['pictures'],
+        select: ['pictures', ['likes']],
       })
       .populate({ path: 'otherUser', select: ['userName', 'avatar'] })
       .sort({ createdAt: -1 });

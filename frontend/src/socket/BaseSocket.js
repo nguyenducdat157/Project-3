@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
 import jwt_decode from 'jwt-decode';
 import { OrderedMap } from 'immutable';
+import { HOST_URL } from '../ultils/constants';
 
 export default class RealTime {
   constructor(store) {
@@ -11,7 +12,7 @@ export default class RealTime {
   }
 
   connect() {
-    this.socket = io('http://localhost:5000');
+    this.socket = io(HOST_URL);
     console.log('connect');
     // let tell server who you are
     this.isConnected = true;
