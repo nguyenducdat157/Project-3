@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React, { useState, useEffect } from 'react';
 import NavBar from '../../Components/NavBar/Navbar';
 import Grid from '@material-ui/core/Grid';
@@ -7,6 +8,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Popup from '../../Components/Popup/Popup';
 import { getFollowers, getFollowing } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
+import { getPostMe } from '../../redux/post/post.slice';
+import love from '../../images/love.svg';
+import comment from '../../images/comment.svg';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -43,12 +47,48 @@ const Profile = () => {
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
-  console.log(listFollower);
+  const listPostForMe = useSelector((state) => state.post.postOfMe.data);
+
+  const ShowPicture = (props) => {
+    const [hoverPicture, setHoverPicture] = useState(false);
+    return (
+      <>
+        <div className="profile_picture_container">
+          <img
+            onMouseOver={() => {
+              setHoverPicture(true);
+            }}
+            onMouseOut={() => {
+              setHoverPicture(false);
+            }}
+            className="profile_picture"
+            style={{ width: '400px', height: '300px', marginRight: '20px' }}
+            src={'http://localhost:5000/public/' + props.picture}
+          ></img>
+          {hoverPicture && (
+            <div style={{ display: 'flex' }} className="profile_icon_in_picture">
+              <span style={{ display: 'flex', marginRight: '20px' }}>
+                <img className="profile_love" src={love}></img>
+                <span style={{ color: 'red', fontWeight: 'bold' }}>{props.likes}</span>
+              </span>
+              <span style={{ display: 'flex' }}>
+                <img className="profile_commnet" src={comment}></img>
+                <span style={{ color: 'red', fontWeight: 'bold' }}>{props.comments}</span>
+              </span>
+            </div>
+          )}
+        </div>
+      </>
+    );
+  };
 
   useEffect(() => {
     dispatch(getFollowers());
     dispatch(getFollowing());
+    dispatch(getPostMe());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  console.log('ok');
 
   const FollowerItem = (props) => {
     const [followed, setFollowed] = useState(false);
@@ -91,7 +131,7 @@ const Profile = () => {
 
       <Grid container classes={{ root: classes.root }}>
         <Grid item xs={3}></Grid>
-        <Grid item xs={9}>
+        <Grid item xs={6}>
           <div className="profile-header">
             <img className="profile-avatar" src={infoUser.avatar} alt="element"></img>
             <div className="profile-info">
@@ -127,8 +167,16 @@ const Profile = () => {
               <div className="profile-full-name">{infoUser.fullName}</div>
             </div>
           </div>
-          <div className="profile-body"></div>
+
+          <div className="profile-body">
+            {listPostForMe &&
+              listPostForMe?.length > 0 &&
+              listPostForMe.map((item) => (
+                <ShowPicture likes={item.likes.length} comments={item.comments.length} picture={item.pictures[0].img} />
+              ))}
+          </div>
         </Grid>
+        <Grid item xs={3}></Grid>
       </Grid>
 
       <Popup

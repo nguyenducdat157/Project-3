@@ -198,6 +198,21 @@ module.exports.removeComment = async (req, res) => {
     return res.status(400).json({ code: 1, message: 'post not found' });
   } catch (err) {
     console.log(err);
+  }
+}
+module.exports.getPostForMe = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    if (!user) {
+      return res.status(404).json({ message: 'User not find' });
+    }
+    const posts = await Post.find({ postBy: currentId });
+    if (!posts) {
+      return res.status(404).json({ message: 'Not find post ' });
+    }
+    return res.status(200).json({ code: 0, data: posts });
+  } catch (err) {
     return res.status(500).json({ error: 'Server error' });
   }
 };
