@@ -226,3 +226,39 @@ module.exports.getAllUserFollowing = async (req, res) => {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
 };
+module.exports.changeAvatar = async (req, res) => {
+  try {
+    let pictures = [];
+
+    if (req.files.length > 0) {
+      pictures = req.files.map((file) => {
+        return { img: file.filename };
+      });
+    }
+    console.log(pictures);
+
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    if (!user) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    }
+
+    const updateAvatar = await User.findOneAndUpdate({ _id: user._id }, { avatar: pictures[0].img });
+    if (updateAvatar) {
+      return res.status(200).json({ code: 0, data: 'update successfully' });
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};
+
+module.exports.getMe = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    if (!user) return res.status(404).json({ code: 1, error: 'Can not find user' });
+    return res.status(200).json({ code: 0, data: user });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};
