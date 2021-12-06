@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import NavBar from '../../Components/NavBar/Navbar';
 import Grid from '@material-ui/core/Grid';
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,6 +12,10 @@ import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { getPostMe } from '../../redux/post/post.slice';
 import love from '../../images/love.svg';
 import comment from '../../images/comment.svg';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import Avatar from 'react-avatar-edit';
+import { showModalMessage } from '../../redux/message/message.slice';
+import { getMe } from '../../redux/auth/auth.slice';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -44,6 +49,10 @@ const Profile = () => {
   const dispatch = useDispatch();
   const [isShowFollowers, setIsShowFollowers] = useState(false);
   const [isShowFollowing, setIsShowFollowing] = useState(false);
+  const [isChangeAvatar, setIsChangeAvatar] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [src, setSrc] = useState(null);
+  const [editorRef, setEditorRef] = useState(null);
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
@@ -88,8 +97,43 @@ const Profile = () => {
     dispatch(getPostMe());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log('ok');
 
+  const handleChangeAvatar = (e) => {
+    const formData = new FormData();
+    formData.append('pictures', editorRef.state?.file);
+    axios({
+      method: 'post',
+      url: `http://localhost:5000/api/user/change-avatar`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+      data: formData,
+    })
+      .then((response) => {
+        console.log('response: ', response);
+        if (response.status === 200) {
+          setIsChangeAvatar(false);
+          dispatch(getMe());
+          dispatch(
+            showModalMessage({
+              type: 'SUCCESS',
+              msg: 'Thay đổi anh đại diện thành công!',
+            }),
+          );
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const onClose = () => {
+    setPreview(null);
+  };
+  const onCrop = (preview) => {
+    setPreview(preview);
+  };
   const FollowerItem = (props) => {
     const [followed, setFollowed] = useState(false);
     const checkFollowed = (item) => {
@@ -133,7 +177,24 @@ const Profile = () => {
         <Grid item xs={3}></Grid>
         <Grid item xs={6}>
           <div className="profile-header">
-            <img className="profile-avatar" src={infoUser.avatar} alt="element"></img>
+            <div className="profile-avatar-box">
+              <img
+                style={{ width: '200px', height: '200px', borderRadius: '50%' }}
+                className="profile-avatar"
+                src={`http://localhost:5000/public/${infoUser.avatar}`}
+                alt="element"
+              ></img>
+              <div
+                className="icon_picture"
+                onClick={() => {
+                  setIsChangeAvatar(true);
+                  setPreview(null);
+                }}
+              >
+                <CameraAltIcon />
+              </div>
+            </div>
+
             <div className="profile-info">
               <div className="profile-title">
                 <div className="profile-user-name">{infoUser.userName}</div>
@@ -194,6 +255,32 @@ const Profile = () => {
           listFollower.map((item) => (
             <FollowerItem item={item} avatar={item.avatar} fullName={item.fullName} userName={item.userName} />
           ))}
+      </Popup>
+
+      <Popup
+        isOpen={isChangeAvatar}
+        handleClose={() => {
+          setIsChangeAvatar(false);
+        }}
+        title="Change Avatar"
+        isIconClose={true}
+        minwidth="500px"
+      >
+        <div className="editor">
+          <Avatar
+            width={390}
+            height={295}
+            onCrop={onCrop}
+            onClose={onClose}
+            src={src}
+            // labelStyle={this.state.labelStyle}
+            ref={(ref) => setEditorRef(ref)}
+          />
+          <img src={preview} alt="Preview" />
+        </div>
+        <button onClick={handleChangeAvatar} className="profile_btn_save">
+          Save change
+        </button>
       </Popup>
 
       <Popup
