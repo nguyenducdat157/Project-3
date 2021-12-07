@@ -35,4 +35,6 @@ router.post('/change-avatar', requireSignIn, upload.array('pictures'), controlle
 
 router.get('/get-me', requireSignIn, controller.getMe);
 
+router.get('/profile-friend/:id', requireSignIn, controller.getProfileFriend);
+
 module.exports = router;

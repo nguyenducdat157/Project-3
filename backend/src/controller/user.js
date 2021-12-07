@@ -262,3 +262,16 @@ module.exports.getMe = async (req, res) => {
     return res.status(500).json({ code: 1, error: err.message });
   }
 };
+
+module.exports.getProfileFriend = async (req, res) => {
+  try {
+    const idFriend = req.params.id;
+    const friend = await User.findOne({ _id: idFriend });
+    if (!friend) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    }
+    return res.status(200).json({ code: 0, data: friend });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};
