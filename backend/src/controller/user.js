@@ -151,7 +151,14 @@ module.exports.allUserSuggest = async (req, res) => {
 
 module.exports.searchUser = async (req, res) => {
   try {
-    const name = req.params.name;
+    const name = req.query.name;
+    if(req.query.name === '') {
+      const users =  await User.find({});
+      return res.status(200).json({
+        code: 0,
+        data:users
+      });
+    }
     const users = await User.find({
       $or: [
         {
@@ -181,6 +188,7 @@ module.exports.searchUser = async (req, res) => {
       });
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
 };
@@ -226,3 +234,41 @@ module.exports.getAllUserFollowing = async (req, res) => {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
 };
+
+
+module.exports.getAllUser = async (req, res) => {
+  try {
+    const users = await User.find({});
+    return res.status(200).json({ code: 0, data: users });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+};
+
+module.exports.BlockUser = async (req, res) => {
+  try {
+    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id}, { status: 2 });
+    if(userUpdate) {
+      return res.status(200).json({code: 0, message: 'Block successfully'})
+    }
+    else {
+      return res.status(400).json({code: 0, message: 'Block failed'})
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+}
+
+module.exports.UnBlockUser = async (req, res) => {
+  try {
+    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id}, { status: 0 });
+    if(userUpdate) {
+      return res.status(200).json({code: 0, message: 'Un Block successfully'})
+    }
+    else {
+      return res.status(400).json({code: 0, message: ' Un Block failed'})
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+}

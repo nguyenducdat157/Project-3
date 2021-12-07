@@ -67,7 +67,7 @@ const NavBar = () => {
   const fetchDataUser = (name) => {
     axios({
       method: 'get',
-      url: `${HOST_URL}/api/user/search/${name}`,
+      url: `${HOST_URL}/api/user/search?name=${name}`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -257,9 +257,6 @@ const NavBar = () => {
                                         postId: noti?.post?._id,
                                         liked: noti?.post?.likes.find((i) => i.userId === infoUser._id) ? true : false,
                                         numberLikes: noti?.post?.likes?.length,
-                                        followed: infoUser?.following?.find((i) => i.userId === noti?.post?.userId)
-                                          ? true
-                                          : false,
                                       },
                                     });
                                   }

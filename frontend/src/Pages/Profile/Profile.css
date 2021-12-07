@@ -80,6 +80,7 @@
   cursor: pointer;
   -webkit-filter: opacity(50%); /* Safari 6.0 - 9.0 */
   filter: opacity(50%);
+  background-color: #100f24;
 }
 
 @media screen and (max-width: 735px) {

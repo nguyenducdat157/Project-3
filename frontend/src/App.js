@@ -13,6 +13,7 @@ import { setSocket } from './redux/socket/socket.slice';
 import PostDetail from './Pages/PostDetail/PostDetail';
 import io from 'socket.io-client';
 import { HOST_URL } from './ultils/constants';
+import Dashboard from './Pages/Admin/Dashboard';
 const socket = io.connect(HOST_URL);
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Route exact path="/suggest-detail" component={SuggestDetail} />
         <Route exact path="/profile" component={Profile} />
         <Route exact path="/post/:id" component={PostDetail} />
+        <Route exact path="/admin" component={Dashboard} />
       </Switch>
       <ModalMessage />
     </BrowserRouter>
