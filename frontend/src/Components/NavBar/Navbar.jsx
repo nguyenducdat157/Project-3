@@ -157,7 +157,7 @@ const NavBar = () => {
                         });
                       }}
                     >
-                      <Avatar src={pp} className="search__dropdown_item_avatar" />
+                      <Avatar src={`${PREVLINK}/${infoUser.avatar}`} className="search__dropdown_item_avatar" />
                       <div>
                         <p className="search__dropdown_item_username">{option.userName}</p>
                         <p className="search__dropdown_item_fullname">{option.fullName}</p>
@@ -287,7 +287,7 @@ const NavBar = () => {
               }
               <div class="dropdown" ref={refAvatar}>
                 <Avatar
-                  src={pp}
+                  src={`${PREVLINK}/${infoUser.avatar}`}
                   className="navbar__img navbar__avatar"
                   style={{ maxWidth: '25px', maxHeight: '25px' }}
                   onClick={() => {
