@@ -10,7 +10,9 @@ const InfoSection = () => {
       <div className="info__container">
         <Avatar src={infoUser.avatar} className="info__image" />
         <div className="info_content">
-          <div className="info_username">{infoUser.userName}</div>
+          <a style={{ color: 'blue' }} href="http://localhost:3000/profile">
+            <div className="info_username">{infoUser.userName}</div>
+          </a>
           <div className="info_description">{infoUser.fullName}</div>
         </div>
         <div className="button__switch__account">Chuyển</div>

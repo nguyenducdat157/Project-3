@@ -152,7 +152,7 @@ const NavBar = () => {
                       className="search__dropdown_item"
                       onClick={() => {
                         history.push({
-                          pathname: '/suggest-detail',
+                          pathname: `/profile-friend/${option._id}`,
                           state: { name: 'dat' },
                         });
                       }}

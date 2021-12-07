@@ -65,7 +65,16 @@ export const blockApi = createAsyncThunk('user/block', async (params) => {
   } catch (error) {
     throw error;
   }
+
 });
+
+export const getProfileFriend = createAsyncThunk('user/get-profile-friend', async (id) => {
+  try {
+    return await axiosInstance.get(`/api/user/profile-friend/${id}`);
+  } catch (error) {
+    throw error;
+  }
+})
 
 export const unBlockApi = createAsyncThunk('user/un-block', async (params) => {
   try {
@@ -85,7 +94,8 @@ const initialState = {
   following: { code: 0, data: {} },
   blockUser: {code: 0, success: false},
   unBlockUser: {code: 0, success: false},
-  searchUser: {code: 0, data: {}}
+  searchUser: {code: 0, data: {}},
+  profileFriend: { code: 0, data: {} },
 };
 
 const userSlice = createSlice({
@@ -157,6 +167,18 @@ const userSlice = createSlice({
       state.unBlockUser = {code: 0, success: true};
     },
 
+    // get profile friends
+    [`${getProfileFriend.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${getProfileFriend.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${getProfileFriend.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.profileFriend = action.payload;
+    },
   },
 });
 export const { reducer: userReducer } = userSlice;
