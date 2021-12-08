@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const controller = require('../controller/user');
-const { requireSignIn } = require('../middleware');
+const { requireSignIn, isAdmin } = require('../middleware');
 
 const multer = require('multer');
 const shortid = require('shortid');
@@ -25,12 +25,17 @@ router.get('/get-user-suggest', requireSignIn, controller.getListUserSuggestion)
 
 router.get('/get-all-suggest', requireSignIn, controller.allUserSuggest);
 
-router.get('/search/:name', requireSignIn, controller.searchUser);
+router.get('/search', requireSignIn, controller.searchUser);
 
 router.get('/get-all-follower', requireSignIn, controller.getAllUserFollower);
 
 router.get('/get-all-following', requireSignIn, controller.getAllUserFollowing);
 
+router.get('/get-all', requireSignIn, isAdmin, controller.getAllUser);
+
+router.post('/block/:id', requireSignIn, isAdmin, controller.BlockUser);
+
+router.post('/un-block/:id', requireSignIn, isAdmin, controller.UnBlockUser);
 router.post('/change-avatar', requireSignIn, upload.array('pictures'), controller.changeAvatar);
 
 router.get('/get-me', requireSignIn, controller.getMe);

@@ -67,7 +67,7 @@ const NavBar = () => {
   const fetchDataUser = (name) => {
     axios({
       method: 'get',
-      url: `${HOST_URL}/api/user/search/${name}`,
+      url: `${HOST_URL}/api/user/search?name=${name}`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -157,7 +157,7 @@ const NavBar = () => {
                         });
                       }}
                     >
-                      <Avatar src={pp} className="search__dropdown_item_avatar" />
+                      <Avatar src={`${PREVLINK}/${infoUser.avatar}`} className="search__dropdown_item_avatar" />
                       <div>
                         <p className="search__dropdown_item_username">{option.userName}</p>
                         <p className="search__dropdown_item_fullname">{option.fullName}</p>
@@ -257,9 +257,6 @@ const NavBar = () => {
                                         postId: noti?.post?._id,
                                         liked: noti?.post?.likes.find((i) => i.userId === infoUser._id) ? true : false,
                                         numberLikes: noti?.post?.likes?.length,
-                                        followed: infoUser?.following?.find((i) => i.userId === noti?.post?.userId)
-                                          ? true
-                                          : false,
                                       },
                                     });
                                   }
@@ -290,7 +287,7 @@ const NavBar = () => {
               }
               <div class="dropdown" ref={refAvatar}>
                 <Avatar
-                  src={pp}
+                  src={`${PREVLINK}/${infoUser.avatar}`}
                   className="navbar__img navbar__avatar"
                   style={{ maxWidth: '25px', maxHeight: '25px' }}
                   onClick={() => {

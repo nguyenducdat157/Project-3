@@ -16,6 +16,7 @@ import PostDetail from './Pages/PostDetail/PostDetail';
 import EditProfile from './Pages/EditProfile/EditProfile';
 import io from 'socket.io-client';
 import { HOST_URL } from './ultils/constants';
+import Dashboard from './Pages/Admin/Dashboard';
 const socket = io.connect(HOST_URL);
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
         <Route exact path="/suggest-detail" component={SuggestDetail} />
         <Route exact path="/profile" component={Profile} />
         <Route exact path="/post/:id" component={PostDetail} />
+        <Route exact path="/admin" component={Dashboard} />
         <Route exact path="/profile-friend/:id" render={(props) => <ProfileFriend {...props} />} />
         <Route exact path="/inbox/:id" render={(props) => <Inbox {...props} />} />
         <Route exact path="/edit-profile" component={EditProfile} />
