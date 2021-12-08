@@ -34,9 +34,9 @@ export const unFollowApi = createAsyncThunk('user/un-follow', async (params) => 
   }
 });
 
-export const searchUser = createAsyncThunk('user/search', async (params) => {
+export const searchUser = createAsyncThunk('user/search', async (query) => {
   try {
-    return await axiosInstance.get(`/api/user/search/${params}`);
+    return await axiosInstance.get(`/api/user/search?name=${query}`);
   } catch (error) {
     throw error;
   }
@@ -58,6 +58,33 @@ export const getFollowing = createAsyncThunk('user/get-following', async () => {
   }
 });
 
+export const blockApi = createAsyncThunk('user/block', async (params) => {
+  console.log(params);
+  try {
+    return await axiosInstance.post(`/api/user/block/${params}`);
+  } catch (error) {
+    throw error;
+  }
+
+});
+
+export const getProfileFriend = createAsyncThunk('user/get-profile-friend', async (id) => {
+  try {
+    return await axiosInstance.get(`/api/user/profile-friend/${id}`);
+  } catch (error) {
+    throw error;
+  }
+})
+
+export const unBlockApi = createAsyncThunk('user/un-block', async (params) => {
+  try {
+    return await axiosInstance.post(`/api/user/un-block/${params}`);
+  } catch (error) {
+    throw error;
+  }
+});
+
+
 const initialState = {
   loading: false,
   error: '',
@@ -65,6 +92,10 @@ const initialState = {
   userSuggest: { code: 0, data: {} },
   followers: { code: 0, data: {} },
   following: { code: 0, data: {} },
+  blockUser: {code: 0, success: false},
+  unBlockUser: {code: 0, success: false},
+  searchUser: {code: 0, data: {}},
+  profileFriend: { code: 0, data: {} },
 };
 
 const userSlice = createSlice({
@@ -108,6 +139,45 @@ const userSlice = createSlice({
     [`${getFollowing.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.following = action.payload;
+    },
+
+    //block user 
+    [`${blockApi.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${blockApi.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${blockApi.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.blockUser = {code: 0, success: true};
+    },
+
+    //un-block user 
+    [`${unBlockApi.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${unBlockApi.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${unBlockApi.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.unBlockUser = {code: 0, success: true};
+    },
+
+    // get profile friends
+    [`${getProfileFriend.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${getProfileFriend.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${getProfileFriend.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.profileFriend = action.payload;
     },
   },
 });

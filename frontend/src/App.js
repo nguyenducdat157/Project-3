@@ -5,14 +5,19 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import RegisterPage from './Pages/LoginPage/RegisterPage';
 import SuggestDetail from './Pages/SuggestDetail/SuggestDetail';
 import Profile from './Pages/Profile/Profile';
+import ProfileFriend from './Pages/Profile/ProfileFriend';
+import Inbox from './Pages/Inbox/Inbox';
 import ModalMessage from './Components/ModalMessage/ModalMessage';
 import { hideModalMessage } from './redux/message/message.slice';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setSocket } from './redux/socket/socket.slice';
 import PostDetail from './Pages/PostDetail/PostDetail';
+import EditProfile from './Pages/EditProfile/EditProfile';
 import io from 'socket.io-client';
-const socket = io.connect('http://localhost:5000');
+import { HOST_URL } from './ultils/constants';
+import Dashboard from './Pages/Admin/Dashboard';
+const socket = io.connect(HOST_URL);
 
 function App() {
   const dispatch = useDispatch();
@@ -34,7 +39,11 @@ function App() {
         <Route exact path="/login" component={LoginPage} />
         <Route exact path="/suggest-detail" component={SuggestDetail} />
         <Route exact path="/profile" component={Profile} />
-        <Route exact path="/post" component={PostDetail} />
+        <Route exact path="/post/:id" component={PostDetail} />
+        <Route exact path="/admin" component={Dashboard} />
+        <Route exact path="/profile-friend/:id" render={(props) => <ProfileFriend {...props} />} />
+        <Route exact path="/inbox/:id" render={(props) => <Inbox {...props} />} />
+        <Route exact path="/edit-profile" component={EditProfile} />
       </Switch>
       <ModalMessage />
     </BrowserRouter>

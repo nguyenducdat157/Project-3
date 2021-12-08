@@ -17,6 +17,15 @@ export const signIn = createAsyncThunk('auth/sign-in', async (body) => {
     return error;
   }
 });
+export const getMe = createAsyncThunk('user/get-me', async () => {
+  try {
+    console.log('getMe: ', await axiosInstance.get(`/api/user/get-me`));
+    return await axiosInstance.get(`/api/user/get-me`);
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+});
 
 const initialState = {
   loading: false,
@@ -37,6 +46,18 @@ const authSlice = createSlice({
       state.error = action.error;
     },
     [`${signIn.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+    },
+
+    [`${getMe.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${getMe.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${getMe.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.user = action.payload;
     },

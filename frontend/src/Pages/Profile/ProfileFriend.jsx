@@ -12,12 +12,8 @@ import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { getPostMe } from '../../redux/post/post.slice';
 import love from '../../images/love.svg';
 import comment from '../../images/comment.svg';
-import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import Avatar from 'react-avatar-edit';
-import { showModalMessage } from '../../redux/message/message.slice';
-import { getMe } from '../../redux/auth/auth.slice';
+import { getProfileFriend } from '../../redux/user/user.slice';
 import { useHistory } from 'react-router';
-
 const useStyles = makeStyles(() => ({
   root: {
     '& .MuiGrid-grid-xs-6': {},
@@ -45,20 +41,17 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Profile = () => {
+const ProfileFriend = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const history = useHistory();
   const [isShowFollowers, setIsShowFollowers] = useState(false);
   const [isShowFollowing, setIsShowFollowing] = useState(false);
-  const [isChangeAvatar, setIsChangeAvatar] = useState(false);
-  const [preview, setPreview] = useState(null);
-  const [src, setSrc] = useState(null);
-  const [editorRef, setEditorRef] = useState(null);
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
-  const listPostForMe = useSelector((state) => state.post.postOfMe?.data);
+  const listPostForMe = useSelector((state) => state.post.postOfMe.data);
+  const infoFriend = useSelector((state) => state.user.profileFriend.data.data);
+  const history = useHistory();
 
   const ShowPicture = (props) => {
     const [hoverPicture, setHoverPicture] = useState(false);
@@ -73,7 +66,7 @@ const Profile = () => {
               setHoverPicture(false);
             }}
             className="profile_picture"
-            style={{ width: '300px', height: '300px' }}
+            style={{ width: '400px', height: '300px', marginRight: '20px' }}
             src={'http://localhost:5000/public/' + props.picture}
           ></img>
           {hoverPicture && (
@@ -97,45 +90,10 @@ const Profile = () => {
     dispatch(getFollowers());
     dispatch(getFollowing());
     dispatch(getPostMe());
+    dispatch(getProfileFriend(props.match.params.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleChangeAvatar = (e) => {
-    const formData = new FormData();
-    formData.append('pictures', editorRef.state?.file);
-    axios({
-      method: 'post',
-      url: `http://localhost:5000/api/user/change-avatar`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-      data: formData,
-    })
-      .then((response) => {
-        console.log('response: ', response);
-        if (response.status === 200) {
-          setIsChangeAvatar(false);
-          dispatch(getMe());
-          dispatch(
-            showModalMessage({
-              type: 'SUCCESS',
-              msg: 'Thay đổi anh đại diện thành công!',
-            }),
-          );
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const onClose = () => {
-    setPreview(null);
-  };
-  const onCrop = (preview) => {
-    setPreview(preview);
-  };
   const FollowerItem = (props) => {
     const [followed, setFollowed] = useState(false);
     const checkFollowed = (item) => {
@@ -183,37 +141,29 @@ const Profile = () => {
               <img
                 style={{ width: '200px', height: '200px', borderRadius: '50%' }}
                 className="profile-avatar"
-                src={`http://localhost:5000/public/${infoUser.avatar}`}
+                src={`http://localhost:5000/public/${infoFriend.avatar}`}
                 alt="element"
               ></img>
-              <div
-                className="icon_picture"
-                onClick={() => {
-                  setIsChangeAvatar(true);
-                  setPreview(null);
-                }}
-              >
-                <CameraAltIcon />
-              </div>
             </div>
 
             <div className="profile-info">
               <div className="profile-title">
-                <div className="profile-user-name">{infoUser.userName}</div>
+                <div className="profile-user-name">{infoFriend.userName}</div>
                 <button
+                  style={{ padding: '0px 10px' }}
                   className="profile__button__edit"
                   onClick={() => {
                     history.push({
-                      pathname: `/edit-profile`,
+                      pathname: `/inbox/${infoFriend._id}`,
                     });
                   }}
                 >
-                  Chỉnh sửa trang cá nhân
+                  Nhắn tin
                 </button>
               </div>
               <div className="profile-info-detail">
                 <div style={{ cursor: 'pointer' }} className="profile-post">
-                  <b>2</b> bài viết
+                  <b>{infoFriend?.posts?.length}</b> bài viết
                 </div>
                 <div
                   onClick={() => {
@@ -222,7 +172,7 @@ const Profile = () => {
                   style={{ cursor: 'pointer' }}
                   className="profile-followers"
                 >
-                  <b>{listFollower?.length}</b> người theo dõi
+                  <b>{infoFriend?.followers?.length}</b> người theo dõi
                 </div>
                 <div
                   onClick={() => {
@@ -231,17 +181,17 @@ const Profile = () => {
                   style={{ cursor: 'pointer' }}
                   className="profile-following"
                 >
-                  Đang theo dõi <b>{listFollowing?.length}</b> người dùng
+                  Đang theo dõi <b>{infoFriend?.following?.length}</b> người dùng
                 </div>
               </div>
-              <div className="profile-full-name">{infoUser.fullName}</div>
+              <div className="profile-full-name">{infoFriend.fullName}</div>
             </div>
           </div>
 
           <div className="profile-body">
-            {listPostForMe &&
-              listPostForMe?.length > 0 &&
-              listPostForMe.map((item) => (
+            {infoFriend?.posts &&
+              infoFriend?.posts.length > 0 &&
+              infoFriend?.posts.map((item) => (
                 <ShowPicture likes={item.likes.length} comments={item.comments.length} picture={item.pictures[0].img} />
               ))}
           </div>
@@ -264,32 +214,6 @@ const Profile = () => {
           listFollower.map((item) => (
             <FollowerItem item={item} avatar={item.avatar} fullName={item.fullName} userName={item.userName} />
           ))}
-      </Popup>
-
-      <Popup
-        isOpen={isChangeAvatar}
-        handleClose={() => {
-          setIsChangeAvatar(false);
-        }}
-        title="Change Avatar"
-        isIconClose={true}
-        minwidth="500px"
-      >
-        <div className="editor">
-          <Avatar
-            width={390}
-            height={295}
-            onCrop={onCrop}
-            onClose={onClose}
-            src={src}
-            // labelStyle={this.state.labelStyle}
-            ref={(ref) => setEditorRef(ref)}
-          />
-          <img src={preview} alt="Preview" />
-        </div>
-        <button onClick={handleChangeAvatar} className="profile_btn_save">
-          Save change
-        </button>
       </Popup>
 
       <Popup
@@ -330,4 +254,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileFriend;

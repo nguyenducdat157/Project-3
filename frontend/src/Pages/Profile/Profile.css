@@ -3,6 +3,7 @@
   margin-top: 50px;
   padding: 30px;
   /* background-color: red; */
+  border-bottom: 1px solid #e4e4eb;
 }
 .profile-title {
   display: flex;
@@ -52,6 +53,71 @@
 
 .profile-avatar {
   height: 150px;
+  cursor: pointer;
+}
+.profile-avatar-box {
+  position: relative;
+}
+.editor div > div:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.editor label:hover {
+  /* background-color: blue; */
+}
+.profile_btn_save {
+  margin-top: 10px;
+  display: flex;
+  border-radius: 5px;
+  border: none;
+  margin-left: 30%;
+  cursor: pointer;
+  background-color: blue;
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+}
+.icon_picture {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+.profile-avatar:hover {
+  -webkit-filter: opacity(50%); /* Safari 6.0 - 9.0 */
+  filter: opacity(50%);
+}
+
+.profile-body {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 30px;
+}
+.profile_picture_container {
+  position: relative;
+}
+.profile_love {
+  width: 30px;
+  height: 30px;
+  color: white;
+}
+.profile_commnet {
+  width: 30px;
+  height: 30px;
+  color: white;
+}
+
+.profile_icon_in_picture {
+  position: absolute;
+  top: 45%;
+  left: 35%;
+}
+.profile_picture:hover {
+  cursor: pointer;
+  -webkit-filter: opacity(50%); /* Safari 6.0 - 9.0 */
+  filter: opacity(50%);
+  background-color: #100f24;
 }
 
 @media screen and (max-width: 735px) {

@@ -18,6 +18,8 @@ import CreatePost from '../CreatePost/CreatePost';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNotifications, readNotification } from '../../redux/notification/notification.slice';
+import { HOST_URL, PREVLINK } from '../../ultils/constants';
+import { Link } from 'react-router-dom';
 
 const NavBar = () => {
   const dispatch = useDispatch();
@@ -30,7 +32,24 @@ const NavBar = () => {
   const [listUser, setListUser] = useState([]);
   const socket = useSelector((state) => state.socket.socket.payload);
   const infoUser = useSelector((state) => state.auth.user.data.data);
-  const notifications = useSelector((state) => state.notification.notification?.data.data);
+  // const notifications = useSelector((state) => state.notification.notification?.data.data);
+  const [notifications, setNotifications] = useState([]);
+
+  const fetchNotification = async () => {
+    axios({
+      method: 'get',
+      url: `${HOST_URL}/api/notification/get`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    }).then((response) => {
+      console.log(response);
+      if (response.status === 200) {
+        setNotifications(response.data.data);
+      }
+    });
+  };
 
   const addPost = () => {
     setIsOpenCreatePost(true);
@@ -41,14 +60,14 @@ const NavBar = () => {
 
   socket?.on('getNoti', async (data) => {
     if (infoUser.userName === data.userNameCreatePost) {
-      await dispatch(getNotifications());
+      await fetchNotification();
     }
   });
 
   const fetchDataUser = (name) => {
     axios({
       method: 'get',
-      url: `http://localhost:5000/api/user/search/${name}`,
+      url: `${HOST_URL}/api/user/search?name=${name}`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -93,12 +112,12 @@ const NavBar = () => {
   };
 
   useEffect(() => {
-    dispatch(getNotifications());
+    fetchNotification();
   }, []);
 
-  console.log('notification: ', notifications);
+  // console.log('notification: ', notifications);
   const showNumberNotification = () => {
-    return notifications.filter((item) => {
+    return notifications?.filter((item) => {
       return item.status === 0;
     }).length;
   };
@@ -124,7 +143,7 @@ const NavBar = () => {
                 freeSolo
                 id="free-solo-2-demo"
                 disableClearable
-                options={listUser.map((option) => option)}
+                options={listUser?.map((option) => option)}
                 // getOptionLabel={(option) => option.userName && option.fullName}
                 filterOptions={(options, state) => options}
                 renderOption={(object, option) => {
@@ -133,12 +152,12 @@ const NavBar = () => {
                       className="search__dropdown_item"
                       onClick={() => {
                         history.push({
-                          pathname: '/suggest-detail',
+                          pathname: `/profile-friend/${option._id}`,
                           state: { name: 'dat' },
                         });
                       }}
                     >
-                      <Avatar src={pp} className="search__dropdown_item_avatar" />
+                      <Avatar src={`${PREVLINK}/${infoUser.avatar}`} className="search__dropdown_item_avatar" />
                       <div>
                         <p className="search__dropdown_item_username">{option.userName}</p>
                         <p className="search__dropdown_item_fullname">{option.fullName}</p>
@@ -152,7 +171,7 @@ const NavBar = () => {
                     setListUser([]);
                   }
 
-                  console.log('listUser: ', listUser);
+                  // console.log('listUser: ', listUser);
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -201,7 +220,7 @@ const NavBar = () => {
                       onClick={() => {
                         setToggleNoti(!toggleNoti);
                         dispatch(readNotification());
-                        dispatch(getNotifications());
+                        fetchNotification();
                       }}
                     />
                   ) : (
@@ -216,35 +235,51 @@ const NavBar = () => {
                       }}
                     />
                   )}
-                  <div className="navbar__number__noti">
+                  {/* <div className="navbar__number__noti">
                     {showNumberNotification() > 0 ? showNumberNotification() : 0}
-                  </div>
-
-                  {toggleNoti && !notifications?.length && (
-                    <div className="dropdown__content__noti">No notification</div>
+                  </div> */}
+                  {showNumberNotification() > 0 && (
+                    <div className="navbar__number__noti">{showNumberNotification()}</div>
                   )}
-
                   {toggleNoti && (
                     <>
                       <div className="dropdown__content__noti">
-                        {notifications?.map((noti) => {
-                          return (
-                            <div className="noti__component">
-                              <Avatar src={noti.otherUser?.avatar} style={{ marginRight: '10px' }} />
-                              <div style={{ fontWeight: '600' }}>{noti.otherUser?.userName}&nbsp;</div>
-                              <div>{noti.content}</div>
-                              {noti.post?.pictures[0]?.img && (
-                                <img
-                                  src={`http://localhost:5000/public/${noti.post?.pictures[0]?.img}`}
-                                  alt="element"
-                                  width="30px"
-                                  height="30px"
-                                  style={{ marginLeft: 'auto' }}
-                                />
-                              )}
-                            </div>
-                          );
-                        })}
+                        {notifications?.length ? (
+                          notifications?.map((noti) => {
+                            return (
+                              <div
+                                className="noti__component"
+                                onClick={() => {
+                                  if (noti?.post) {
+                                    history.push({
+                                      pathname: `/post/${noti?.post?._id}`,
+                                      state: {
+                                        postId: noti?.post?._id,
+                                        liked: noti?.post?.likes.find((i) => i.userId === infoUser._id) ? true : false,
+                                        numberLikes: noti?.post?.likes?.length,
+                                      },
+                                    });
+                                  }
+                                }}
+                              >
+                                <Avatar src={noti.otherUser?.avatar} style={{ marginRight: '10px' }} />
+                                <div style={{ fontWeight: '600' }}>{noti.otherUser?.userName}&nbsp;</div>
+                                <div>{noti.content}</div>
+                                {noti.post?.pictures[0]?.img && (
+                                  <img
+                                    src={`${PREVLINK}/${noti.post?.pictures[0]?.img}`}
+                                    alt="element"
+                                    width="30px"
+                                    height="30px"
+                                    style={{ marginLeft: 'auto' }}
+                                  />
+                                )}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p style={{ textAlign: 'center', fontWeight: '600' }}>No notification</p>
+                        )}
                       </div>
                     </>
                   )}
@@ -252,7 +287,7 @@ const NavBar = () => {
               }
               <div class="dropdown" ref={refAvatar}>
                 <Avatar
-                  src={pp}
+                  src={`${PREVLINK}/${infoUser.avatar}`}
                   className="navbar__img navbar__avatar"
                   style={{ maxWidth: '25px', maxHeight: '25px' }}
                   onClick={() => {

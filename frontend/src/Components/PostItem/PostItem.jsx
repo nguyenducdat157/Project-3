@@ -11,7 +11,10 @@ import edit from '../../images/threedot.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { commentApi, reactApi } from '../../redux/post/post.slice';
 // import { border } from '@mui/system';
+import Popup from '../../Components/Popup/Popup';
 import { likeNotification, commentNotification } from '../../redux/notification/notification.slice';
+import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 const PostItem = (props) => {
   const [liked, setLiked] = useState(props.liked);
   const [numberLikes, setNumberLikes] = useState(props.likes);
@@ -19,7 +22,9 @@ const PostItem = (props) => {
   const [commentExtra, setCommentExtra] = useState([]);
   const [commentValue, setCommentValue] = useState('');
   const [active, setActive] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const dispatch = useDispatch();
+  const history = useHistory();
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const socket = useSelector((state) => state.socket.socket.payload);
 
@@ -78,6 +83,10 @@ const PostItem = (props) => {
     return <span></span>;
   };
 
+  // console.log('props: ', props);
+  // console.log('infoUser', infoUser);
+  // console.log('userId', props?.userId);
+
   return (
     <div className="post__container">
       {/* Header */}
@@ -85,7 +94,15 @@ const PostItem = (props) => {
         <Avatar className="post__image" src={props.avatar} />
         <div className="post__username">{props.userName}</div>
         <div style={{ display: 'flex', margin: 'auto', justifyContent: 'flex-end', width: '70%' }}>
-          <img src={edit} alt="element" width="20px" />
+          <img
+            src={edit}
+            alt="element"
+            width="20px"
+            onClick={() => {
+              setShowModal(true);
+            }}
+            style={{ cursor: 'pointer' }}
+          />
         </div>
       </div>
 
@@ -110,7 +127,26 @@ const PostItem = (props) => {
             }}
           />
           /> */}
-          <img src={comment} alt="element" className="post_reactimage" />
+          <Link
+            to={{
+              pathname: `/post/${props.id}`,
+              state: {
+                postId: props.id,
+                liked: liked,
+                numberLikes: numberLikes,
+                followed: infoUser?.following?.find((i) => i.userId === props?.userId) ? true : false,
+              },
+            }}
+          >
+            <img
+              src={comment}
+              alt="element"
+              className="post_reactimage"
+              // onClick={() => {
+              //   history.push(`/post/${props.id}`, { postId: props.id });
+              // }}
+            />
+          </Link>
         </div>
         <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>{numberLikes} likes</div>
       </div>
@@ -137,8 +173,26 @@ const PostItem = (props) => {
         )}
         {CommentExtraList(commentExtra)}
         {commentList.length + commentExtra.length >= 3 && (
-          <div style={{ fontSize: '14px', margin: '10px', color: '#8e8e8e' }}>
-            Xem tất cả {commentList.length + commentExtra.length} bình luận
+          <div
+            style={{ fontSize: '14px', margin: '10px' }}
+            // onClick={() => {
+            //   history.push(`/post/${props.id}`, { postId: props.id });
+            // }}
+          >
+            <Link
+              to={{
+                pathname: `/post/${props.id}`,
+                state: {
+                  postId: props.id,
+                  liked: liked,
+                  numberLikes: numberLikes,
+                  followed: infoUser?.following?.find((i) => i.userId === props?.userId) ? true : false,
+                },
+              }}
+              style={{ textDecoration: 'none', color: '#8e8e8e' }}
+            >
+              Xem tất cả {commentList.length + commentExtra.length} bình luận
+            </Link>
           </div>
         )}
         <div style={{ display: 'flex' }}>
@@ -156,6 +210,41 @@ const PostItem = (props) => {
           </button>
         </div>
       </div>
+      {showModal && (
+        <Popup
+          isOpen={showModal}
+          handleClose={() => {
+            setShowModal(false);
+          }}
+          isIconClose={false}
+          isScroll={true}
+        >
+          {infoUser?.role === 1 && (
+            <>
+              <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+                Xóa
+              </div>
+              <hr className="popup_report_hr" />
+            </>
+          )}
+          <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+            Báo cáo
+          </div>
+          <hr className="popup_report_hr" />
+          <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+            Bỏ theo dõi
+          </div>
+          <hr className="popup_report_hr" />
+          <div
+            className="popup_report_text"
+            onClick={() => {
+              setShowModal(false);
+            }}
+          >
+            Hủy
+          </div>
+        </Popup>
+      )}
     </div>
   );
 };

@@ -57,6 +57,7 @@ const SignUp = () => {
     } else {
       setIsActive(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email, fullName, userName, password]);
 
   return (
