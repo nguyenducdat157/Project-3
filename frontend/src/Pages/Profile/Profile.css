@@ -94,6 +94,7 @@
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 30px;
 }
+
 .profile_picture_container {
   position: relative;
 }

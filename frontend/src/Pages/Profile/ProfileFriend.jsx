@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Popup from '../../Components/Popup/Popup';
 import { getFollowers, getFollowing } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
-import { getPostMe } from '../../redux/post/post.slice';
+import { getPostMe, getPostFriend } from '../../redux/post/post.slice';
 import love from '../../images/love.svg';
 import comment from '../../images/comment.svg';
 import { getProfileFriend } from '../../redux/user/user.slice';
@@ -49,7 +49,7 @@ const ProfileFriend = (props) => {
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
-  const listPostForMe = useSelector((state) => state.post.postOfMe.data);
+  const listPostForFriend = useSelector((state) => state.post?.postOfFriend?.data);
   const infoFriend = useSelector((state) => state.user.profileFriend.data.data);
   const history = useHistory();
 
@@ -89,8 +89,8 @@ const ProfileFriend = (props) => {
   useEffect(() => {
     dispatch(getFollowers());
     dispatch(getFollowing());
-    dispatch(getPostMe());
     dispatch(getProfileFriend(props.match.params.id));
+    dispatch(getPostFriend(props.match.params.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -189,9 +189,9 @@ const ProfileFriend = (props) => {
           </div>
 
           <div className="profile-body">
-            {infoFriend?.posts &&
-              infoFriend?.posts.length > 0 &&
-              infoFriend?.posts.map((item) => (
+            {listPostForFriend &&
+              listPostForFriend?.length > 0 &&
+              listPostForFriend?.map((item) => (
                 <ShowPicture likes={item.likes.length} comments={item.comments.length} picture={item.pictures[0].img} />
               ))}
           </div>
