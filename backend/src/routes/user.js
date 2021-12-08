@@ -36,6 +36,7 @@ router.get('/get-all', requireSignIn, isAdmin, controller.getAllUser);
 router.post('/block/:id', requireSignIn, isAdmin, controller.BlockUser);
 
 router.post('/un-block/:id', requireSignIn, isAdmin, controller.UnBlockUser);
+
 router.post('/change-avatar', requireSignIn, upload.array('pictures'), controller.changeAvatar);
 
 router.get('/get-me', requireSignIn, controller.getMe);

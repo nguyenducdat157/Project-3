@@ -213,7 +213,7 @@ const Profile = () => {
               </div>
               <div className="profile-info-detail">
                 <div style={{ cursor: 'pointer' }} className="profile-post">
-                  <b>2</b> bài viết
+                  <b>{listPostForMe?.length}</b> bài viết
                 </div>
                 <div
                   onClick={() => {

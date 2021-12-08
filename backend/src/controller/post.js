@@ -33,8 +33,8 @@ module.exports.createPost = (req, res) => {
 
 module.exports.getPostById = async (req, res) => {
   const idPost = req.params.id;
-  if(idPost) {
-    Post.findById({ _id : idPost })
+  if (idPost) {
+    Post.findById({ _id: idPost })
       .populate('postBy', ['userName', 'avatar'])
       .populate({ path: 'comments', populate: { path: 'userId', select: ['userName', 'avatar'] } })
       .sort('-updateAt')
@@ -49,8 +49,7 @@ module.exports.getPostById = async (req, res) => {
         return res.status(500).json({ error: 'Server error' });
       });
   }
-  
-}
+};
 
 module.exports.getPosts = async (req, res) => {
   // try {
@@ -90,9 +89,9 @@ module.exports.getPosts = async (req, res) => {
   //   return res.status(500).json({ error: 'Server error' });
   // }
   const user = await User.findOne({ _id: req.user._id });
-  if(user) {
-    const listFollowing = user.following.map((obj) => (obj.userId));
-    Post.find({ 'postBy' : { $in: listFollowing } })
+  if (user) {
+    const listFollowing = user.following.map((obj) => obj.userId);
+    Post.find({ postBy: { $in: listFollowing } })
       .populate('postBy', ['userName', 'avatar'])
       .populate({ path: 'comments', populate: { path: 'userId', select: 'userName' } })
       .sort('-updateAt')
@@ -107,7 +106,6 @@ module.exports.getPosts = async (req, res) => {
         return res.status(500).json({ error: 'Server error' });
       });
   }
-  
 };
 
 module.exports.removePost = async (req, res) => {
@@ -187,7 +185,7 @@ module.exports.removeComment = async (req, res) => {
     const update = {
       $pull: {
         comments: {
-          _id: commentId
+          _id: commentId,
         },
       },
     };
@@ -199,7 +197,7 @@ module.exports.removeComment = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-}
+};
 module.exports.getPostForMe = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -214,5 +212,22 @@ module.exports.getPostForMe = async (req, res) => {
     return res.status(200).json({ code: 0, data: posts });
   } catch (err) {
     return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+module.exports.getPostForFriend = async (req, res) => {
+  try {
+    const idFriend = req.params.id;
+    const user = await User.findOne({ _id: idFriend });
+    if (!user) {
+      return res.status(404).json({ message: 'User not find' });
+    }
+    const posts = await Post.find({ postBy: idFriend });
+    if (!posts) {
+      return res.status(404).json({ message: 'Not find post ' });
+    }
+    return res.status(200).json({ code: 0, data: posts });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };

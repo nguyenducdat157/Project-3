@@ -15,7 +15,7 @@ export const getPostById = createAsyncThunk('post/get-post', async (params) => {
   } catch (error) {
     console.log(error);
   }
-})
+});
 
 export const reactApi = createAsyncThunk('post/like', async (params) => {
   try {
@@ -42,9 +42,18 @@ export const getPostMe = createAsyncThunk('post/get-post-for-me', async () => {
   }
 });
 
+export const getPostFriend = createAsyncThunk('post/get-post-for-friend', async (id) => {
+  try {
+    console.log('res: ', await axiosInstance.get(`/api/post/get-post-for-friend/${id}`));
+    return await axiosInstance.get(`/api/post/get-post-for-friend/${id}`);
+  } catch (error) {
+    return error;
+  }
+});
+
 export const removeCommentApi = createAsyncThunk('post/remove-comment', async (body) => {
   console.log(body);
-  const {postId, commentId} = await body;
+  const { postId, commentId } = await body;
   console.log(postId, commentId);
   try {
     return await axiosInstance.post(`/api/post/remove-comment`, body);
@@ -58,6 +67,7 @@ const initialState = {
   error: '',
   post: { code: 0, data: {} },
   postOfMe: { code: 0, data: {} },
+  postOfFriend: { code: 0, data: {} },
 };
 
 const postSlice = createSlice({
@@ -75,6 +85,18 @@ const postSlice = createSlice({
     [`${getPostMe.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.postOfMe = action.payload.data;
+    },
+
+    [`${getPostFriend.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${getPostFriend.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${getPostFriend.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.postOfFriend = action.payload.data;
     },
   },
 });

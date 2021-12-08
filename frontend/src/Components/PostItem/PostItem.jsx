@@ -85,14 +85,33 @@ const PostItem = (props) => {
 
   // console.log('props: ', props);
   // console.log('infoUser', infoUser);
-  // console.log('userId', props?.userId);
+  console.log('userId', props?.userId);
 
   return (
     <div className="post__container">
       {/* Header */}
       <div className="post__header">
-        <Avatar className="post__image" src={props.avatar} />
-        <div className="post__username">{props.userName}</div>
+        <Avatar
+          onClick={() => {
+            history.push({
+              pathname: `/profile-friend/${props.userId}`,
+            });
+          }}
+          style={{ cursor: 'pointer' }}
+          className="post__image"
+          src={props.avatar}
+        />
+        <div
+          onClick={() => {
+            history.push({
+              pathname: `/profile-friend/${props.userId}`,
+            });
+          }}
+          style={{ cursor: 'pointer' }}
+          className="post__username"
+        >
+          {props.userName}
+        </div>
         <div style={{ display: 'flex', margin: 'auto', justifyContent: 'flex-end', width: '70%' }}>
           <img
             src={edit}
