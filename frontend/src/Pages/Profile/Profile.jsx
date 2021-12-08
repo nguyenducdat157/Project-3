@@ -58,7 +58,7 @@ const Profile = () => {
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
-  const listPostForMe = useSelector((state) => state.post.postOfMe.data);
+  const listPostForMe = useSelector((state) => state.post?.postOfMe?.data);
 
   const ShowPicture = (props) => {
     const [hoverPicture, setHoverPicture] = useState(false);
