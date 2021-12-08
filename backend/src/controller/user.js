@@ -226,3 +226,90 @@ module.exports.getAllUserFollowing = async (req, res) => {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
 };
+
+
+module.exports.getAllUser = async (req, res) => {
+  try {
+    const users = await User.find({role: 0});
+    return res.status(200).json({ code: 0, data: users });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+};
+
+module.exports.BlockUser = async (req, res) => {
+  try {
+    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id}, { status: 2 });
+    if(userUpdate) {
+      return res.status(200).json({code: 0, message: 'Block successfully'})
+    }
+    else {
+      return res.status(400).json({code: 0, message: 'Block failed'})
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+}
+
+module.exports.UnBlockUser = async (req, res) => {
+  try {
+    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id}, { status: 0 });
+    if(userUpdate) {
+      return res.status(200).json({code: 0, message: 'Un Block successfully'})
+    }
+    else {
+      return res.status(400).json({code: 0, message: ' Un Block failed'})
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: 'Server error' });
+  }
+}
+module.exports.changeAvatar = async (req, res) => {
+  try {
+    let pictures = [];
+
+    if (req.files.length > 0) {
+      pictures = req.files.map((file) => {
+        return { img: file.filename };
+      });
+    }
+    console.log(pictures);
+
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    if (!user) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    }
+
+    const updateAvatar = await User.findOneAndUpdate({ _id: user._id }, { avatar: pictures[0].img });
+    if (updateAvatar) {
+      return res.status(200).json({ code: 0, data: 'update successfully' });
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};
+
+module.exports.getMe = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    if (!user) return res.status(404).json({ code: 1, error: 'Can not find user' });
+    return res.status(200).json({ code: 0, data: user });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};
+
+module.exports.getProfileFriend = async (req, res) => {
+  try {
+    const idFriend = req.params.id;
+    const friend = await User.findOne({ _id: idFriend });
+    if (!friend) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    }
+    return res.status(200).json({ code: 0, data: friend });
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};
