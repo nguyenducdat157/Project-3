@@ -321,3 +321,26 @@ module.exports.getProfileFriend = async (req, res) => {
     return res.status(500).json({ code: 1, error: err.message });
   }
 };
+
+module.exports.editProfile = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    if (!user) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    }
+    const update = {
+      fullName: req.body.fullName,
+      userName: req.body.userName,
+      email: req.body.email,
+      status: req.body.status,
+    };
+    const updateUser = await User.findOneAndUpdate({ _id: user._id }, update);
+    if (updateUser) {
+      const userUpdated = await User.findOne({ _id: currentId });
+      return res.status(200).json({ code: 0, data: userUpdated });
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};

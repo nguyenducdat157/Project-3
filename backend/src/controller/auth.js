@@ -96,8 +96,8 @@ module.exports.signUp = async (req, res) => {
 
 module.exports.replacePassword = async (req, res) => {
   try {
-    const { email, password, newPassword } = req.body;
-    const user = await User.findOne({ email: email });
+    const { password, newPassword } = req.body;
+    const user = await User.findOne({ _id: req.user._id });
     if (!user) {
       return res.status(404).json({
         error: 'User not found',
@@ -111,7 +111,7 @@ module.exports.replacePassword = async (req, res) => {
         });
       } else {
         const decodePass = await bcrypt.hash(newPassword, 10);
-        await User.findOneAndUpdate({ email: email }, { password: decodePass });
+        await User.findOneAndUpdate({ _id: req.user._id }, { password: decodePass });
         return res.status(200).json({
           code: 0,
           message: 'Password changed',
@@ -119,6 +119,7 @@ module.exports.replacePassword = async (req, res) => {
       }
     }
   } catch (err) {
+    console.log(err.message);
     return res.status(500).json({
       error: 'Server error',
     });

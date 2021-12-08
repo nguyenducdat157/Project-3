@@ -42,4 +42,6 @@ router.get('/get-me', requireSignIn, controller.getMe);
 
 router.get('/profile-friend/:id', requireSignIn, controller.getProfileFriend);
 
+router.post('/edit-profile', requireSignIn, controller.editProfile);
+
 module.exports = router;
