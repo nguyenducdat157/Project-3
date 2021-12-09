@@ -6,18 +6,24 @@ import love from '../../images/love.svg';
 import redlove from '../../images/redlove.svg';
 import edit from '../../images/threedot.svg';
 import comment from '../../images/comment.svg';
-import { commentApi, reactApi, removeCommentApi } from '../../redux/post/post.slice';
-import { likeNotification, commentNotification } from '../../redux/notification/notification.slice';
+import { commentApi, reactApi, removeCommentApi, removePostApi } from '../../redux/post/post.slice';
+import {
+  likeNotification,
+  commentNotification,
+  reportPostNotification,
+} from '../../redux/notification/notification.slice';
 import { followNotification } from '../../redux/notification/notification.slice';
 import './postDetail.css';
-import { HOST_URL, PREVLINK } from '../../ultils/constants';
+import { HOST_URL, listReportPost, PREVLINK } from '../../ultils/constants';
 import axios from 'axios';
 import Popup from '../../Components/Popup/Popup';
 import { getTimePost } from '../../ultils/fucntions';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { showModalMessage } from '../../redux/message/message.slice';
+import { useHistory } from 'react-router';
 const PostDetail = (props) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [liked, setLiked] = useState(props.location.state.liked);
   const [numberLikes, setNumberLikes] = useState(props.location.state.numberLikes);
   const [commentChange, setCommentChange] = useState(0);
@@ -30,8 +36,9 @@ const PostDetail = (props) => {
   const [followed, setFollowed] = useState(props.location.state.followed);
   const [commentId, setCommentId] = useState('');
   const [commentUserId, setCommentUserId] = useState('');
+  const [showListReport, setShowListReport] = useState(false);
 
-  console.log('followed', props.location.state.followed);
+  // console.log('POSTID', props.location.state.postId);
 
   useEffect(() => {
     // window.location.reload();
@@ -127,6 +134,45 @@ const PostDetail = (props) => {
   useEffect(() => {
     setActive(commentValue !== '');
   }, [commentValue]);
+
+  const handleReport = async (content) => {
+    const data = {
+      postId: props.location.state.postId,
+      content: content,
+    };
+    const res = await dispatch(reportPostNotification(data));
+    if (res?.payload?.data?.code === 0) {
+      dispatch(
+        showModalMessage({
+          type: 'SUCCESS',
+          msg: 'Báo cáo thành công!, Cảm ơn bạn đã phản hồi với chúng tôi',
+        }),
+      );
+      setShowListReport(false);
+      const dataPost = {
+        idPost: props.id,
+        userNameCreatePost: props.userName,
+        admin: 'admin',
+      };
+      socket?.emit('report_post', dataPost);
+    }
+  };
+
+  const handleRemovePost = async () => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa bài viết này không?')) {
+      const res = await dispatch(removePostApi(props.location.state.postId));
+      if (res?.payload?.data?.code === 0) {
+        dispatch(
+          showModalMessage({
+            type: 'SUCCESS',
+            msg: 'Xóa bài viết thành công!',
+          }),
+        );
+        setShowModal(0);
+        history.push('/profile');
+      }
+    }
+  };
   return (
     <>
       <NavBar />
@@ -266,13 +312,26 @@ const PostDetail = (props) => {
         >
           {(post?.postBy?._id === infoUser?._id || infoUser?.role === 1) && (
             <>
-              <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+              <div
+                className="popup_report_text"
+                style={{ color: 'red', fontWeight: 'bold' }}
+                onClick={() => {
+                  handleRemovePost();
+                }}
+              >
                 Xóa
               </div>
               <hr className="popup_report_hr" />
             </>
           )}
-          <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+          <div
+            className="popup_report_text"
+            style={{ color: 'red', fontWeight: 'bold' }}
+            onClick={() => {
+              setShowModal(0);
+              setShowListReport(true);
+            }}
+          >
             Báo cáo
           </div>
           <hr className="popup_report_hr" />
@@ -314,6 +373,43 @@ const PostDetail = (props) => {
             className="popup_report_text"
             onClick={() => {
               setShowModal(0);
+            }}
+          >
+            Hủy
+          </div>
+        </Popup>
+      )}
+      {showListReport && (
+        <Popup
+          isOpen={showListReport}
+          handleClose={() => {
+            setShowListReport(false);
+          }}
+          isIconClose={true}
+          isScroll={true}
+          title="Báo cáo"
+        >
+          <div className="popup_report_text" style={{ color: 'black', fontWeight: 'bold' }}>
+            Tại sao bạn muốn báo cáo nội dung này ?
+          </div>
+          <hr className="popup_report_hr" />
+          {listReportPost.map((content) => (
+            <>
+              <div
+                className="popup_report_text"
+                onClick={() => {
+                  handleReport(content);
+                }}
+              >
+                {content}
+              </div>
+              <hr className="popup_report_hr" />
+            </>
+          ))}
+          <div
+            className="popup_report_text"
+            onClick={() => {
+              setShowListReport(false);
             }}
           >
             Hủy

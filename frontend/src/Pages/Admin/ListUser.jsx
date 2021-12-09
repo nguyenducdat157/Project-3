@@ -231,7 +231,7 @@ export default function ListUser() {
                     if (column.id === 'id') {
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          <Link to={`/profile/${value}`} style={{ cursor: 'pointer' }}>
+                          <Link to={`/profile-friend/${value}`} style={{ cursor: 'pointer' }}>
                             {value}
                           </Link>
                         </TableCell>

@@ -5,7 +5,6 @@ import axios from 'axios';
 import { showModalMessage } from '../../redux/message/message.slice';
 import './CreatePost.css';
 import { HOST_URL, PREVLINK } from '../../ultils/constants';
-import { HOST_URL } from '../../ultils/constants';
 const CreatePost = (props) => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');

@@ -11,9 +11,13 @@ import { getFollowers, getFollowing } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { getPostMe } from '../../redux/post/post.slice';
 import love from '../../images/love.svg';
+import edit from '../../images/threedot.svg';
 import comment from '../../images/comment.svg';
 import { getProfileFriend } from '../../redux/user/user.slice';
 import { useHistory } from 'react-router';
+import { followNotification, reportUserNotification } from '../../redux/notification/notification.slice';
+import { listReportUser } from '../../ultils/constants';
+import { showModalMessage } from '../../redux/message/message.slice';
 const useStyles = makeStyles(() => ({
   root: {
     '& .MuiGrid-grid-xs-6': {},
@@ -49,9 +53,27 @@ const ProfileFriend = (props) => {
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
-  const listPostForMe = useSelector((state) => state.post.postOfMe.data);
-  const infoFriend = useSelector((state) => state.user.profileFriend.data.data);
+  const listPostForMe = useSelector((state) => state.post.postOfMe?.data);
+  const infoFriend = useSelector((state) => state.user.profileFriend?.data?.data);
+  const socket = useSelector((state) => state.socket.socket.payload);
   const history = useHistory();
+  const [showModal, setShowModal] = useState(0);
+
+  const [followed, setFollowed] = useState(infoUser?.following.find((i) => i.userId === infoFriend._id) ? true : false);
+  const handleFollow = async () => {
+    await dispatch(followApi(infoFriend._id));
+    setFollowed(true);
+    await dispatch(followNotification(infoFriend._id));
+    const data = {
+      idUser: infoFriend._id,
+      userNameCreatePost: infoFriend.userName,
+    };
+    socket?.emit('follow_user', data);
+  };
+  const handleUnFollow = async () => {
+    await dispatch(unFollowApi(infoFriend._id));
+    setFollowed(false);
+  };
 
   const ShowPicture = (props) => {
     const [hoverPicture, setHoverPicture] = useState(false);
@@ -84,6 +106,29 @@ const ProfileFriend = (props) => {
         </div>
       </>
     );
+  };
+
+  const handleReport = async (content) => {
+    const data = {
+      userId: infoFriend._id,
+      content: content,
+    };
+    const res = await dispatch(reportUserNotification(data));
+    if (res?.payload?.data?.code === 0) {
+      dispatch(
+        showModalMessage({
+          type: 'SUCCESS',
+          msg: 'Báo cáo thành công!, Cảm ơn bạn đã phản hồi với chúng tôi',
+        }),
+      );
+      setShowModal(0);
+      const dataUser = {
+        idPost: props.id,
+        userNameCreatePost: props.userName,
+        admin: 'admin',
+      };
+      socket?.emit('report_user', dataUser);
+    }
   };
 
   useEffect(() => {
@@ -141,14 +186,14 @@ const ProfileFriend = (props) => {
               <img
                 style={{ width: '200px', height: '200px', borderRadius: '50%' }}
                 className="profile-avatar"
-                src={`http://localhost:5000/public/${infoFriend.avatar}`}
+                src={`http://localhost:5000/public/${infoFriend?.avatar}`}
                 alt="element"
               ></img>
             </div>
 
             <div className="profile-info">
               <div className="profile-title">
-                <div className="profile-user-name">{infoFriend.userName}</div>
+                <div className="profile-user-name">{infoFriend?.userName}</div>
                 <button
                   style={{ padding: '0px 10px' }}
                   className="profile__button__edit"
@@ -160,6 +205,29 @@ const ProfileFriend = (props) => {
                 >
                   Nhắn tin
                 </button>
+                {!followed && (
+                  <button className="follow" onClick={handleFollow} style={{ marginTop: '0px', marginLeft: '20px' }}>
+                    Theo dõi
+                  </button>
+                )}
+                {followed && (
+                  <button
+                    className="followed"
+                    onClick={handleUnFollow}
+                    style={{ marginTop: '0px', marginLeft: '20px', width: '120px' }}
+                  >
+                    Hủy theo dõi
+                  </button>
+                )}
+                {infoUser?.role === 0 && (
+                  <img
+                    src={edit}
+                    style={{ marginLeft: '20px', cursor: 'pointer' }}
+                    onClick={() => {
+                      setShowModal(1);
+                    }}
+                  />
+                )}
               </div>
               <div className="profile-info-detail">
                 <div style={{ cursor: 'pointer' }} className="profile-post">
@@ -184,7 +252,7 @@ const ProfileFriend = (props) => {
                   Đang theo dõi <b>{infoFriend?.following?.length}</b> người dùng
                 </div>
               </div>
-              <div className="profile-full-name">{infoFriend.fullName}</div>
+              <div className="profile-full-name">{infoFriend?.fullName}</div>
             </div>
           </div>
 
@@ -250,6 +318,73 @@ const ProfileFriend = (props) => {
             </div>
           ))}
       </Popup>
+      {showModal === 1 && (
+        <Popup
+          isOpen={showModal === 1}
+          handleClose={() => {
+            setShowModal(0);
+          }}
+          isIconClose={false}
+          isScroll={true}
+        >
+          <div
+            className="popup_report_text"
+            style={{ color: 'red', fontWeight: 'bold' }}
+            onClick={() => {
+              setShowModal(2);
+            }}
+          >
+            Báo cáo tài khoản
+          </div>
+          <hr className="popup_report_hr" />
+
+          <div
+            className="popup_report_text"
+            onClick={() => {
+              setShowModal(0);
+            }}
+          >
+            Hủy
+          </div>
+        </Popup>
+      )}
+      {showModal === 2 && (
+        <Popup
+          isOpen={showModal === 2}
+          handleClose={() => {
+            setShowModal(0);
+          }}
+          isIconClose={true}
+          isScroll={true}
+          title="Báo cáo"
+        >
+          <div className="popup_report_text" style={{ color: 'black', fontWeight: 'bold' }}>
+            Tại sao bạn muốn báo cáo tài khoản này ?
+          </div>
+          <hr className="popup_report_hr" />
+          {listReportUser.map((content) => (
+            <>
+              <div
+                className="popup_report_text"
+                onClick={() => {
+                  handleReport(content);
+                }}
+              >
+                {content}
+              </div>
+              <hr className="popup_report_hr" />
+            </>
+          ))}
+          <div
+            className="popup_report_text"
+            onClick={() => {
+              setShowModal(0);
+            }}
+          >
+            Hủy
+          </div>
+        </Popup>
+      )}
     </>
   );
 };

@@ -12,9 +12,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { commentApi, reactApi } from '../../redux/post/post.slice';
 // import { border } from '@mui/system';
 import Popup from '../../Components/Popup/Popup';
-import { likeNotification, commentNotification } from '../../redux/notification/notification.slice';
+import {
+  likeNotification,
+  commentNotification,
+  reportPostNotification,
+} from '../../redux/notification/notification.slice';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
+import { listReportPost } from '../../ultils/constants';
+import { showModalMessage } from '../../redux/message/message.slice';
+
 const PostItem = (props) => {
   const [liked, setLiked] = useState(props.liked);
   const [numberLikes, setNumberLikes] = useState(props.likes);
@@ -23,6 +30,7 @@ const PostItem = (props) => {
   const [commentValue, setCommentValue] = useState('');
   const [active, setActive] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showListReport, setShowListReport] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   const infoUser = useSelector((state) => state.auth.user.data.data);
@@ -83,6 +91,29 @@ const PostItem = (props) => {
     return <span></span>;
   };
 
+  const handleReport = async (content) => {
+    const data = {
+      postId: props.id,
+      content: content,
+    };
+    const res = await dispatch(reportPostNotification(data));
+    // console.log(res);
+    if (res?.payload?.data?.code === 0) {
+      dispatch(
+        showModalMessage({
+          type: 'SUCCESS',
+          msg: 'Báo cáo thành công!, Cảm ơn bạn đã phản hồi với chúng tôi',
+        }),
+      );
+      setShowListReport(false);
+      const dataPost = {
+        idPost: props.id,
+        userNameCreatePost: props.userName,
+        admin: 'admin',
+      };
+      socket?.emit('report_post', dataPost);
+    }
+  };
   // console.log('props: ', props);
   // console.log('infoUser', infoUser);
   // console.log('userId', props?.userId);
@@ -92,7 +123,15 @@ const PostItem = (props) => {
       {/* Header */}
       <div className="post__header">
         <Avatar className="post__image" src={props.avatar} />
-        <div className="post__username">{props.userName}</div>
+        <div
+          className="post__username"
+          onClick={() => {
+            history.push(`/profile-friend/${props?.userId}`);
+          }}
+          style={{ cursor: 'pointer' }}
+        >
+          {props.userName}
+        </div>
         <div style={{ display: 'flex', margin: 'auto', justifyContent: 'flex-end', width: '70%' }}>
           <img
             src={edit}
@@ -227,7 +266,32 @@ const PostItem = (props) => {
               <hr className="popup_report_hr" />
             </>
           )}
-          <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+          <div
+            className="popup_report_text"
+            style={{ color: 'black', fontWeight: 'bold' }}
+            onClick={() => {
+              history.push({
+                pathname: `/post/${props.id}`,
+                state: {
+                  postId: props.id,
+                  liked: liked,
+                  numberLikes: numberLikes,
+                  followed: infoUser?.following?.find((i) => i.userId === props?.userId) ? true : false,
+                },
+              });
+            }}
+          >
+            Đi tới bài viết
+          </div>
+          <hr className="popup_report_hr" />
+          <div
+            className="popup_report_text"
+            style={{ color: 'red', fontWeight: 'bold' }}
+            onClick={() => {
+              setShowModal(false);
+              setShowListReport(true);
+            }}
+          >
             Báo cáo
           </div>
           <hr className="popup_report_hr" />
@@ -239,6 +303,43 @@ const PostItem = (props) => {
             className="popup_report_text"
             onClick={() => {
               setShowModal(false);
+            }}
+          >
+            Hủy
+          </div>
+        </Popup>
+      )}
+      {showListReport && (
+        <Popup
+          isOpen={showListReport}
+          handleClose={() => {
+            setShowListReport(false);
+          }}
+          isIconClose={true}
+          isScroll={true}
+          title="Báo cáo"
+        >
+          <div className="popup_report_text" style={{ color: 'black', fontWeight: 'bold' }}>
+            Tại sao bạn muốn báo cáo nội dung này ?
+          </div>
+          <hr className="popup_report_hr" />
+          {listReportPost.map((content) => (
+            <>
+              <div
+                className="popup_report_text"
+                onClick={() => {
+                  handleReport(content);
+                }}
+              >
+                {content}
+              </div>
+              <hr className="popup_report_hr" />
+            </>
+          ))}
+          <div
+            className="popup_report_text"
+            onClick={() => {
+              setShowListReport(false);
             }}
           >
             Hủy

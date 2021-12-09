@@ -114,7 +114,10 @@ module.exports.getNotifications = async (req, res) => {
     const listNotification = await Notification.find({ userId: currentId })
       .populate({
         path: 'post',
-        select: ['pictures', ['likes']],
+        select: ['pictures', ['likes'], 'status'],
+      })
+      .populate({
+        path: 'userReport'
       })
       .populate({ path: 'otherUser', select: ['userName', 'avatar'] })
       .sort({ createdAt: -1 });
@@ -138,5 +141,88 @@ module.exports.readNotification = async (req, res) => {
     }
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports.reportPost = async (req, res) => {
+  try {
+    const idPost = req.params.idPost;
+    const userReported = await User.findOne({ _id: req.user._id });
+    if (!userReported) {
+      return res.status(404).json({ status: 'User Not Found' });
+    }
+    // const nameUserLiked = userLiked.userName;
+    const post = await Post.findOne({ _id: idPost });
+    if (!post) {
+      return res.status(404).json({ status: 'Post Not Found' });
+    }
+    const owner = await User.findOne({role: 1});
+    console.log(owner);
+
+    const notification = new Notification({
+      otherUser: req.user._id,
+      userId: owner._id,
+      content: `đã báo cáo một bài viết vì lí do ${req.body.content}`,
+      post: post._id,
+      status: 0,
+    });
+    const createNotification = await notification.save();
+    if (createNotification) {
+      await User.findOneAndUpdate(
+        { _id: owner._id },
+        { $push: { notifications: { notificationId: createNotification._id } } },
+      );
+      return res.status(200).json({
+        code: 0,
+        data: notification,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: 'Server error',
+    });
+  }
+};
+
+
+module.exports.reportUser = async (req, res) => {
+  try {
+    const idUser = req.params.idUser;
+    const userReported = await User.findOne({ _id: req.user._id });
+    if (!userReported) {
+      return res.status(404).json({ status: 'User Not Found' });
+    }
+    // const nameUserLiked = userLiked.userName;
+    const user = await User.findOne({ _id: idUser });
+    if (!user) {
+      return res.status(404).json({ status: 'User Report Not Found' });
+    }
+    const owner = await User.findOne({role: 1});
+    console.log(owner);
+
+    const notification = new Notification({
+      otherUser: req.user._id,
+      userId: owner._id,
+      content: `đã báo cáo một tài khoản vì lí do ${req.body.content}`,
+      userReport: user._id,
+      status: 0,
+    });
+    const createNotification = await notification.save();
+    if (createNotification) {
+      await User.findOneAndUpdate(
+        { _id: owner._id },
+        { $push: { notifications: { notificationId: createNotification._id } } },
+      );
+      return res.status(200).json({
+        code: 0,
+        data: notification,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: 'Server error',
+    });
   }
 };

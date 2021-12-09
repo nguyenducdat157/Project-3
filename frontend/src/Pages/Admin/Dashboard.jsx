@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -29,7 +29,11 @@ import ListUser from './ListUser';
 import { useState } from 'react';
 import { useHistory } from 'react-router';
 import ListReport from './ListReport';
-const drawerWidth = 240;
+import axios from 'axios';
+import { HOST_URL } from '../../ultils/constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { readNotification } from '../../redux/notification/notification.slice';
+const drawerWidth = 280;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -108,6 +112,16 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+  numberNoti: {
+    width: '25px',
+    height: '25px',
+    borderRadius: '11px',
+    color: 'white',
+    textAlign: 'center',
+    background: 'red',
+    fontSize: '18px',
+    alignItems: 'center',
+  },
 }));
 
 export default function Dashboard() {
@@ -115,6 +129,38 @@ export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
   const [tab, setTab] = useState(1);
   const history = useHistory();
+  const dispatch = useDispatch();
+  const socket = useSelector((state) => state.socket.socket.payload);
+  const infoUser = useSelector((state) => state.auth.user.data.data);
+
+  const [notifications, setNotifications] = useState([]);
+
+  const fetchNotification = async () => {
+    axios({
+      method: 'get',
+      url: `${HOST_URL}/api/notification/get`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+    }).then((response) => {
+      console.log(response);
+      if (response.status === 200) {
+        setNotifications(response.data.data);
+      }
+    });
+  };
+
+  socket?.on('getNoti', async (data) => {
+    if (infoUser.userName === data.admin) {
+      await fetchNotification();
+    }
+  });
+
+  useEffect(() => {
+    fetchNotification();
+  }, []);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -128,6 +174,14 @@ export default function Dashboard() {
     localStorage.removeItem('token');
     history.push('/login');
   };
+
+  const showNumberNotification = () => {
+    return notifications?.filter((item) => {
+      return item.status === 0;
+    }).length;
+  };
+
+  console.log(showNumberNotification());
 
   return (
     <div className={classes.root}>
@@ -182,12 +236,15 @@ export default function Dashboard() {
               button
               onClick={() => {
                 setTab(2);
+                dispatch(readNotification());
+                fetchNotification();
               }}
             >
               <ListItemIcon>
                 <NotificationsIcon />
               </ListItemIcon>
               <ListItemText primary="Danh sách báo cáo" />
+              {showNumberNotification() > 0 && <div className={classes.numberNoti}>{showNumberNotification()}</div>}
             </ListItem>
             <ListItem
               button
@@ -206,7 +263,7 @@ export default function Dashboard() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         {tab === 1 && <ListUser />}
-        {tab === 2 && <ListReport />}
+        {tab === 2 && <ListReport notification={notifications} />}
       </main>
     </div>
   );

@@ -43,15 +43,21 @@ export const getPostMe = createAsyncThunk('post/get-post-for-me', async () => {
 });
 
 export const removeCommentApi = createAsyncThunk('post/remove-comment', async (body) => {
-  console.log(body);
-  const {postId, commentId} = await body;
-  console.log(postId, commentId);
   try {
     return await axiosInstance.post(`/api/post/remove-comment`, body);
   } catch (error) {
     return error;
   }
 });
+
+export const removePostApi = createAsyncThunk('post/remove-comment', async (postId) => {
+  try {
+    return await axiosInstance.post(`/api/post/remove-post/${postId}`);
+  } catch (error) {
+    return error;
+  }
+});
+
 
 const initialState = {
   loading: false,

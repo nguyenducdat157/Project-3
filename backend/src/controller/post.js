@@ -92,7 +92,7 @@ module.exports.getPosts = async (req, res) => {
   const user = await User.findOne({ _id: req.user._id });
   if(user) {
     const listFollowing = user.following.map((obj) => (obj.userId));
-    Post.find({ 'postBy' : { $in: listFollowing } })
+    Post.find({ 'postBy' : { $in: listFollowing}, status: 0  })
       .populate('postBy', ['userName', 'avatar'])
       .populate({ path: 'comments', populate: { path: 'userId', select: 'userName' } })
       .sort('-updateAt')
@@ -113,17 +113,13 @@ module.exports.getPosts = async (req, res) => {
 module.exports.removePost = async (req, res) => {
   try {
     const idPost = req.params.id;
-    Post.findOneAndDelete({ _id: idPost }, (err, post) => {
-      if (err) {
-        return res.status(500).json({ error: 'Server error' });
-      }
-      if (post) {
+    const removePost = await Post.findOneAndUpdate({ _id: idPost }, { status: 1 });
+      if (removePost) {
         return res.status(200).json({
           code: 0,
           message: 'Delete post success',
         });
       }
-    });
   } catch (err) {
     return res.status(500).json({ error: 'Server error' });
   }
@@ -187,11 +183,11 @@ module.exports.removeComment = async (req, res) => {
     const update = {
       $pull: {
         comments: {
-          _id: commentId
+          _id: req.body.commentId
         },
       },
     };
-    const postUpdate = await Post.findByIdAndUpdate({ _id: postId }, update);
+    const postUpdate = await Post.findByIdAndUpdate({ _id: req.body.postId }, update);
     if (postUpdate) {
       return res.status(200).json({ code: 0, message: 'remove comment successfully' });
     }
@@ -207,7 +203,7 @@ module.exports.getPostForMe = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not find' });
     }
-    const posts = await Post.find({ postBy: currentId });
+    const posts = await Post.find({ postBy: currentId, status: 0 });
     if (!posts) {
       return res.status(404).json({ message: 'Not find post ' });
     }

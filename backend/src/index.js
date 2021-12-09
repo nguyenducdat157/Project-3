@@ -81,6 +81,13 @@ io.on('connection', (socket) => {
     console.log('follow');
     io.emit('getNoti', data);
   });
+  socket.on('report_post', (data) => {
+    io.emit('getNoti', data);
+  }) 
+
+  socket.on('report_user', (data) => {
+    io.emit('getNoti', data);
+  }) 
 });
 
 server.listen(PORT, () => {
