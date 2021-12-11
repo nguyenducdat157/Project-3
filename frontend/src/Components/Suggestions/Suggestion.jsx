@@ -54,7 +54,7 @@ const Suggestion = () => {
     return (
       <div className="suggestions__friends">
         <Avatar src={props.imageSrc} className="suggestions__image" />
-        <a className="suggestions__username" href="localhost:3000/#">
+        <a className="suggestions__username" href={`/profile-friend/${props.id}`}>
           {props.username}
         </a>
         {followed ? (

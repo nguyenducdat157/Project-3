@@ -27,7 +27,7 @@ module.exports.signIn = async (req, res) => {
           // },
         );
         res.cookie('token', token);
-        const { _id, email, role, fullName, avatar, following, followers, userName, notifications } = user;
+        const { _id, email, role, fullName, avatar, following, followers, userName, notifications, status } = user;
         return res.status(200).json({
           code: 0,
           data: {
@@ -40,6 +40,7 @@ module.exports.signIn = async (req, res) => {
             email,
             notifications,
             role,
+            status
           },
           token,
         });

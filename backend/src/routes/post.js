@@ -23,13 +23,14 @@ router.get('/get-posts', requireSignIn, controller.getPosts);
 
 router.get('/get-post/:id', requireSignIn, controller.getPostById);
 
-router.delete('/remove-post/:id', requireSignIn, controller.removePost);
+router.post('/remove-post/:id', requireSignIn, controller.removePost);
 
 router.post('/like/:postId', requireSignIn, controller.likePost);
 
 router.post('/comment/:postId', requireSignIn, controller.addComment);
 
 router.post('/remove-comment', requireSignIn, controller.removeComment);
+
 router.get('/get-post-for-me', requireSignIn, controller.getPostForMe);
 router.get('/get-post-for-friend/:id', requireSignIn, controller.getPostForFriend);
 

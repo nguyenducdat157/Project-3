@@ -224,14 +224,14 @@ export default function ListUser() {
                     if (column.id === 'avatar') {
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          <Avatar src={value} style={{ marginRight: '10px' }} />
+                          <Avatar src={`${PREVLINK}/${value}`} style={{ marginRight: '10px' }} />
                         </TableCell>
                       );
                     }
                     if (column.id === 'id') {
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          <Link to={`/profile/${value}`} style={{ cursor: 'pointer' }}>
+                          <Link to={`/profile-friend/${value}`} style={{ cursor: 'pointer' }}>
                             {value}
                           </Link>
                         </TableCell>

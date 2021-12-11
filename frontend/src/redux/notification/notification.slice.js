@@ -41,6 +41,24 @@ export const getNotifications = createAsyncThunk('notification/get', async () =>
   }
 });
 
+
+export const reportPostNotification = createAsyncThunk('notification/report-post', async (data) => {
+  try {
+    return await axiosInstance.post(`/api/notification/report-post/${data.postId}`, {content: data.content});
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const reportUserNotification = createAsyncThunk('notification/report-user', async (data) => {
+  try {
+    return await axiosInstance.post(`/api/notification/report-user/${data.userId}`, {content: data.content});
+  } catch (error) {
+    throw error;
+  }
+});
+
+
 const initialState = {
   loading: false,
   error: '',

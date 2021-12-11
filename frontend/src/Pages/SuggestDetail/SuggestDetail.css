@@ -11,6 +11,7 @@
   margin-top: 10px;
   width: 44px !important;
   height: 44px !important;
+  cursor: pointer;
 }
 
 .list-data {
@@ -54,12 +55,15 @@
   color: #100f24;
   font-weight: 600;
   font-size: 14px;
+  cursor: pointer;
 }
 .full-name {
   color: #c9c8cc;
   font-size: 14px;
+  cursor: pointer;
 }
 .followers {
   color: #c9c8cc;
   font-size: 14px;
+  cursor: pointer;
 }

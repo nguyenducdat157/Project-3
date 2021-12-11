@@ -13,4 +13,8 @@ router.post('/read-notification', requireSignIn, controller.readNotification);
 
 router.get('/get', requireSignIn, controller.getNotifications);
 
+router.post('/report-post/:idPost', requireSignIn, controller.reportPost);
+
+router.post('/report-user/:idUser', requireSignIn, controller.reportUser);
+
 module.exports = router;

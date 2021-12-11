@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: 'https://cdn0.iconfinder.com/data/icons/instagram-ui-1/24/Instagram-UI_account-512.png',
+      default: 'default-avatar.png',
     },
     followers: [{ userId: { type: ObjectId, ref: 'User' } }],
     following: [{ userId: { type: ObjectId, ref: 'User' } }],
