@@ -13,6 +13,31 @@ export const signIn = createAsyncThunk('auth/sign-in', async (body) => {
   try {
     return await axiosInstance.post(`/api/auth/sign-in`, body);
   } catch (error) {
+    console.log(error);
+    return error;
+  }
+});
+export const getMe = createAsyncThunk('user/get-me', async () => {
+  try {
+    return await axiosInstance.get(`/api/user/get-me`);
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+});
+
+export const editProfile = createAsyncThunk('user/edit-profile', async (body) => {
+  try {
+    return await axiosInstance.post(`/api/user/edit-profile`, body);
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const replacePassword = createAsyncThunk('auth/replace-password', async (body) => {
+  try {
+    return await axiosInstance.post(`/api/auth/replace-password`, body);
+  } catch (error) {
     throw error;
   }
 });
@@ -36,6 +61,30 @@ const authSlice = createSlice({
       state.error = action.error;
     },
     [`${signIn.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+    },
+
+    [`${getMe.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${getMe.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${getMe.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+    },
+
+    [`${editProfile.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${editProfile.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${editProfile.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.user = action.payload;
     },

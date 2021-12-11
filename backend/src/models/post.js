@@ -14,10 +14,10 @@ const userSchema = new mongoose.Schema(
       {
         userId: { type: ObjectId, ref: 'User' },
         content: { type: String },
+        // commentBy: {type: String}
       },
     ],
     postBy: { type: ObjectId, ref: 'User' },
-    userName: { type: String },
     status: {
       type: Number,
       default: 0,
@@ -32,8 +32,8 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    createAt: Date,
-    updateAt: Date,
+    // createAt: Date,
+    // updateAt: Date,
   },
   { timestamps: true },
 );

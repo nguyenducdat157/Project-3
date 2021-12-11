@@ -1,6 +1,6 @@
 import { Backdrop, Fade, makeStyles, Modal } from '@material-ui/core';
 import CloseIcon from '@mui/icons-material/Close';
-const Popup = ({ isOpen, handleClose, children, className, isIconClose, title }) => {
+const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, minWidth, isScroll }) => {
   const useStyles = makeStyles((theme) => {
     return {
       mainModal: {
@@ -9,11 +9,11 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title })
         '& .modal-container': {
           background: 'rgba(var(--f23,255,255,255),1)',
           color: '#262626',
-          padding: '22px 0 55px',
           width: 'fit-content',
           margin: 'auto',
           borderRadius: '12px',
           maxHeight: '100%',
+          overflow: 'hidden',
           outline: 'none',
           '@media (max-width: 767px)': {
             width: '400px',
@@ -21,7 +21,7 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title })
           },
 
           '& .body-modal-container': {
-            padding: '0 118px',
+            padding: '0 50px',
             '@media (max-width: 767px)': {
               padding: '0 20px',
             },
@@ -73,8 +73,8 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title })
         timeout: 500,
       }}
     >
-      <Fade in={isOpen}>
-        <div className="modal-container">
+      <Fade in={isOpen} style={{ minWidth: minWidth }}>
+        <div style={isScroll ? { padding: '22px 0 0px' } : { padding: '22px 0 55px' }} className="modal-container">
           <div className="modal-header">
             <div className="modal-header-title">{title}</div>
             {isIconClose ? (
@@ -85,7 +85,9 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title })
               <></>
             )}
           </div>
-          <div className="body-modal-container">{children}</div>
+          <div style={isScroll ? { overflowY: 'auto' } : { padding: '0 118px' }} className="body-modal-container">
+            {children}
+          </div>
         </div>
       </Fade>
     </Modal>

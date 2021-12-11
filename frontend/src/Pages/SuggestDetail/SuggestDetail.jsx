@@ -4,20 +4,29 @@ import Grid from '@material-ui/core/Grid';
 import './SuggestDetail.css';
 import { Avatar } from '@material-ui/core';
 import NavBar from '../../Components/NavBar/Navbar';
-import { getAllUserSuggest } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
-import { useDispatch } from 'react-redux';
-import pp from '../../images/avt-ins.jpg';
+import { useDispatch, useSelector } from 'react-redux';
+import { followNotification } from '../../redux/notification/notification.slice';
+import { HOST_URL } from '../../ultils/constants';
+import { useHistory } from 'react-router';
 
 const SuggestDetail = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [listSuggest, setListSuggest] = useState([]);
+  const socket = useSelector((state) => state.socket.socket.payload);
 
   const SuggestItem = (props) => {
     const [followed, setFollowed] = useState(false);
     const handleFollow = async () => {
       await dispatch(followApi(props.id));
       setFollowed(true);
+      await dispatch(followNotification(props.id));
+      const data = {
+        idUser: props.id,
+        userNameCreatePost: props.userName,
+      };
+      socket?.emit('follow_user', data);
     };
     const handleUnFollow = async () => {
       await dispatch(unFollowApi(props.id));
@@ -27,9 +36,22 @@ const SuggestDetail = () => {
     return (
       <div key={props.key} className="element">
         <div className="data">
-          <Avatar src={props.avatar} className="suggestions__image__detail" />
+          <Avatar
+            src={props.avatar}
+            className="suggestions__image__detail"
+            onClick={() => {
+              history.push(`/profile-friend/${props.id}`);
+            }}
+          />
           <div className="info">
-            <div className="user-name">{props.userName}</div>
+            <div
+              className="user-name"
+              onClick={() => {
+                history.push(`/profile-friend/${props.id}`);
+              }}
+            >
+              {props.userName}
+            </div>
             <div className="full-name">{props.fullName}</div>
             <div className="followers">có {props.followers.length} người theo dõi</div>
           </div>
@@ -52,7 +74,7 @@ const SuggestDetail = () => {
     const fetchData = async () => {
       axios({
         method: 'get',
-        url: 'http://localhost:5000/api/user/get-all-suggest',
+        url: `${HOST_URL}/api/user/get-all-suggest`,
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + localStorage.getItem('token'),

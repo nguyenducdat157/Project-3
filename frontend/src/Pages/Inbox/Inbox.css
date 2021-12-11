@@ -1,0 +1,12 @@
+.box_data {
+  margin-top: 100px;
+  background-color: #fff;
+  border: 1px solid #e4e4eb;
+}
+.header {
+  height: 70px;
+  border-bottom: 1px solid #e4e4eb;
+}
+.content {
+  height: 800px;
+}

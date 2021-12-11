@@ -1,15 +1,17 @@
 import { Avatar } from '@material-ui/core';
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { showModalMessage } from '../../redux/message/message.slice';
 import './CreatePost.css';
+import { HOST_URL, PREVLINK } from '../../ultils/constants';
 const CreatePost = (props) => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
   const [pictures, setPictures] = useState('');
   const [imgPreview, setImgPreview] = useState(null);
   const [error, setError] = useState(false);
+  const infoUser = useSelector((state) => state.auth.user.data.data);
 
   const handleImageChange = (e) => {
     setError(false);
@@ -38,7 +40,7 @@ const CreatePost = (props) => {
     } else {
       axios({
         method: 'post',
-        url: 'http://localhost:5000/api/post/create-post',
+        url: `${HOST_URL}/api/post/create-post`,
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: 'Bearer ' + localStorage.getItem('token'),
@@ -78,8 +80,8 @@ const CreatePost = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className="userPost">
-        <Avatar src={''} style={{ marginRight: '10px' }} />
-        <div style={{ fontWeight: '600' }}>ducdatchelsea</div>
+        <Avatar src={`${PREVLINK}/${infoUser.avatar}`} style={{ marginRight: '10px' }} />
+        <div style={{ fontWeight: '600' }}>{infoUser.userName}</div>
       </div>
 
       <textarea
