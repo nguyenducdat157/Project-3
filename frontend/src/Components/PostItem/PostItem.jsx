@@ -5,9 +5,6 @@ import love from '../../images/love.svg';
 import redlove from '../../images/redlove.svg';
 import comment from '../../images/comment.svg';
 import edit from '../../images/threedot.svg';
-// import FavoriteIcon from '@mui/icons-material/Favorite';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { commentApi, reactApi } from '../../redux/post/post.slice';
 // import { border } from '@mui/system';
@@ -19,9 +16,9 @@ import {
 } from '../../redux/notification/notification.slice';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
-import { listReportPost } from '../../ultils/constants';
+import { listReportPost, PREVLINK } from '../../ultils/constants';
 import { showModalMessage } from '../../redux/message/message.slice';
-
+import { unFollowApi } from '../../redux/user/user.slice';
 const PostItem = (props) => {
   const [liked, setLiked] = useState(props.liked);
   const [numberLikes, setNumberLikes] = useState(props.likes);
@@ -35,12 +32,11 @@ const PostItem = (props) => {
   const history = useHistory();
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const socket = useSelector((state) => state.socket.socket.payload);
-
   const handleReact = async () => {
     await dispatch(reactApi(props.id));
     setNumberLikes(liked ? numberLikes - 1 : numberLikes + 1);
     setLiked(!liked);
-    if (!liked) {
+    if (!liked && props?.userId !== infoUser?._id) {
       await dispatch(likeNotification(props.id));
       const data = {
         idPost: props.id,
@@ -48,6 +44,11 @@ const PostItem = (props) => {
       };
       socket?.emit('like_post', data);
     }
+  };
+
+  const handleUnFollow = async (id) => {
+    await dispatch(unFollowApi(id));
+    setShowModal(false);
   };
 
   const handleAddComment = async () => {
@@ -62,12 +63,14 @@ const PostItem = (props) => {
     if (res?.payload?.data?.code === 0) {
       const newList = [...commentExtra, { ...data, userName: infoUser.userName }];
       setCommentExtra(newList);
-      await dispatch(commentNotification(props.id));
-      const dataPost = {
-        idPost: props.id,
-        userNameCreatePost: props.userName,
-      };
-      socket?.emit('comment_post', dataPost);
+      if (props?.userId !== infoUser?._id) {
+        await dispatch(commentNotification(props.id));
+        const dataPost = {
+          idPost: props.id,
+          userNameCreatePost: props.userName,
+        };
+        socket?.emit('comment_post', dataPost);
+      }
     }
   };
 
@@ -79,7 +82,13 @@ const PostItem = (props) => {
     if (list.length > 0) {
       return list.map((item, index) => (
         <div style={{ display: 'flex' }}>
-          <p className="post_comment" style={{ fontWeight: '600' }}>
+          <p
+            className="post_comment"
+            style={{ fontWeight: '600', cursor: 'pointer' }}
+            onClick={() => {
+              goToProfile(item.userId);
+            }}
+          >
             {item.userName} &nbsp;
           </p>
           <p className="post_comment" style={{ marginLeft: '-10px' }}>
@@ -114,21 +123,39 @@ const PostItem = (props) => {
       socket?.emit('report_post', dataPost);
     }
   };
-  // console.log('props: ', props);
-  // console.log('infoUser', infoUser);
-  // console.log('userId', props?.userId);
+
+  const goToProfile = (id) => {
+    if (infoUser._id === id) {
+      history.push('/profile');
+    } else {
+      history.push({
+        pathname: `/profile-friend/${id}`,
+      });
+    }
+  };
 
   return (
     <div className="post__container">
       {/* Header */}
       <div className="post__header">
-        <Avatar className="post__image" src={props.avatar} />
-        <div
-          className="post__username"
+        <Avatar
           onClick={() => {
-            history.push(`/profile-friend/${props?.userId}`);
+            history.push({
+              pathname: `/profile-friend/${props.userId}`,
+            });
           }}
           style={{ cursor: 'pointer' }}
+          className="post__image"
+          src={`${PREVLINK}/${props.avatar}`}
+        />
+        <div
+          onClick={() => {
+            history.push({
+              pathname: `/profile-friend/${props.userId}`,
+            });
+          }}
+          style={{ cursor: 'pointer' }}
+          className="post__username"
         >
           {props.userName}
         </div>
@@ -173,7 +200,7 @@ const PostItem = (props) => {
                 postId: props.id,
                 liked: liked,
                 numberLikes: numberLikes,
-                followed: infoUser?.following?.find((i) => i.userId === props?.userId) ? true : false,
+                followed: true,
               },
             }}
           >
@@ -187,10 +214,17 @@ const PostItem = (props) => {
             />
           </Link>
         </div>
-        <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>{numberLikes} likes</div>
+        <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>{numberLikes} người thích</div>
       </div>
       <div style={{ display: 'flex', margin: '10px 10px 0' }}>
-        <p style={{ fontWeight: '600', margin: '0px 0px' }}>{props.userName} &nbsp;</p>
+        <p
+          style={{ fontWeight: '600', margin: '0px 0px', cursor: 'pointer' }}
+          onClick={() => {
+            goToProfile(props?.userId);
+          }}
+        >
+          {props.userName} &nbsp;
+        </p>
         <p style={{ margin: '0px 0px' }}>{props.title}</p>
       </div>
 
@@ -199,7 +233,13 @@ const PostItem = (props) => {
         {commentList.map((item, index) =>
           index < 2 ? (
             <div style={{ display: 'flex' }}>
-              <span className="post_comment" style={{ fontWeight: '600' }}>
+              <span
+                className="post_comment"
+                style={{ fontWeight: '600', cursor: 'pointer' }}
+                onClick={() => {
+                  goToProfile(item.userId?._id);
+                }}
+              >
                 {item.userId?.userName} &nbsp;
               </span>
               <span className="post_comment" style={{ marginLeft: '-10px' }}>
@@ -225,7 +265,7 @@ const PostItem = (props) => {
                   postId: props.id,
                   liked: liked,
                   numberLikes: numberLikes,
-                  followed: infoUser?.following?.find((i) => i.userId === props?.userId) ? true : false,
+                  followed: true,
                 },
               }}
               style={{ textDecoration: 'none', color: '#8e8e8e' }}
@@ -276,7 +316,7 @@ const PostItem = (props) => {
                   postId: props.id,
                   liked: liked,
                   numberLikes: numberLikes,
-                  followed: infoUser?.following?.find((i) => i.userId === props?.userId) ? true : false,
+                  followed: true,
                 },
               });
             }}
@@ -295,7 +335,13 @@ const PostItem = (props) => {
             Báo cáo
           </div>
           <hr className="popup_report_hr" />
-          <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+          <div
+            className="popup_report_text"
+            style={{ color: 'red', fontWeight: 'bold' }}
+            onClick={() => {
+              handleUnFollow(props?.userId);
+            }}
+          >
             Bỏ theo dõi
           </div>
           <hr className="popup_report_hr" />

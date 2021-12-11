@@ -32,8 +32,8 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    createAt: Date,
-    updateAt: Date,
+    // createAt: Date,
+    // updateAt: Date,
   },
   { timestamps: true },
 );

@@ -13,7 +13,7 @@ export const getTimePost = (date) => {
     const minutes = today.getMinutes - postDate.getMinutes();
     const seconds = today.getSeconds() - postDate.getSeconds();
     if (years > 0) return years + ' năm';
-    if (months > 0) return months + ' háng';
+    if (months > 0) return months + ' tháng';
     if (Math.floor(dates / 7) > 0) return Math.floor(dates / 7) + ' tuần';
     if (dates > 0) return dates + ' ngày';
     if (hours > 0) return hours + ' giờ';

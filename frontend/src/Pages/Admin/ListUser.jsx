@@ -224,7 +224,7 @@ export default function ListUser() {
                     if (column.id === 'avatar') {
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          <Avatar src={value} style={{ marginRight: '10px' }} />
+                          <Avatar src={`${PREVLINK}/${value}`} style={{ marginRight: '10px' }} />
                         </TableCell>
                       );
                     }

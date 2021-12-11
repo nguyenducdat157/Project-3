@@ -38,8 +38,6 @@ const PostDetail = (props) => {
   const [commentUserId, setCommentUserId] = useState('');
   const [showListReport, setShowListReport] = useState(false);
 
-  // console.log('POSTID', props.location.state.postId);
-
   useEffect(() => {
     // window.location.reload();
     axios({
@@ -56,8 +54,6 @@ const PostDetail = (props) => {
       }
     });
   }, [commentChange]);
-
-  console.log(post);
 
   const handleFollow = async () => {
     await dispatch(followApi(post?.postBy?._id));
@@ -78,7 +74,7 @@ const PostDetail = (props) => {
     await dispatch(reactApi(props.location.state.postId));
     setNumberLikes(liked ? numberLikes - 1 : numberLikes + 1);
     setLiked(!liked);
-    if (!liked) {
+    if (!liked && post?.postBy?._id !== infoUser?._id) {
       await dispatch(likeNotification(props.location.state.postId));
       const data = {
         idPost: props.location.state.postId,
@@ -98,15 +94,15 @@ const PostDetail = (props) => {
     const res = await dispatch(commentApi(data));
 
     if (res?.payload?.data?.code === 0) {
-      // const newList = [...commentExtra, { ...data, userName: infoUser.userName }];
-      // setCommentExtra(newList);
-      await dispatch(commentNotification(props.location.state.postId));
-      const dataPost = {
-        idPost: props.location.state.postId,
-        userNameCreatePost: post?.postBy?.userName,
-      };
+      if (post?.postBy?._id !== infoUser?._id) {
+        await dispatch(commentNotification(props.location.state.postId));
+        const dataPost = {
+          idPost: props.location.state.postId,
+          userNameCreatePost: post?.postBy?.userName,
+        };
+        socket?.emit('comment_post', dataPost);
+      }
       setCommentChange(commentChange + 1);
-      socket?.emit('comment_post', dataPost);
     }
   };
 
@@ -173,6 +169,16 @@ const PostDetail = (props) => {
       }
     }
   };
+
+  const goToProfile = (id) => {
+    if (infoUser._id === id) {
+      history.push('/profile');
+    } else {
+      history.push({
+        pathname: `/profile-friend/${id}`,
+      });
+    }
+  };
   return (
     <>
       <NavBar />
@@ -193,8 +199,16 @@ const PostDetail = (props) => {
             <div className="post_detail_comment_container">
               <div className="post_detail_header">
                 <Avatar className="post__image" src={post?.postBy?.avatar} />
-                <div className="post_detail_username">{post?.postBy?.userName}</div>
-                {post?.postBy?._id === infoUser?._id ? (
+                <div
+                  className="post_detail_username"
+                  onClick={() => {
+                    goToProfile(post?.postBy?._id);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {post?.postBy?.userName}
+                </div>
+                {post?.postBy?._id === infoUser?._id || infoUser?.role === 1 ? (
                   <div
                     className="post_detail_username"
                     style={{ color: '#262626', whiteSpace: 'nowrap', cursor: 'pointer', width: '90px' }}
@@ -238,7 +252,13 @@ const PostDetail = (props) => {
               <div className="post_detail_list_comment">
                 <div className="post_detail_user_comment">
                   <Avatar className="post__image" src={post?.postBy?.avatar} />
-                  <div className="post_detail_username" style={{ marginLeft: '10px', marginTop: '10px' }}>
+                  <div
+                    className="post_detail_username"
+                    style={{ marginLeft: '10px', marginTop: '10px', cursor: 'pointer' }}
+                    onClick={() => {
+                      goToProfile(post?.postBy?._id);
+                    }}
+                  >
                     {post?.postBy?.userName}
                   </div>
                   <div className="post_detail_content_commnet">{post?.title}</div>
@@ -249,7 +269,10 @@ const PostDetail = (props) => {
                     <div className="post_detail_user_comment" style={{ marginTop: '10px' }} key={index}>
                       <Avatar className="post__image" src={comment?.userId?.avatar} />
                       <div className="post_detail_content_commnet">
-                        <b>{comment?.userId?.userName}</b> &nbsp; {comment?.content}
+                        <b onClick={() => goToProfile(comment?.userId?._id)} style={{ cursor: 'pointer' }}>
+                          {comment?.userId?.userName}
+                        </b>{' '}
+                        &nbsp; {comment?.content}
                         <img
                           className="post_detail_edit_comment"
                           src={edit}
@@ -266,17 +289,38 @@ const PostDetail = (props) => {
                   ))}
               </div>
 
+              {/* {infoUser?.role !== 1 && (
+                <> */}
               <div className="post_detail_action">
                 <div style={{ marginLeft: '10px' }}>
                   {liked ? (
                     <img src={redlove} className="post_reactimage" alt="element" onClick={handleReact} />
                   ) : (
-                    <img src={love} className="post_reactimage" alt="element" onClick={handleReact} />
+                    <img
+                      src={love}
+                      className="post_reactimage"
+                      alt="element"
+                      onClick={() => {
+                        if (infoUser?.role === 1) {
+                          return;
+                        } else {
+                          handleReact();
+                        }
+                      }}
+                      style={{ cursor: infoUser?.role === 1 ? 'auto' : '' }}
+                    />
                   )}
 
-                  <img src={comment} alt="element" className="post_reactimage" />
+                  <img
+                    src={comment}
+                    alt="element"
+                    className="post_reactimage"
+                    style={{ cursor: infoUser?.role === 1 ? 'auto' : '' }}
+                  />
                 </div>
-                <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>{numberLikes ? numberLikes : 0} likes</div>
+                <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>
+                  {numberLikes ? numberLikes : 0} người thích
+                </div>
                 <div className="post_detail_day_down">{getTimePost(post?.createdAt)} trước</div>
               </div>
               {/* Comment Section */}
@@ -287,15 +331,23 @@ const PostDetail = (props) => {
                     className="detail_post__commentbox"
                     placeholder="Add a comment..."
                     onChange={(e) => {
-                      setCommentValue(e.target.value);
+                      if (infoUser?.role !== 1) {
+                        setCommentValue(e.target.value);
+                      }
                     }}
                     value={commentValue}
                   />
-                  <button className="button_add_comment" onClick={handleAddComment} disabled={!active}>
+                  <button
+                    className="button_add_comment"
+                    onClick={handleAddComment}
+                    disabled={!active || infoUser?.role === 1}
+                  >
                     Đăng
                   </button>
                 </div>
               </div>
+              {/* </>
+              )} */}
             </div>
           </Grid>
           <Grid item xs={3}></Grid>
@@ -310,7 +362,7 @@ const PostDetail = (props) => {
           isIconClose={false}
           isScroll={true}
         >
-          {(post?.postBy?._id === infoUser?._id || infoUser?.role === 1) && (
+          {post?.postBy?._id === infoUser?._id || infoUser?.role === 1 ? (
             <>
               <div
                 className="popup_report_text"
@@ -323,22 +375,26 @@ const PostDetail = (props) => {
               </div>
               <hr className="popup_report_hr" />
             </>
+          ) : (
+            <>
+              <div
+                className="popup_report_text"
+                style={{ color: 'red', fontWeight: 'bold' }}
+                onClick={() => {
+                  setShowModal(0);
+                  setShowListReport(true);
+                }}
+              >
+                Báo cáo
+              </div>
+              <hr className="popup_report_hr" />
+              <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+                Bỏ theo dõi
+              </div>
+              <hr className="popup_report_hr" />
+            </>
           )}
-          <div
-            className="popup_report_text"
-            style={{ color: 'red', fontWeight: 'bold' }}
-            onClick={() => {
-              setShowModal(0);
-              setShowListReport(true);
-            }}
-          >
-            Báo cáo
-          </div>
-          <hr className="popup_report_hr" />
-          <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
-            Bỏ theo dõi
-          </div>
-          <hr className="popup_report_hr" />
+
           <div
             className="popup_report_text"
             onClick={() => {

@@ -32,5 +32,6 @@ router.post('/comment/:postId', requireSignIn, controller.addComment);
 router.post('/remove-comment', requireSignIn, controller.removeComment);
 
 router.get('/get-post-for-me', requireSignIn, controller.getPostForMe);
+router.get('/get-post-for-friend/:id', requireSignIn, controller.getPostForFriend);
 
 module.exports = router;

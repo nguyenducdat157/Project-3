@@ -72,6 +72,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    cursor: 'pointer',
   },
   drawerPaper: {
     position: 'relative',
@@ -151,15 +152,17 @@ export default function Dashboard() {
     });
   };
 
-  socket?.on('getNoti', async (data) => {
-    if (infoUser.userName === data.admin) {
-      await fetchNotification();
-    }
-  });
-
   useEffect(() => {
     fetchNotification();
   }, []);
+
+  useEffect(() => {
+    socket?.on('getNoti', async (data) => {
+      if (infoUser.userName === data.admin) {
+        await fetchNotification();
+      }
+    });
+  }, [socket]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -197,14 +200,16 @@ export default function Dashboard() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            className={classes.title}
+            onClick={() => history.push('/')}
+          >
             Dashboard
           </Typography>
-          {/* <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton> */}
         </Toolbar>
       </AppBar>
       <Drawer
