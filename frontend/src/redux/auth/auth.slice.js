@@ -42,6 +42,14 @@ export const replacePassword = createAsyncThunk('auth/replace-password', async (
   }
 });
 
+export const logout = createAsyncThunk('auth/logout', async () => {
+  try {
+    return await axiosInstance.post(`/api/user/logout`);
+  } catch (error) {
+    throw error;
+  }
+});
+
 const initialState = {
   loading: false,
   error: '',
@@ -85,6 +93,19 @@ const authSlice = createSlice({
       state.error = action.error;
     },
     [`${editProfile.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+    },
+
+    //logout
+    [`${logout.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${logout.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${logout.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.user = action.payload;
     },

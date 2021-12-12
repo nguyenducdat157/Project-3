@@ -12,9 +12,9 @@ const EditProfile = () => {
   const infoUser = useSelector((state) => state.auth.user.data.data);
 
   const [option, setOption] = useState(1);
-  const [fullName, setFullName] = useState('');
-  const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState(infoUser.fullName);
+  const [userName, setUserName] = useState(infoUser.userName);
+  const [email, setEmail] = useState(infoUser.email);
   const [status, setStatus] = useState(0);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -31,6 +31,7 @@ const EditProfile = () => {
     };
 
     const res = await dispatch(editProfile(body));
+    console.log('res: ', res);
     if (res?.payload?.status === 200) {
       dispatch(
         showModalMessage({
@@ -38,6 +39,7 @@ const EditProfile = () => {
           msg: 'Cập nhật thông tin cá nhân thành công!',
         }),
       );
+    } else {
     }
   };
 

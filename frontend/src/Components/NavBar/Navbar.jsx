@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getNotifications, readNotification } from '../../redux/notification/notification.slice';
 import { HOST_URL, PREVLINK } from '../../ultils/constants';
 import { Link } from 'react-router-dom';
+import { logout } from '../../redux/auth/auth.slice';
 
 const NavBar = () => {
   const dispatch = useDispatch();
@@ -309,6 +310,7 @@ const NavBar = () => {
                       </div>
                       <div
                         onClick={() => {
+                          dispatch(logout());
                           localStorage.removeItem('token');
                           history.push('/login');
                         }}

@@ -41,7 +41,7 @@ function App() {
         <Route exact path="/profile" component={Profile} />
         <Route exact path="/post/:id" component={PostDetail} />
         <Route exact path="/admin" component={Dashboard} />
-        <Route exact path="/profile-friend/:id" render={(props) => <ProfileFriend {...props} />} />
+        <Route exact path="/profile-friend/:id" component={ProfileFriend} />
         <Route exact path="/inbox/:id" render={(props) => <Inbox {...props} />} />
         <Route exact path="/edit-profile" component={EditProfile} />
       </Switch>

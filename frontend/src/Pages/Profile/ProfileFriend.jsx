@@ -50,7 +50,7 @@ const ProfileFriend = (props) => {
   const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
   const listPostForFriend = useSelector((state) => state.post?.postOfFriend?.data);
-  const infoFriend = useSelector((state) => state.user.profileFriend.data.data);
+  const infoFriend = useSelector((state) => state.user?.profileFriend?.data?.data);
   const history = useHistory();
 
   const ShowPicture = (props) => {
@@ -129,6 +129,8 @@ const ProfileFriend = (props) => {
     );
   };
 
+  console.log('infoFriend: ', infoFriend);
+
   return (
     <>
       <NavBar />
@@ -163,7 +165,7 @@ const ProfileFriend = (props) => {
               </div>
               <div className="profile-info-detail">
                 <div style={{ cursor: 'pointer' }} className="profile-post">
-                  <b>{infoFriend?.posts?.length}</b> bài viết
+                  <b>{listPostForFriend?.length}</b> bài viết
                 </div>
                 <div
                   onClick={() => {
@@ -209,9 +211,9 @@ const ProfileFriend = (props) => {
         minwidth="500px"
         isScroll={true}
       >
-        {listFollower &&
-          listFollower.length > 0 &&
-          listFollower.map((item) => (
+        {infoFriend?.followers &&
+          infoFriend?.followers.length > 0 &&
+          infoFriend?.followers.map((item) => (
             <FollowerItem item={item} avatar={item.avatar} fullName={item.fullName} userName={item.userName} />
           ))}
       </Popup>
@@ -226,9 +228,9 @@ const ProfileFriend = (props) => {
         minwidth="500px"
         isScroll={true}
       >
-        {listFollowing &&
-          listFollowing.length > 0 &&
-          listFollowing.map((item) => (
+        {infoFriend?.following &&
+          infoFriend?.following.length > 0 &&
+          infoFriend?.following.map((item) => (
             <div className={classes.popup_follower}>
               <div className="pop_left">
                 <div style={{ display: 'flex' }}>
