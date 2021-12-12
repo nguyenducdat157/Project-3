@@ -18,7 +18,6 @@ export const getAllUserSuggest = createAsyncThunk('user/get-all-user-suggest', a
 });
 
 export const followApi = createAsyncThunk('user/follow', async (params) => {
-  console.log(params);
   try {
     return await axiosInstance.post(`/api/user/follow/${params}`);
   } catch (error) {
@@ -99,7 +98,6 @@ const initialState = {
 const userSlice = createSlice({
   name: 'user',
   initialState: initialState,
-  reducers: {},
   extraReducers: {
     [`${getListUserSuggestion.pending}`]: (state) => {
       state.loading = true;
@@ -176,6 +174,32 @@ const userSlice = createSlice({
     [`${getProfileFriend.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.profileFriend = action.payload;
+    },
+
+    //unfollow user
+    [`${unFollowApi.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${unFollowApi.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${unFollowApi.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.following = action.payload
+    },
+
+    //follow user
+    [`${followApi.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${followApi.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${followApi.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.following = action.payload
     },
   },
 });

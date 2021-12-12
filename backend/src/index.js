@@ -86,6 +86,13 @@ io.on('connection', (socket) => {
   socket.on('inbox_user', (data) => {
     io.emit('get_message', data);
   });
+  socket.on('report_post', (data) => {
+    io.emit('getNoti', data);
+  });
+
+  socket.on('report_user', (data) => {
+    io.emit('getNoti', data);
+  });
 });
 
 server.listen(PORT, () => {

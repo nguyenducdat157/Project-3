@@ -12,11 +12,6 @@ const SignIn = (props) => {
   const [password, setPassword] = useState('');
   const [isActive, setIsActive] = useState(false);
 
-  // useEffect(() => {
-  //   // dispatch(setSocket(socket));
-  //   socket.emit('add_socket', socket);
-  // }, []);
-
   const handleLogin = async () => {
     const body = {
       email: email,
@@ -24,8 +19,17 @@ const SignIn = (props) => {
     };
     const res = await dispatch(signIn(body));
     if (res?.payload?.data?.code === 0) {
-      await localStorage.setItem('token', res.payload.data.token);
-      await history.push('/');
+      if (res?.payload?.data?.data?.status === 2) {
+        dispatch(
+          showModalMessage({
+            type: 'ERROR',
+            msg: 'Tài khoản của bạn đã bị khóa',
+          }),
+        );
+      } else {
+        await localStorage.setItem('token', res.payload.data.token);
+        await history.push('/');
+      }
     } else if (res.payload.response.status === 404) {
       dispatch(
         showModalMessage({

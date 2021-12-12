@@ -44,7 +44,6 @@ export const getPostMe = createAsyncThunk('post/get-post-for-me', async () => {
 
 export const getPostFriend = createAsyncThunk('post/get-post-for-friend', async (id) => {
   try {
-    console.log('res: ', await axiosInstance.get(`/api/post/get-post-for-friend/${id}`));
     return await axiosInstance.get(`/api/post/get-post-for-friend/${id}`);
   } catch (error) {
     return error;
@@ -52,15 +51,21 @@ export const getPostFriend = createAsyncThunk('post/get-post-for-friend', async 
 });
 
 export const removeCommentApi = createAsyncThunk('post/remove-comment', async (body) => {
-  console.log(body);
-  const { postId, commentId } = await body;
-  console.log(postId, commentId);
   try {
     return await axiosInstance.post(`/api/post/remove-comment`, body);
   } catch (error) {
     return error;
   }
 });
+
+export const removePostApi = createAsyncThunk('post/remove-comment', async (postId) => {
+  try {
+    return await axiosInstance.post(`/api/post/remove-post/${postId}`);
+  } catch (error) {
+    return error;
+  }
+});
+
 
 const initialState = {
   loading: false,

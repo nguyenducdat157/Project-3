@@ -17,14 +17,14 @@ import Avatar from 'react-avatar-edit';
 import { showModalMessage } from '../../redux/message/message.slice';
 import { getMe } from '../../redux/auth/auth.slice';
 import { useHistory } from 'react-router';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 
 const useStyles = makeStyles(() => ({
-  root: {
-    '& .MuiGrid-grid-xs-6': {},
-    '@media (max-width: 735px)': {
-      marginLeft: '-140px',
-      minWidth: '500px',
-    },
+  profileContainer: {
+    width: '100%',
+    maxWidth: '950px',
+    margin: 'auto',
   },
   popup_follower: {
     display: 'flex',
@@ -61,33 +61,37 @@ const Profile = () => {
   const listPostForMe = useSelector((state) => state.post?.postOfMe?.data);
 
   const ShowPicture = (props) => {
-    const [hoverPicture, setHoverPicture] = useState(false);
     return (
       <>
-        <div className="profile_picture_container">
+        <div
+          className="profile_picture_container"
+          onClick={() => {
+            history.push({
+              pathname: `/post/${props.id}`,
+              state: {
+                postId: props.id,
+                liked: props.liked,
+                numberLikes: props.likes,
+                followed: listFollowing?.find((i) => i._id === props?.userId) ? true : false,
+              },
+            });
+          }}
+        >
           <img
-            onMouseOver={() => {
-              setHoverPicture(true);
-            }}
-            onMouseOut={() => {
-              setHoverPicture(false);
-            }}
             className="profile_picture"
             style={{ width: '300px', height: '300px' }}
             src={'http://localhost:5000/public/' + props.picture}
           ></img>
-          {hoverPicture && (
-            <div style={{ display: 'flex' }} className="profile_icon_in_picture">
-              <span style={{ display: 'flex', marginRight: '20px' }}>
-                <img className="profile_love" src={love}></img>
-                <span style={{ color: 'red', fontWeight: 'bold' }}>{props.likes}</span>
-              </span>
-              <span style={{ display: 'flex' }}>
-                <img className="profile_commnet" src={comment}></img>
-                <span style={{ color: 'red', fontWeight: 'bold' }}>{props.comments}</span>
-              </span>
-            </div>
-          )}
+          <div className="profile_icon_in_picture">
+            <span style={{ display: 'flex', alignItems: 'center', columnGap: '6px' }}>
+              <FavoriteIcon style={{ color: 'white' }} />
+              <span style={{ color: 'white', fontWeight: 'bold' }}>{props.likes}</span>
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', columnGap: '6px' }}>
+              <ChatBubbleIcon style={{ color: 'white' }} />
+              <span style={{ color: 'white', fontWeight: 'bold' }}>{props.comments}</span>
+            </span>
+          </div>
         </div>
       </>
     );
@@ -174,80 +178,82 @@ const Profile = () => {
   return (
     <>
       <NavBar />
+      <div className={classes.profileContainer}>
+        <div className="profile-header">
+          <div className="profile-avatar-box">
+            <img
+              style={{ width: '200px', height: '200px', borderRadius: '50%' }}
+              className="profile-avatar"
+              src={`http://localhost:5000/public/${infoUser.avatar}`}
+              alt="element"
+            ></img>
+            <div
+              className="icon_picture"
+              onClick={() => {
+                setIsChangeAvatar(true);
+                setPreview(null);
+              }}
+            >
+              <CameraAltIcon />
+            </div>
+          </div>
 
-      <Grid container classes={{ root: classes.root }}>
-        <Grid item xs={3}></Grid>
-        <Grid item xs={6}>
-          <div className="profile-header">
-            <div className="profile-avatar-box">
-              <img
-                style={{ width: '200px', height: '200px', borderRadius: '50%' }}
-                className="profile-avatar"
-                src={`http://localhost:5000/public/${infoUser.avatar}`}
-                alt="element"
-              ></img>
-              <div
-                className="icon_picture"
+          <div className="profile-info">
+            <div className="profile-title">
+              <div className="profile-user-name">{infoUser.userName}</div>
+              <button
+                className="profile__button__edit"
                 onClick={() => {
-                  setIsChangeAvatar(true);
-                  setPreview(null);
+                  history.push({
+                    pathname: `/edit-profile`,
+                  });
                 }}
               >
-                <CameraAltIcon />
+                Chỉnh sửa trang cá nhân
+              </button>
+            </div>
+            <div className="profile-info-detail">
+              <div style={{ cursor: 'pointer' }} className="profile-post">
+                <b>{listPostForMe?.length}</b> bài viết
+              </div>
+              <div
+                onClick={() => {
+                  setIsShowFollowers(true);
+                }}
+                style={{ cursor: 'pointer' }}
+                className="profile-followers"
+              >
+                <b>{listFollower?.length}</b> người theo dõi
+              </div>
+              <div
+                onClick={() => {
+                  setIsShowFollowing(true);
+                }}
+                style={{ cursor: 'pointer' }}
+                className="profile-following"
+              >
+                Đang theo dõi <b>{listFollowing?.length}</b> người dùng
               </div>
             </div>
-
-            <div className="profile-info">
-              <div className="profile-title">
-                <div className="profile-user-name">{infoUser.userName}</div>
-                <button
-                  className="profile__button__edit"
-                  onClick={() => {
-                    history.push({
-                      pathname: `/edit-profile`,
-                    });
-                  }}
-                >
-                  Chỉnh sửa trang cá nhân
-                </button>
-              </div>
-              <div className="profile-info-detail">
-                <div style={{ cursor: 'pointer' }} className="profile-post">
-                  <b>{listPostForMe?.length}</b> bài viết
-                </div>
-                <div
-                  onClick={() => {
-                    setIsShowFollowers(true);
-                  }}
-                  style={{ cursor: 'pointer' }}
-                  className="profile-followers"
-                >
-                  <b>{listFollower?.length}</b> người theo dõi
-                </div>
-                <div
-                  onClick={() => {
-                    setIsShowFollowing(true);
-                  }}
-                  style={{ cursor: 'pointer' }}
-                  className="profile-following"
-                >
-                  Đang theo dõi <b>{listFollowing?.length}</b> người dùng
-                </div>
-              </div>
-              <div className="profile-full-name">{infoUser.fullName}</div>
-            </div>
+            <div className="profile-full-name">{infoUser.fullName}</div>
           </div>
+        </div>
 
-          <div className="profile-body">
-            {listPostForMe &&
-              listPostForMe?.length > 0 &&
-              listPostForMe.map((item) => (
-                <ShowPicture likes={item.likes.length} comments={item.comments.length} picture={item.pictures[0].img} />
-              ))}
-          </div>
-        </Grid>
-        <Grid item xs={3}></Grid>
-      </Grid>
+        <div className="profile-body">
+          {listPostForMe &&
+            listPostForMe?.length > 0 &&
+            listPostForMe.map((item) => (
+              <ShowPicture
+                likes={item.likes.length}
+                comments={item.comments.length}
+                picture={item.pictures[0].img}
+                id={item?._id}
+                liked={item.likes.find((i) => i.userId === infoUser._id) ? true : false}
+                userId={item?.postBy}
+              />
+            ))}
+        </div>
+      </div>
 
       <Popup
         isOpen={isShowFollowers}

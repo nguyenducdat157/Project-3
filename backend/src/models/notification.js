@@ -14,6 +14,10 @@ const notificationSchema = new mongoose.Schema(
       type: ObjectId,
       ref: 'Post',
     },
+    userReport: {
+      type: String,
+      ref: 'User'
+    },
     otherUser: {
       type: ObjectId,
       ref: 'User',

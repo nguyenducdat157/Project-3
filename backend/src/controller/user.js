@@ -22,8 +22,10 @@ module.exports.follow = async (req, res) => {
     const res1 = await User.findOneAndUpdate(condition1, update1);
     const res2 = await User.findOneAndUpdate(condition2, update2);
 
+    const result = await User.findOne(condition1);
+
     if (res1 && res2) {
-      return res.status(200).json({ code: 0, message: 'follow success' });
+      return res.status(200).json({ code: 0, message: 'follow success', data: result.following });
     }
   } catch (err) {
     return res.status(500).json({ error: 'Server error' });
@@ -57,10 +59,13 @@ module.exports.unFollow = async (req, res) => {
     const res1 = await User.findOneAndUpdate(condition1, update1);
     const res2 = await User.findOneAndUpdate(condition2, update2);
 
+    const result = await User.findOne(condition1);
+
     if (res1 && res2) {
       return res.status(200).json({
         code: 0,
         message: 'unfollow success',
+        data: result.following,
       });
     }
   } catch (err) {
@@ -111,9 +116,9 @@ module.exports.getListUserSuggestion = async (req, res) => {
           });
         }
       }
-      result = await User.find({ _id: { $in: Array.from(mySet) } });
+      result = await User.find({ _id: { $in: Array.from(mySet) }, status: { $ne: 2 } });
     } else {
-      result = await User.find({ _id: { $ne: currentId } });
+      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 } });
     }
     return res.status(200).json({ code: 0, data: result.sort(() => Math.random() - Math.random()).slice(0, 5) });
   } catch (err) {
@@ -136,9 +141,9 @@ module.exports.allUserSuggest = async (req, res) => {
       });
       list.push(req.user._id);
 
-      result = await User.find({ _id: { $nin: list } });
+      result = await User.find({ _id: { $nin: list }, status: { $ne: 2 } });
     } else {
-      result = await User.find({ _id: { $ne: currentId } });
+      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 } });
     }
     return res.status(200).json({
       code: 0,
@@ -237,7 +242,7 @@ module.exports.getAllUserFollowing = async (req, res) => {
 
 module.exports.getAllUser = async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({ role: 0 });
     return res.status(200).json({ code: 0, data: users });
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });

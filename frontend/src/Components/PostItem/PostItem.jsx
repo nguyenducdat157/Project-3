@@ -5,16 +5,20 @@ import love from '../../images/love.svg';
 import redlove from '../../images/redlove.svg';
 import comment from '../../images/comment.svg';
 import edit from '../../images/threedot.svg';
-// import FavoriteIcon from '@mui/icons-material/Favorite';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { commentApi, reactApi } from '../../redux/post/post.slice';
 // import { border } from '@mui/system';
 import Popup from '../../Components/Popup/Popup';
-import { likeNotification, commentNotification } from '../../redux/notification/notification.slice';
+import {
+  likeNotification,
+  commentNotification,
+  reportPostNotification,
+} from '../../redux/notification/notification.slice';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
+import { listReportPost, PREVLINK } from '../../ultils/constants';
+import { showModalMessage } from '../../redux/message/message.slice';
+import { unFollowApi } from '../../redux/user/user.slice';
 const PostItem = (props) => {
   const [liked, setLiked] = useState(props.liked);
   const [numberLikes, setNumberLikes] = useState(props.likes);
@@ -23,16 +27,16 @@ const PostItem = (props) => {
   const [commentValue, setCommentValue] = useState('');
   const [active, setActive] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showListReport, setShowListReport] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const socket = useSelector((state) => state.socket.socket.payload);
-
   const handleReact = async () => {
     await dispatch(reactApi(props.id));
     setNumberLikes(liked ? numberLikes - 1 : numberLikes + 1);
     setLiked(!liked);
-    if (!liked) {
+    if (!liked && props?.userId !== infoUser?._id) {
       await dispatch(likeNotification(props.id));
       const data = {
         idPost: props.id,
@@ -40,6 +44,11 @@ const PostItem = (props) => {
       };
       socket?.emit('like_post', data);
     }
+  };
+
+  const handleUnFollow = async (id) => {
+    await dispatch(unFollowApi(id));
+    setShowModal(false);
   };
 
   const handleAddComment = async () => {
@@ -54,12 +63,14 @@ const PostItem = (props) => {
     if (res?.payload?.data?.code === 0) {
       const newList = [...commentExtra, { ...data, userName: infoUser.userName }];
       setCommentExtra(newList);
-      await dispatch(commentNotification(props.id));
-      const dataPost = {
-        idPost: props.id,
-        userNameCreatePost: props.userName,
-      };
-      socket?.emit('comment_post', dataPost);
+      if (props?.userId !== infoUser?._id) {
+        await dispatch(commentNotification(props.id));
+        const dataPost = {
+          idPost: props.id,
+          userNameCreatePost: props.userName,
+        };
+        socket?.emit('comment_post', dataPost);
+      }
     }
   };
 
@@ -71,7 +82,13 @@ const PostItem = (props) => {
     if (list.length > 0) {
       return list.map((item, index) => (
         <div style={{ display: 'flex' }}>
-          <p className="post_comment" style={{ fontWeight: '600' }}>
+          <p
+            className="post_comment"
+            style={{ fontWeight: '600', cursor: 'pointer' }}
+            onClick={() => {
+              goToProfile(item.userId);
+            }}
+          >
             {item.userName} &nbsp;
           </p>
           <p className="post_comment" style={{ marginLeft: '-10px' }}>
@@ -83,9 +100,39 @@ const PostItem = (props) => {
     return <span></span>;
   };
 
-  // console.log('props: ', props);
-  // console.log('infoUser', infoUser);
-  console.log('userId', props?.userId);
+  const handleReport = async (content) => {
+    const data = {
+      postId: props.id,
+      content: content,
+    };
+    const res = await dispatch(reportPostNotification(data));
+    // console.log(res);
+    if (res?.payload?.data?.code === 0) {
+      dispatch(
+        showModalMessage({
+          type: 'SUCCESS',
+          msg: 'Báo cáo thành công!, Cảm ơn bạn đã phản hồi với chúng tôi',
+        }),
+      );
+      setShowListReport(false);
+      const dataPost = {
+        idPost: props.id,
+        userNameCreatePost: props.userName,
+        admin: 'admin',
+      };
+      socket?.emit('report_post', dataPost);
+    }
+  };
+
+  const goToProfile = (id) => {
+    if (infoUser._id === id) {
+      history.push('/profile');
+    } else {
+      history.push({
+        pathname: `/profile-friend/${id}`,
+      });
+    }
+  };
 
   return (
     <div className="post__container">
@@ -99,7 +146,7 @@ const PostItem = (props) => {
           }}
           style={{ cursor: 'pointer' }}
           className="post__image"
-          src={props.avatar}
+          src={`${PREVLINK}/${props.avatar}`}
         />
         <div
           onClick={() => {
@@ -153,7 +200,7 @@ const PostItem = (props) => {
                 postId: props.id,
                 liked: liked,
                 numberLikes: numberLikes,
-                followed: infoUser?.following?.find((i) => i.userId === props?.userId) ? true : false,
+                followed: true,
               },
             }}
           >
@@ -167,10 +214,17 @@ const PostItem = (props) => {
             />
           </Link>
         </div>
-        <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>{numberLikes} likes</div>
+        <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>{numberLikes} người thích</div>
       </div>
       <div style={{ display: 'flex', margin: '10px 10px 0' }}>
-        <p style={{ fontWeight: '600', margin: '0px 0px' }}>{props.userName} &nbsp;</p>
+        <p
+          style={{ fontWeight: '600', margin: '0px 0px', cursor: 'pointer' }}
+          onClick={() => {
+            goToProfile(props?.userId);
+          }}
+        >
+          {props.userName} &nbsp;
+        </p>
         <p style={{ margin: '0px 0px' }}>{props.title}</p>
       </div>
 
@@ -179,7 +233,13 @@ const PostItem = (props) => {
         {commentList.map((item, index) =>
           index < 2 ? (
             <div style={{ display: 'flex' }}>
-              <span className="post_comment" style={{ fontWeight: '600' }}>
+              <span
+                className="post_comment"
+                style={{ fontWeight: '600', cursor: 'pointer' }}
+                onClick={() => {
+                  goToProfile(item.userId?._id);
+                }}
+              >
                 {item.userId?.userName} &nbsp;
               </span>
               <span className="post_comment" style={{ marginLeft: '-10px' }}>
@@ -205,7 +265,7 @@ const PostItem = (props) => {
                   postId: props.id,
                   liked: liked,
                   numberLikes: numberLikes,
-                  followed: infoUser?.following?.find((i) => i.userId === props?.userId) ? true : false,
+                  followed: true,
                 },
               }}
               style={{ textDecoration: 'none', color: '#8e8e8e' }}
@@ -246,11 +306,42 @@ const PostItem = (props) => {
               <hr className="popup_report_hr" />
             </>
           )}
-          <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+          <div
+            className="popup_report_text"
+            style={{ color: 'black', fontWeight: 'bold' }}
+            onClick={() => {
+              history.push({
+                pathname: `/post/${props.id}`,
+                state: {
+                  postId: props.id,
+                  liked: liked,
+                  numberLikes: numberLikes,
+                  followed: true,
+                },
+              });
+            }}
+          >
+            Đi tới bài viết
+          </div>
+          <hr className="popup_report_hr" />
+          <div
+            className="popup_report_text"
+            style={{ color: 'red', fontWeight: 'bold' }}
+            onClick={() => {
+              setShowModal(false);
+              setShowListReport(true);
+            }}
+          >
             Báo cáo
           </div>
           <hr className="popup_report_hr" />
-          <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+          <div
+            className="popup_report_text"
+            style={{ color: 'red', fontWeight: 'bold' }}
+            onClick={() => {
+              handleUnFollow(props?.userId);
+            }}
+          >
             Bỏ theo dõi
           </div>
           <hr className="popup_report_hr" />
@@ -258,6 +349,43 @@ const PostItem = (props) => {
             className="popup_report_text"
             onClick={() => {
               setShowModal(false);
+            }}
+          >
+            Hủy
+          </div>
+        </Popup>
+      )}
+      {showListReport && (
+        <Popup
+          isOpen={showListReport}
+          handleClose={() => {
+            setShowListReport(false);
+          }}
+          isIconClose={true}
+          isScroll={true}
+          title="Báo cáo"
+        >
+          <div className="popup_report_text" style={{ color: 'black', fontWeight: 'bold' }}>
+            Tại sao bạn muốn báo cáo nội dung này ?
+          </div>
+          <hr className="popup_report_hr" />
+          {listReportPost.map((content) => (
+            <>
+              <div
+                className="popup_report_text"
+                onClick={() => {
+                  handleReport(content);
+                }}
+              >
+                {content}
+              </div>
+              <hr className="popup_report_hr" />
+            </>
+          ))}
+          <div
+            className="popup_report_text"
+            onClick={() => {
+              setShowListReport(false);
             }}
           >
             Hủy

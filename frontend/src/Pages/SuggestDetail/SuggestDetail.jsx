@@ -8,9 +8,11 @@ import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { followNotification } from '../../redux/notification/notification.slice';
 import { HOST_URL } from '../../ultils/constants';
+import { useHistory } from 'react-router';
 
 const SuggestDetail = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [listSuggest, setListSuggest] = useState([]);
   const socket = useSelector((state) => state.socket.socket.payload);
 
@@ -34,9 +36,22 @@ const SuggestDetail = () => {
     return (
       <div key={props.key} className="element">
         <div className="data">
-          <Avatar src={props.avatar} className="suggestions__image__detail" />
+          <Avatar
+            src={props.avatar}
+            className="suggestions__image__detail"
+            onClick={() => {
+              history.push(`/profile-friend/${props.id}`);
+            }}
+          />
           <div className="info">
-            <div className="user-name">{props.userName}</div>
+            <div
+              className="user-name"
+              onClick={() => {
+                history.push(`/profile-friend/${props.id}`);
+              }}
+            >
+              {props.userName}
+            </div>
             <div className="full-name">{props.fullName}</div>
             <div className="followers">có {props.followers.length} người theo dõi</div>
           </div>
