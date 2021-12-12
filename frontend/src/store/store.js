@@ -14,6 +14,7 @@ import { userReducer } from '../redux/user/user.slice';
 import { messageReducer } from '../redux/message/message.slice';
 import { socketReducer } from '../redux/socket/socket.slice';
 import { notificationReducer } from '../redux/notification/notification.slice';
+import { chatReducer } from '../redux/chat/chat.slice';
 
 import { combineReducers } from 'redux';
 import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   message: messageReducer,
   socket: socketReducer,
   notification: notificationReducer,
+  chat: chatReducer,
 });
 
 const persistConfig = {

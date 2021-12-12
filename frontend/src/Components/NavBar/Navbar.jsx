@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getNotifications, readNotification } from '../../redux/notification/notification.slice';
 import { HOST_URL, PREVLINK } from '../../ultils/constants';
 import { Link } from 'react-router-dom';
+import { logout } from '../../redux/auth/auth.slice';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -64,6 +65,7 @@ const NavBar = () => {
   const logout = () => {
     localStorage.removeItem('persist:root');
     localStorage.removeItem('token');
+    dispatch(logout());
     history.push('/login');
   };
   const showNumberNotification = () => {

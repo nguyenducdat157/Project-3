@@ -22,7 +22,7 @@ module.exports.follow = async (req, res) => {
     const res1 = await User.findOneAndUpdate(condition1, update1);
     const res2 = await User.findOneAndUpdate(condition2, update2);
 
-    const result = await User.findOne(condition1);  
+    const result = await User.findOne(condition1);
 
     if (res1 && res2) {
       return res.status(200).json({ code: 0, message: 'follow success', data: result.following });
@@ -65,7 +65,7 @@ module.exports.unFollow = async (req, res) => {
       return res.status(200).json({
         code: 0,
         message: 'unfollow success',
-        data: result.following
+        data: result.following,
       });
     }
   } catch (err) {
@@ -108,7 +108,7 @@ module.exports.getListUserSuggestion = async (req, res) => {
     if (listFollowing.length > 0) {
       list = listFollowing.map((item) => item.userId.toString());
       for (let i = 0; i < listFollowing.length; i++) {
-        const user = await User.findOne({ _id: listFollowing[i].userId});  
+        const user = await User.findOne({ _id: listFollowing[i].userId });
         if (user) {
           user.following.forEach((item) => {
             if (item.userId.toString() !== currentId && list.includes(item.userId.toString()) === false)
@@ -116,15 +116,15 @@ module.exports.getListUserSuggestion = async (req, res) => {
           });
         }
       }
-      result = await User.find({ _id: { $in: Array.from(mySet) }, status: {$ne: 2} });
+      result = await User.find({ _id: { $in: Array.from(mySet) }, status: { $ne: 2 } });
     } else {
-      result = await User.find({ _id: { $ne: currentId }, status: {$ne: 2}});
+      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 } });
     }
     return res.status(200).json({ code: 0, data: result.sort(() => Math.random() - Math.random()).slice(0, 5) });
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
-}; 
+};
 
 module.exports.allUserSuggest = async (req, res) => {
   try {
@@ -141,9 +141,9 @@ module.exports.allUserSuggest = async (req, res) => {
       });
       list.push(req.user._id);
 
-      result = await User.find({ _id: { $nin: list }, status: {$ne: 2} });
+      result = await User.find({ _id: { $nin: list }, status: { $ne: 2 } });
     } else {
-      result = await User.find({ _id: { $ne: currentId }, status: {$ne: 2} });
+      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 } });
     }
     return res.status(200).json({
       code: 0,
@@ -157,11 +157,11 @@ module.exports.allUserSuggest = async (req, res) => {
 module.exports.searchUser = async (req, res) => {
   try {
     const name = req.query.name;
-    if(req.query.name === '') {
-      const users =  await User.find({});
+    if (req.query.name === '') {
+      const users = await User.find({});
       return res.status(200).json({
         code: 0,
-        data:users
+        data: users,
       });
     }
     const users = await User.find({
@@ -240,10 +240,9 @@ module.exports.getAllUserFollowing = async (req, res) => {
   }
 };
 
-
 module.exports.getAllUser = async (req, res) => {
   try {
-    const users = await User.find({role: 0});
+    const users = await User.find({ role: 0 });
     return res.status(200).json({ code: 0, data: users });
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
@@ -252,31 +251,29 @@ module.exports.getAllUser = async (req, res) => {
 
 module.exports.BlockUser = async (req, res) => {
   try {
-    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id}, { status: 2 });
-    if(userUpdate) {
-      return res.status(200).json({code: 0, message: 'Block successfully'})
-    }
-    else {
-      return res.status(400).json({code: 0, message: 'Block failed'})
+    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id }, { status: 2 });
+    if (userUpdate) {
+      return res.status(200).json({ code: 0, message: 'Block successfully' });
+    } else {
+      return res.status(400).json({ code: 0, message: 'Block failed' });
     }
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
-}
+};
 
 module.exports.UnBlockUser = async (req, res) => {
   try {
-    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id}, { status: 0 });
-    if(userUpdate) {
-      return res.status(200).json({code: 0, message: 'Un Block successfully'})
-    }
-    else {
-      return res.status(400).json({code: 0, message: ' Un Block failed'})
+    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id }, { status: 0 });
+    if (userUpdate) {
+      return res.status(200).json({ code: 0, message: 'Un Block successfully' });
+    } else {
+      return res.status(400).json({ code: 0, message: ' Un Block failed' });
     }
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
-}
+};
 module.exports.changeAvatar = async (req, res) => {
   try {
     let pictures = [];
@@ -334,6 +331,11 @@ module.exports.editProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ code: 1, error: 'User not found' });
     }
+
+    const checkExists = await User.findOne({ $or: [{ email: req.body.email }, { userName: req.body.userName }] });
+    if (checkExists) {
+      return res.status(404).json({ code: 2, error: 'User already exists' });
+    }
     const update = {
       fullName: req.body.fullName,
       userName: req.body.userName,
@@ -344,6 +346,23 @@ module.exports.editProfile = async (req, res) => {
     if (updateUser) {
       const userUpdated = await User.findOne({ _id: currentId });
       return res.status(200).json({ code: 0, data: userUpdated });
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};
+
+module.exports.logout = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    if (!user) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    }
+    const logout = await User.findOneAndUpdate({ _id: currentId }, { active: false });
+    if (logout) {
+      const res = await User.findOne({ _id: currentId });
+      return res.status(200).json({ code: 0, data: res });
     }
   } catch (err) {
     return res.status(500).json({ code: 1, error: err.message });

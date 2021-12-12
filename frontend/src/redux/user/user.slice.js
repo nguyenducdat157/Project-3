@@ -64,7 +64,6 @@ export const blockApi = createAsyncThunk('user/block', async (params) => {
   } catch (error) {
     throw error;
   }
-
 });
 
 export const getProfileFriend = createAsyncThunk('user/get-profile-friend', async (id) => {
@@ -73,7 +72,7 @@ export const getProfileFriend = createAsyncThunk('user/get-profile-friend', asyn
   } catch (error) {
     throw error;
   }
-})
+});
 
 export const unBlockApi = createAsyncThunk('user/un-block', async (params) => {
   try {
@@ -83,7 +82,6 @@ export const unBlockApi = createAsyncThunk('user/un-block', async (params) => {
   }
 });
 
-
 const initialState = {
   loading: false,
   error: '',
@@ -91,9 +89,9 @@ const initialState = {
   userSuggest: { code: 0, data: {} },
   followers: { code: 0, data: {} },
   following: { code: 0, data: {} },
-  blockUser: {code: 0, success: false},
-  unBlockUser: {code: 0, success: false},
-  searchUser: {code: 0, data: {}},
+  blockUser: { code: 0, success: false },
+  unBlockUser: { code: 0, success: false },
+  searchUser: { code: 0, data: {} },
   profileFriend: { code: 0, data: {} },
 };
 
@@ -139,7 +137,7 @@ const userSlice = createSlice({
       state.following = action.payload;
     },
 
-    //block user 
+    //block user
     [`${blockApi.pending}`]: (state) => {
       state.loading = true;
     },
@@ -149,10 +147,10 @@ const userSlice = createSlice({
     },
     [`${blockApi.fulfilled}`]: (state, action) => {
       state.loading = false;
-      state.blockUser = {code: 0, success: true};
+      state.blockUser = { code: 0, success: true };
     },
 
-    //un-block user 
+    //un-block user
     [`${unBlockApi.pending}`]: (state) => {
       state.loading = true;
     },
@@ -162,7 +160,7 @@ const userSlice = createSlice({
     },
     [`${unBlockApi.fulfilled}`]: (state, action) => {
       state.loading = false;
-      state.unBlockUser = {code: 0, success: true};
+      state.unBlockUser = { code: 0, success: true };
     },
 
     // get profile friends
