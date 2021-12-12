@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema(
         2, //blocked
       ],
     },
+    active: {
+      type: Boolean,
+      default: false,
+    },
     createAt: Date,
   },
   { timestamps: true },

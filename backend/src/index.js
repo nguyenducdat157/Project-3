@@ -21,6 +21,7 @@ const authRoutes = require('./routes/auth.js');
 const postRoutes = require('./routes/post.js');
 const userRoutes = require('./routes/user.js');
 const notificationRoutes = require('./routes/notification.js');
+const chatRoutes = require('./routes/chat.js');
 
 // app.use(logger("dev"));
 app.use(
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/notification', notificationRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -80,6 +82,9 @@ io.on('connection', (socket) => {
   socket.on('follow_user', (data) => {
     console.log('follow');
     io.emit('getNoti', data);
+  });
+  socket.on('inbox_user', (data) => {
+    io.emit('get_message', data);
   });
 });
 

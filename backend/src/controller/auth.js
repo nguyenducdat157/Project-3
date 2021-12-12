@@ -28,6 +28,7 @@ module.exports.signIn = async (req, res) => {
         );
         res.cookie('token', token);
         const { _id, email, role, fullName, avatar, following, followers, userName, notifications } = user;
+        await User.findOneAndUpdate({ email: email }, { active: true });
         return res.status(200).json({
           code: 0,
           data: {

@@ -152,11 +152,11 @@ module.exports.allUserSuggest = async (req, res) => {
 module.exports.searchUser = async (req, res) => {
   try {
     const name = req.query.name;
-    if(req.query.name === '') {
-      const users =  await User.find({});
+    if (req.query.name === '') {
+      const users = await User.find({});
       return res.status(200).json({
         code: 0,
-        data:users
+        data: users,
       });
     }
     const users = await User.find({
@@ -235,7 +235,6 @@ module.exports.getAllUserFollowing = async (req, res) => {
   }
 };
 
-
 module.exports.getAllUser = async (req, res) => {
   try {
     const users = await User.find({});
@@ -247,31 +246,29 @@ module.exports.getAllUser = async (req, res) => {
 
 module.exports.BlockUser = async (req, res) => {
   try {
-    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id}, { status: 2 });
-    if(userUpdate) {
-      return res.status(200).json({code: 0, message: 'Block successfully'})
-    }
-    else {
-      return res.status(400).json({code: 0, message: 'Block failed'})
+    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id }, { status: 2 });
+    if (userUpdate) {
+      return res.status(200).json({ code: 0, message: 'Block successfully' });
+    } else {
+      return res.status(400).json({ code: 0, message: 'Block failed' });
     }
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
-}
+};
 
 module.exports.UnBlockUser = async (req, res) => {
   try {
-    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id}, { status: 0 });
-    if(userUpdate) {
-      return res.status(200).json({code: 0, message: 'Un Block successfully'})
-    }
-    else {
-      return res.status(400).json({code: 0, message: ' Un Block failed'})
+    const userUpdate = await User.findOneAndUpdate({ _id: req.params.id }, { status: 0 });
+    if (userUpdate) {
+      return res.status(200).json({ code: 0, message: 'Un Block successfully' });
+    } else {
+      return res.status(400).json({ code: 0, message: ' Un Block failed' });
     }
   } catch (err) {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
-}
+};
 module.exports.changeAvatar = async (req, res) => {
   try {
     let pictures = [];
@@ -329,6 +326,11 @@ module.exports.editProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ code: 1, error: 'User not found' });
     }
+
+    const checkExists = await User.findOne({ $or: [{ email: req.body.email }, { userName: req.body.userName }] });
+    if (checkExists) {
+      return res.status(404).json({ code: 2, error: 'User already exists' });
+    }
     const update = {
       fullName: req.body.fullName,
       userName: req.body.userName,
@@ -339,6 +341,23 @@ module.exports.editProfile = async (req, res) => {
     if (updateUser) {
       const userUpdated = await User.findOne({ _id: currentId });
       return res.status(200).json({ code: 0, data: userUpdated });
+    }
+  } catch (err) {
+    return res.status(500).json({ code: 1, error: err.message });
+  }
+};
+
+module.exports.logout = async (req, res) => {
+  try {
+    const currentId = req.user._id;
+    const user = await User.findOne({ _id: currentId });
+    if (!user) {
+      return res.status(404).json({ code: 1, error: 'User not found' });
+    }
+    const logout = await User.findOneAndUpdate({ _id: currentId }, { active: false });
+    if (logout) {
+      const res = await User.findOne({ _id: currentId });
+      return res.status(200).json({ code: 0, data: res });
     }
   } catch (err) {
     return res.status(500).json({ code: 1, error: err.message });
