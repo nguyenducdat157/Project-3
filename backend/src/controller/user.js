@@ -3,6 +3,10 @@ const User = require('../models/user.js');
 module.exports.follow = async (req, res) => {
   try {
     const idFriend = req.params.id;
+    const checkExistUser = await User.findOne({ _id: req.user._id, 'following.userId': idFriend });
+    if (checkExistUser) {
+      return res.status(404).json({ code: 0, message: 'User already followed' });
+    }
     const condition1 = { _id: req.user._id };
     const update1 = {
       $push: {

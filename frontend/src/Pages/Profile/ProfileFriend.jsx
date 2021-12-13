@@ -54,26 +54,28 @@ const ProfileFriend = (props) => {
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
-  const listPostForMe = useSelector((state) => state.post.postOfMe?.data);
   const infoFriend = useSelector((state) => state.user.profileFriend?.data?.data);
   const socket = useSelector((state) => state.socket.socket.payload);
   const listPostForFriend = useSelector((state) => state.post?.postOfFriend?.data);
   const history = useHistory();
   const [showModal, setShowModal] = useState(0);
+  const [isFollowed, setIsFollowed] = useState(false);
 
   const handleFollow = async () => {
     await dispatch(followApi(infoFriend._id));
 
     dispatch(followNotification(infoFriend._id));
+    setIsFollowed(true);
 
     const data = {
       idUser: infoFriend._id,
       userNameCreatePost: infoFriend.userName,
     };
     socket?.emit('follow_user', data);
-    window.location.reload();
+    // window.location.reload();
   };
   const handleUnFollow = async () => {
+    setIsFollowed(false);
     await dispatch(unFollowApi(infoFriend._id));
   };
 
@@ -145,12 +147,16 @@ const ProfileFriend = (props) => {
   };
 
   useEffect(() => {
-    dispatch(getFollowers());
-    dispatch(getFollowing());
-    dispatch(getProfileFriend(props.match.params.id));
-    dispatch(getPostFriend(props.match.params.id));
+    const fetchData = async () => {
+      dispatch(getFollowers());
+      dispatch(getFollowing());
+      dispatch(getProfileFriend(props.match.params.id));
+      dispatch(getPostFriend(props.match.params.id));
+      listFollowing?.filter((i) => i._id === infoFriend?._id).length > 0 ? setIsFollowed(true) : setIsFollowed(false);
+    };
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [listFollowing?.filter((i) => i._id === infoFriend?._id).length > 0]);
 
   const FollowerItem = (props) => {
     const [followed, setFollowed] = useState(false);
@@ -218,7 +224,7 @@ const ProfileFriend = (props) => {
                       >
                         Nhắn tin
                       </button>
-                      {listFollowing?.find((i) => i._id === infoFriend?._id) ? (
+                      {isFollowed ? (
                         <button
                           className="followed"
                           onClick={handleUnFollow}

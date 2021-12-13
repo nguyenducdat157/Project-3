@@ -62,10 +62,10 @@ const NavBar = () => {
   const [notifications, setNotifications] = useState([]);
   const [hasNewNoti, setHasNewNoti] = useState(false);
 
-  const logout = () => {
+  const handleLogout = () => {
+    dispatch(logout());
     localStorage.removeItem('persist:root');
     localStorage.removeItem('token');
-    dispatch(logout());
     history.push('/login');
   };
   const showNumberNotification = () => {
@@ -388,7 +388,7 @@ const NavBar = () => {
                         </div>
                         <div
                           onClick={() => {
-                            logout();
+                            handleLogout();
                           }}
                           className="dropdown__component"
                         >
