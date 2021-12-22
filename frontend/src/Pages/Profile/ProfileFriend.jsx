@@ -192,6 +192,7 @@ const ProfileFriend = (props) => {
       </div>
     );
   };
+  console.log(infoFriend);
   return (
     <>
       {infoFriend?.status !== 2 || infoUser?.role === 1 ? (

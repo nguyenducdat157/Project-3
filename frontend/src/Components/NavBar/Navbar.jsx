@@ -218,7 +218,6 @@ const NavBar = () => {
                         onClick={() => {
                           history.push({
                             pathname: `/profile-friend/${option._id}`,
-                            state: { name: 'dat' },
                           });
                         }}
                       >
@@ -240,17 +239,18 @@ const NavBar = () => {
                   }}
                   renderInput={(params) => (
                     <TextField
-                      onKeyDown={(e) => {
-                        if (e.keyCode === 13) {
-                          history.push('/suggest-detail', { name: 'dat' });
-                        }
-                      }}
+                      // onKeyDown={(e) => {
+                      //   if (e.keyCode === 13) {
+                      //     history.push('/suggest-detail', { name: 'dat' });
+                      //   }
+                      // }}
+                      type="text"
+                      autoComplete="off"
                       className="navbar__searchBar"
                       {...params}
                       placeholder="Tìm kiếm"
                       InputProps={{
                         ...params.InputProps,
-                        type: 'search',
                       }}
                       variant="outlined"
                       // onChange={handleSearch}

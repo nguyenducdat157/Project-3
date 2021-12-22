@@ -31,7 +31,7 @@ const ListReport = (props) => {
   const history = useHistory();
   return notifications?.length ? (
     notifications?.map((noti) => {
-      if (noti?.post && noti?.post?.status === 0) {
+      if (noti?.post) {
         return (
           <div
             className={classes.reportItems}

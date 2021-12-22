@@ -11,7 +11,7 @@ import { HOST_URL, PREVLINK } from '../../ultils/constants';
 
 const MainContent = () => {
   const [listPost, setListPost] = useState([]);
-  const infoUser = useSelector((state) => state.auth.user.data.data);
+  const infoUser = useSelector((state) => state.auth?.user?.data?.data);
   const prevLink = PREVLINK;
 
   useEffect(() => {

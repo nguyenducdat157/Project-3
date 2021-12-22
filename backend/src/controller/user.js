@@ -3,6 +3,10 @@ const User = require('../models/user.js');
 module.exports.follow = async (req, res) => {
   try {
     const idFriend = req.params.id;
+    const checkUserBlock = await User.findOne({_id: req.params.id, status: {$ne: 2}});
+    if(!checkUserBlock) {
+      return res.status(404).json({ code: 1, message: 'User not found!' });
+    }
     const checkExistUser = await User.findOne({ _id: req.user._id, 'following.userId': idFriend });
     if (checkExistUser) {
       return res.status(404).json({ code: 0, message: 'User already followed' });
@@ -39,6 +43,10 @@ module.exports.follow = async (req, res) => {
 module.exports.unFollow = async (req, res) => {
   try {
     const idFriend = req.params.id;
+    const checkUserBlock = await User.findOne({_id: idFriend, status: {$ne: 2}});
+    if(!checkUserBlock) {
+      return res.status(404).json({ code: 1, message: 'User not found!' });
+    }
     const currentId = req.user._id;
     const condition1 = {
       _id: currentId,
@@ -120,9 +128,9 @@ module.exports.getListUserSuggestion = async (req, res) => {
           });
         }
       }
-      result = await User.find({ _id: { $in: Array.from(mySet) }, status: { $ne: 2 } });
+      result = await User.find({ _id: { $in: Array.from(mySet) }, status: { $ne: 2 }, role: 0 });
     } else {
-      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 } });
+      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 }, role: 0 });
     }
     return res.status(200).json({ code: 0, data: result.sort(() => Math.random() - Math.random()).slice(0, 5) });
   } catch (err) {
@@ -145,9 +153,9 @@ module.exports.allUserSuggest = async (req, res) => {
       });
       list.push(req.user._id);
 
-      result = await User.find({ _id: { $nin: list }, status: { $ne: 2 } });
+      result = await User.find({ _id: { $nin: list }, status: { $ne: 2 }, role: 0 });
     } else {
-      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 } });
+      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 }, role: 0 });
     }
     return res.status(200).json({
       code: 0,
@@ -336,8 +344,9 @@ module.exports.editProfile = async (req, res) => {
       return res.status(404).json({ code: 1, error: 'User not found' });
     }
 
-    const checkExists = await User.findOne({ $or: [{ email: req.body.email }, { userName: req.body.userName }] });
-    if (checkExists) {
+    const checkExistsEmail = await User.findOne({ email: req.body.email });
+    const checkExistsUserName = await User.findOne({ userName: req.body.userName });
+    if ((checkExistsEmail.id !== currentId && checkExistsEmail) || (checkExistsUserName.id !== currentId && checkExistsUserName)) {
       return res.status(404).json({ code: 2, error: 'User already exists' });
     }
     const update = {

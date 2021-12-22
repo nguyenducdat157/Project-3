@@ -56,11 +56,11 @@ module.exports.getPosts = async (req, res) => {
   const user = await User.findOne({ _id: req.user._id })
   .populate({ path: 'following', populate: { path: 'userId', select: ['_id', 'status'] } });
 
-  // console.log("user", user.following[0].userId);
+  // console.log("user", user.following);
 
 
   if(user) {
-    const listFollowing = user.following.filter((obj) => obj.userId.status !== 2).map((obj) => (obj.userId._id));
+    const listFollowing = user.following.filter((obj) => { return  obj.userId && obj.userId.status !== 2}).map((obj) => (obj.userId._id));
     Post.find({ 'postBy' : { $in: listFollowing }, status: 0  })
       .populate('postBy', ['userName', 'avatar', 'status'])
       .populate({ path: 'comments', populate: { path: 'userId', select: 'userName' } })
@@ -83,8 +83,11 @@ module.exports.getPosts = async (req, res) => {
 module.exports.removePost = async (req, res) => {
   try {
     const idPost = req.params.id;
-    const removePost = await Post.findOneAndUpdate({ _id: idPost }, { status: 1 });
-      if (removePost) {
+    const removePost = await Post.findOneAndUpdate({ _id: idPost, status: 0 }, { status: 1 });
+    if(!removePost) {
+      return res.status(404).json({ code: 0, message: 'Post Not Found!' });
+    }
+    if (removePost) {
         return res.status(200).json({
           code: 0,
           message: 'Delete post success',
@@ -98,8 +101,12 @@ module.exports.removePost = async (req, res) => {
 module.exports.likePost = async (req, res) => {
   try {
     const postId = req.params.postId;
+    const checkPostExist = await Post.findOne({_id: postId, status: 0});
+    if(!checkPostExist) {
+      return res.status(404).json({ code: 0, message: 'Post Not Found!' });
+    }
     const userLike = req.user._id;
-    const checkInList = await Post.findOne({ _id: postId, 'likes.userId': userLike });
+    const checkInList = await Post.findOne({ _id: postId, 'likes.userId': userLike});
     const update = checkInList
       ? {
           $pull: {
@@ -138,7 +145,10 @@ module.exports.addComment = async (req, res) => {
         },
       },
     };
-    const postUpdate = await Post.findOneAndUpdate({ _id: postId }, update);
+    const postUpdate = await Post.findOneAndUpdate({ _id: postId, status: 0 }, update);
+    if(!postUpdate) {
+      return res.status(404).json({ code: 0, message: 'Post Not Found!' });
+    }
     if (postUpdate) {
       return res.status(200).json({ code: 0, message: 'add comment successfully' });
     }
@@ -157,7 +167,10 @@ module.exports.removeComment = async (req, res) => {
         },
       },
     };
-    const postUpdate = await Post.findByIdAndUpdate({ _id: req.body.postId }, update);
+    const postUpdate = await Post.findByIdAndUpdate({ _id: req.body.postId, status: 0 }, update);
+    if(!postUpdate) {
+      return res.status(404).json({ code: 0, message: 'Post Not Found!' });
+    }
     if (postUpdate) {
       return res.status(200).json({ code: 0, message: 'remove comment successfully' });
     }
@@ -190,7 +203,7 @@ module.exports.getPostForFriend = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not find' });
     }
-    const posts = await Post.find({ postBy: idFriend });
+    const posts = await Post.find({ postBy: idFriend, status: 0 });
     if (!posts) {
       return res.status(404).json({ message: 'Not find post ' });
     }

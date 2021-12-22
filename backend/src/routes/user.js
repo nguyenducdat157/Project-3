@@ -47,4 +47,5 @@ router.post('/edit-profile', requireSignIn, controller.editProfile);
 
 router.post('/logout', requireSignIn, controller.logout);
 
+
 module.exports = router;

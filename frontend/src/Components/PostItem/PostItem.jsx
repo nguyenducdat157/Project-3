@@ -33,7 +33,16 @@ const PostItem = (props) => {
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const socket = useSelector((state) => state.socket.socket.payload);
   const handleReact = async () => {
-    await dispatch(reactApi(props.id));
+    const res = await dispatch(reactApi(props.id));
+    if (res.payload.response.status === 404) {
+      dispatch(
+        showModalMessage({
+          type: 'ERROR',
+          msg: 'Bài viết không khả dụng!',
+        }),
+      );
+      return;
+    }
     setNumberLikes(liked ? numberLikes - 1 : numberLikes + 1);
     setLiked(!liked);
     if (!liked && props?.userId !== infoUser?._id) {

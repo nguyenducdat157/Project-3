@@ -19,17 +19,15 @@ const SignIn = (props) => {
     };
     const res = await dispatch(signIn(body));
     if (res?.payload?.data?.code === 0) {
-      if (res?.payload?.data?.data?.status === 2) {
-        dispatch(
-          showModalMessage({
-            type: 'ERROR',
-            msg: 'Tài khoản của bạn đã bị khóa',
-          }),
-        );
-      } else {
-        await localStorage.setItem('token', res.payload.data.token);
-        await history.push('/');
-      }
+      await localStorage.setItem('token', res.payload.data.token);
+      await history.push('/');
+    } else if (res.payload.response.status === 403) {
+      dispatch(
+        showModalMessage({
+          type: 'ERROR',
+          msg: 'Tài khoản của bạn đã bị khóa',
+        }),
+      );
     } else if (res.payload.response.status === 404) {
       dispatch(
         showModalMessage({

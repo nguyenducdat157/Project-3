@@ -184,8 +184,6 @@ export default function Dashboard() {
     }).length;
   };
 
-  console.log(showNumberNotification());
-
   return (
     <div className={classes.root}>
       <CssBaseline />

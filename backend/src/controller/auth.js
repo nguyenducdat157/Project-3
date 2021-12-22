@@ -11,6 +11,10 @@ module.exports.signIn = async (req, res) => {
       return res.status(404).json({
         error: 'User not found',
       });
+    } else if(user.status === 2) {
+      return res.status(403).json({
+        error: 'Account is block',
+      });
     } else {
       const hash_password = user.password;
       const right_pass = await bcrypt.compare(password, hash_password);
@@ -22,9 +26,9 @@ module.exports.signIn = async (req, res) => {
         const token = jwt.sign(
           { _id: user._id, role: user.role, following: user.following, followers: user.followers },
           process.env.JWT_SECRET,
-          // {
-          //   expiresIn: '1d',
-          // },
+          {
+            expiresIn: '300d',
+          },
         );
         res.cookie('token', token);
         const { _id, email, role, fullName, avatar, following, followers, userName, notifications, status } = user;

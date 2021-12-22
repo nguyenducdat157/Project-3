@@ -1,7 +1,7 @@
 import './App.css';
 import LoginPage from './Pages/LoginPage/LoginPage';
 import HomePage from './Pages/HomePage/HomePage';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, useHistory } from 'react-router-dom';
 import RegisterPage from './Pages/LoginPage/RegisterPage';
 import SuggestDetail from './Pages/SuggestDetail/SuggestDetail';
 import Profile from './Pages/Profile/Profile';
@@ -18,6 +18,8 @@ import io from 'socket.io-client';
 import { HOST_URL } from './ultils/constants';
 import Dashboard from './Pages/Admin/Dashboard';
 import NotFound from './Pages/NotFound';
+import { getMe, logout } from './redux/auth/auth.slice';
+import ProtectedRoute from './Components/ProtectedRoute';
 const socket = io.connect(HOST_URL);
 
 function App() {
@@ -32,20 +34,24 @@ function App() {
     dispatch(hideModalMessage());
   }, []);
 
+  useEffect(() => {
+    dispatch(getMe());
+  }, [])
+
+
   return (
     <BrowserRouter>
       <Switch>
         <Route exact path="/login" component={LoginPage} />
-        <Route exact path="/" component={infoUser?.role === 1 ? Dashboard :HomePage} />
+        <ProtectedRoute exact path="/" component={infoUser?.role === 1 ? Dashboard :HomePage} />
         <Route exact path="/register" component={RegisterPage} />
-        <Route exact path="/login" component={LoginPage} />
-        <Route exact path="/suggest-detail" component={SuggestDetail} />
-        <Route exact path="/profile" component={infoUser?.role === 1 ? Dashboard : Profile} />
-        <Route exact path="/post/:id" component={PostDetail} />
-        <Route exact path="/admin" component={Dashboard} />
-        <Route exact path="/profile-friend/:id" component={ProfileFriend} />
-        <Route exact path="/inbox/:id" render={(props) => <Inbox {...props} />} />
-        <Route exact path="/edit-profile" component={EditProfile} />
+        <ProtectedRoute exact path="/suggest-detail" component={SuggestDetail} />
+        <ProtectedRoute exact path="/profile" component={infoUser?.role === 1 ? Dashboard : Profile} />
+        <ProtectedRoute exact path="/post/:id" component={PostDetail} />
+        <ProtectedRoute exact path="/admin" component={Dashboard} />
+        <ProtectedRoute exact path="/profile-friend/:id" component={ProfileFriend} />
+        <ProtectedRoute exact path="/inbox/:id" render={(props) => <Inbox {...props} />} />
+        <ProtectedRoute exact path="/edit-profile" component={EditProfile} />
         <Route path="*" component={NotFound} />
       </Switch>
       <ModalMessage />

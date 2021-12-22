@@ -1,10 +1,12 @@
 .edit_container {
   margin-top: 100px;
   background-color: #fff;
-  width: 100%;
+  width: 940px;
+  max-width: 100%;
   height: 500px;
   display: flex;
   border: 1px solid #e4e4eb;
+  margin: 100px auto;
 }
 .edit_option {
   width: 30%;
@@ -27,16 +29,23 @@
 .edit_element {
   margin-bottom: 30px;
   display: flex;
+  align-self: center;
+  align-items: center;
 }
 .edit_inputText {
-  width: 200px;
-  height: 25px;
+  max-width: 3550px;
+  width: 100%;
+  height: 32px;
   margin-left: 30px;
-  border-radius: 5px;
+  border: 1px solid rgba(var(--ca6, 219, 219, 219), 1);
+  border-radius: 3px;
+  font-size: 16px;
+  padding: 0 10px;
 }
-label {
+.edit_profile_label {
   min-width: 130px;
   font-weight: bold;
+  text-align: right;
 }
 .edit_infoUser {
   font-size: 18px;
@@ -80,4 +89,16 @@ label {
 }
 .edit_btn_pw:active {
   background-color: rgba(62, 123, 250, 0.3);
+}
+.edit_profile_text_error {
+  color: red;
+  margin-left: 30px;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+@media screen and (max-width: 600px) {
+  .edit_option {
+    display: none;
+  }
 }
