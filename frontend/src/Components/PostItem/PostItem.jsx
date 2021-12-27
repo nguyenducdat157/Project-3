@@ -34,7 +34,7 @@ const PostItem = (props) => {
   const socket = useSelector((state) => state.socket.socket.payload);
   const handleReact = async () => {
     const res = await dispatch(reactApi(props.id));
-    if (res.payload.response.status === 404) {
+    if (res.payload.response?.status === 404) {
       dispatch(
         showModalMessage({
           type: 'ERROR',
@@ -68,7 +68,15 @@ const PostItem = (props) => {
       content: commentValue,
     };
     const res = await dispatch(commentApi(data));
-
+    if (res.payload.response?.status === 404) {
+      dispatch(
+        showModalMessage({
+          type: 'ERROR',
+          msg: 'Bài viết không khả dụng!',
+        }),
+      );
+      return;
+    }
     if (res?.payload?.data?.code === 0) {
       const newList = [...commentExtra, { ...data, userName: infoUser.userName }];
       setCommentExtra(newList);

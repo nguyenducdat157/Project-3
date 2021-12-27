@@ -73,7 +73,7 @@ const PostDetail = (props) => {
 
   const handleReact = async () => {
     const res = await dispatch(reactApi(props.location.state.postId));
-    if (res.payload.response.status === 404) {
+    if (res.payload.response?.status === 404) {
       dispatch(
         showModalMessage({
           type: 'ERROR',
@@ -102,7 +102,7 @@ const PostDetail = (props) => {
       content: commentValue,
     };
     const res = await dispatch(commentApi(data));
-    if (res.payload.response.status === 404) {
+    if (res.payload.response?.status === 404) {
       dispatch(
         showModalMessage({
           type: 'ERROR',
@@ -140,7 +140,7 @@ const PostDetail = (props) => {
       commentId: commentId,
     };
     const res = await dispatch(removeCommentApi(data));
-    if (res.payload.response.status === 404) {
+    if (res.payload.response?.status === 404) {
       dispatch(
         showModalMessage({
           type: 'ERROR',
@@ -185,7 +185,7 @@ const PostDetail = (props) => {
   const handleRemovePost = async () => {
     if (window.confirm('Bạn có chắc chắn muốn xóa bài viết này không?')) {
       const res = await dispatch(removePostApi(props.location.state.postId));
-      if (res.payload.response.status === 404) {
+      if (res.payload.response?.status === 404) {
         dispatch(
           showModalMessage({
             type: 'ERROR',

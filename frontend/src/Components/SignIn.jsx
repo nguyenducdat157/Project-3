@@ -28,7 +28,7 @@ const SignIn = (props) => {
           msg: 'Tài khoản của bạn đã bị khóa',
         }),
       );
-    } else if (res.payload.response.status === 404) {
+    } else if (res.payload.response?.status === 404) {
       dispatch(
         showModalMessage({
           type: 'ERROR',

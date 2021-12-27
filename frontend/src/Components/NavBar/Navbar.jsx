@@ -274,7 +274,7 @@ const NavBar = () => {
                   onClick={addPost}
                 />
                 {
-                  <div class="dropdown" ref={refNoti}>
+                  <div className="dropdown" ref={refNoti}>
                     {!toggleNoti ? (
                       <img
                         className="navbar__img"
