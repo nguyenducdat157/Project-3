@@ -35,15 +35,15 @@ const Inbox = (props) => {
     if (e.keyCode === 13) {
       await dispatch(
         addMessage({
-          receiver: props.match.params.id,
+          receiver: infoFriend._id,
           content: inputText,
         }),
       );
       const data = {
-        idFriend: props.match.params.id,
+        idFriend: infoFriend._id,
       };
       socket?.emit('inbox_user', data);
-      dispatch(getListMessage(props.match.params.id));
+      dispatch(getListMessage(infoFriend._id));
       scrollToBottom();
       setInputText('');
     }
