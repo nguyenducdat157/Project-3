@@ -18,8 +18,6 @@ const Inbox = (props) => {
   const [idFriend, setIdFriend] = useState('');
   const [active, setActive] = useState(0);
 
-  console.log('infoFriend: ', infoFriend);
-
   const [inputText, setInputText] = useState('');
   const messagesEnd = useRef(null);
 
