@@ -52,16 +52,20 @@ module.exports.getPostById = async (req, res) => {
 };
 
 module.exports.getPosts = async (req, res) => {
-
-  const user = await User.findOne({ _id: req.user._id })
-  .populate({ path: 'following', populate: { path: 'userId', select: ['_id', 'status'] } });
+  const user = await User.findOne({ _id: req.user._id }).populate({
+    path: 'following',
+    populate: { path: 'userId', select: ['_id', 'status'] },
+  });
 
   // console.log("user", user.following);
 
-
-  if(user) {
-    const listFollowing = user.following.filter((obj) => { return  obj.userId && obj.userId.status !== 2}).map((obj) => (obj.userId._id));
-    Post.find({ 'postBy' : { $in: listFollowing }, status: 0  })
+  if (user) {
+    const listFollowing = user.following
+      .filter((obj) => {
+        return obj.userId && obj.userId.status !== 2;
+      })
+      .map((obj) => obj.userId._id);
+    Post.find({ postBy: { $in: listFollowing }, status: 0 })
       .populate('postBy', ['userName', 'avatar', 'status'])
       .populate({ path: 'comments', populate: { path: 'userId', select: 'userName' } })
       // .where('postBy.status').ne(2)
@@ -84,15 +88,15 @@ module.exports.removePost = async (req, res) => {
   try {
     const idPost = req.params.id;
     const removePost = await Post.findOneAndUpdate({ _id: idPost, status: 0 }, { status: 1 });
-    if(!removePost) {
+    if (!removePost) {
       return res.status(404).json({ code: 0, message: 'Post Not Found!' });
     }
     if (removePost) {
-        return res.status(200).json({
-          code: 0,
-          message: 'Delete post success',
-        });
-      }
+      return res.status(200).json({
+        code: 0,
+        message: 'Delete post success',
+      });
+    }
   } catch (err) {
     return res.status(500).json({ error: 'Server error' });
   }
@@ -101,12 +105,12 @@ module.exports.removePost = async (req, res) => {
 module.exports.likePost = async (req, res) => {
   try {
     const postId = req.params.postId;
-    const checkPostExist = await Post.findOne({_id: postId, status: 0});
-    if(!checkPostExist) {
+    const checkPostExist = await Post.findOne({ _id: postId, status: 0 });
+    if (!checkPostExist) {
       return res.status(404).json({ code: 0, message: 'Post Not Found!' });
     }
     const userLike = req.user._id;
-    const checkInList = await Post.findOne({ _id: postId, 'likes.userId': userLike});
+    const checkInList = await Post.findOne({ _id: postId, 'likes.userId': userLike });
     const update = checkInList
       ? {
           $pull: {
@@ -146,7 +150,7 @@ module.exports.addComment = async (req, res) => {
       },
     };
     const postUpdate = await Post.findOneAndUpdate({ _id: postId, status: 0 }, update);
-    if(!postUpdate) {
+    if (!postUpdate) {
       return res.status(404).json({ code: 0, message: 'Post Not Found!' });
     }
     if (postUpdate) {
@@ -163,12 +167,12 @@ module.exports.removeComment = async (req, res) => {
     const update = {
       $pull: {
         comments: {
-          _id: req.body.commentId
+          _id: req.body.commentId,
         },
       },
     };
     const postUpdate = await Post.findByIdAndUpdate({ _id: req.body.postId, status: 0 }, update);
-    if(!postUpdate) {
+    if (!postUpdate) {
       return res.status(404).json({ code: 0, message: 'Post Not Found!' });
     }
     if (postUpdate) {
@@ -208,6 +212,22 @@ module.exports.getPostForFriend = async (req, res) => {
       return res.status(404).json({ message: 'Not find post ' });
     }
     return res.status(200).json({ code: 0, data: posts });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports.getListUserLiked = async (req, res) => {
+  try {
+    const idPost = req.params.id;
+    const listUserLiked = await Post.findOne({ _id: idPost }).populate({
+      path: 'likes',
+      populate: { path: 'userId', select: ['avatar', 'userName', 'fullName', '_id'] },
+    });
+    if (!listUserLiked) {
+      return res.status(404).json({ code: 1, message: 'Post not found' });
+    }
+    return res.status(200).json({ code: 0, data: listUserLiked });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

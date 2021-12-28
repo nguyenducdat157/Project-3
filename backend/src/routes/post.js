@@ -33,5 +33,6 @@ router.post('/remove-comment', requireSignIn, controller.removeComment);
 
 router.get('/get-post-for-me', requireSignIn, controller.getPostForMe);
 router.get('/get-post-for-friend/:id', requireSignIn, controller.getPostForFriend);
+router.get('/get-users-liked/:id', requireSignIn, controller.getListUserLiked);
 
 module.exports = router;
