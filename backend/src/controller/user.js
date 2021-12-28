@@ -3,8 +3,8 @@ const User = require('../models/user.js');
 module.exports.follow = async (req, res) => {
   try {
     const idFriend = req.params.id;
-    const checkUserBlock = await User.findOne({_id: req.params.id, status: {$ne: 2}});
-    if(!checkUserBlock) {
+    const checkUserBlock = await User.findOne({ _id: req.params.id, status: { $ne: 2 } });
+    if (!checkUserBlock) {
       return res.status(404).json({ code: 1, message: 'User not found!' });
     }
     const checkExistUser = await User.findOne({ _id: req.user._id, 'following.userId': idFriend });
@@ -43,8 +43,8 @@ module.exports.follow = async (req, res) => {
 module.exports.unFollow = async (req, res) => {
   try {
     const idFriend = req.params.id;
-    const checkUserBlock = await User.findOne({_id: idFriend, status: {$ne: 2}});
-    if(!checkUserBlock) {
+    const checkUserBlock = await User.findOne({ _id: idFriend, status: { $ne: 2 } });
+    if (!checkUserBlock) {
       return res.status(404).json({ code: 1, message: 'User not found!' });
     }
     const currentId = req.user._id;
@@ -326,7 +326,12 @@ module.exports.getMe = async (req, res) => {
 module.exports.getProfileFriend = async (req, res) => {
   try {
     const idFriend = req.params.id;
-    const friend = await User.findOne({ _id: idFriend });
+    const friend = await User.findOne({ _id: idFriend })
+      .populate({
+        path: 'followers',
+        populate: { path: 'userId', select: ['fullName', 'userName', 'avatar'] },
+      })
+      .populate({ path: 'following', populate: { path: 'userId', select: ['fullName', 'userName', 'avatar'] } });
     if (!friend) {
       return res.status(404).json({ code: 1, error: 'User not found' });
     }
@@ -346,7 +351,10 @@ module.exports.editProfile = async (req, res) => {
 
     const checkExistsEmail = await User.findOne({ email: req.body.email });
     const checkExistsUserName = await User.findOne({ userName: req.body.userName });
-    if ((checkExistsEmail.id !== currentId && checkExistsEmail) || (checkExistsUserName.id !== currentId && checkExistsUserName)) {
+    if (
+      (checkExistsEmail.id !== currentId && checkExistsEmail) ||
+      (checkExistsUserName.id !== currentId && checkExistsUserName)
+    ) {
       return res.status(404).json({ code: 2, error: 'User already exists' });
     }
     const update = {
