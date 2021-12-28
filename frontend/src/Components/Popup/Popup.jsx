@@ -85,7 +85,10 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, m
               <></>
             )}
           </div>
-          <div style={isScroll ? { overflowY: 'auto' } : { padding: '0 118px' }} className="body-modal-container">
+          <div
+            style={isScroll ? { overflowY: 'auto', height: '400px' } : { padding: '0 118px' }}
+            className="body-modal-container"
+          >
             {children}
           </div>
         </div>

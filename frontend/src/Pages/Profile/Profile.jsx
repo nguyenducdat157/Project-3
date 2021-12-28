@@ -16,6 +16,7 @@ import { getMe } from '../../redux/auth/auth.slice';
 import { useHistory } from 'react-router';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
+import ListUser from '../../Components/ListUser/ListUser';
 
 const useStyles = makeStyles(() => ({
   profileContainer: {
@@ -137,40 +138,40 @@ const Profile = () => {
   const onCrop = (preview) => {
     setPreview(preview);
   };
-  const FollowerItem = (props) => {
-    const [followed, setFollowed] = useState(false);
-    const checkFollowed = (item) => {
-      const listFollowingId = listFollowing.map((item) => item._id);
-      return listFollowingId.includes(item._id);
-    };
-    return (
-      <div className={classes.popup_follower}>
-        <div className="pop_left">
-          <div style={{ display: 'flex' }}>
-            <img style={{ width: '40px' }} src={props.avatar} alt="element"></img>
-            <div className="pop_name">
-              <div className="pop_fullName">{props.fullName}</div>
-              <div className="pop_userName">{props.userName}</div>
-            </div>
-            {!checkFollowed(props.item) && !followed ? (
-              <div
-                onClick={() => {
-                  dispatch(followApi(props.item._id));
-                  setFollowed(true);
-                }}
-                style={{ cursor: 'pointer', color: '#0395F6', marginLeft: '5px', fontWeight: 'bold' }}
-              >
-                .Theo dõi
-              </div>
-            ) : (
-              ''
-            )}
-          </div>
-        </div>
-        <button className="pop_btn">Xóa</button>
-      </div>
-    );
-  };
+  // const FollowerItem = (props) => {
+  //   const [followed, setFollowed] = useState(false);
+  //   const checkFollowed = (item) => {
+  //     const listFollowingId = listFollowing.map((item) => item._id);
+  //     return listFollowingId.includes(item._id);
+  //   };
+  //   return (
+  //     <div className={classes.popup_follower}>
+  //       <div className="pop_left">
+  //         <div style={{ display: 'flex' }}>
+  //           <img style={{ width: '40px' }} src={props.avatar} alt="element"></img>
+  //           <div className="pop_name">
+  //             <div className="pop_fullName">{props.fullName}</div>
+  //             <div className="pop_userName">{props.userName}</div>
+  //           </div>
+  //           {!checkFollowed(props.item) && !followed ? (
+  //             <div
+  //               onClick={() => {
+  //                 dispatch(followApi(props.item._id));
+  //                 setFollowed(true);
+  //               }}
+  //               style={{ cursor: 'pointer', color: '#0395F6', marginLeft: '5px', fontWeight: 'bold' }}
+  //             >
+  //               .Theo dõi
+  //             </div>
+  //           ) : (
+  //             ''
+  //           )}
+  //         </div>
+  //       </div>
+  //       <button className="pop_btn">Xóa</button>
+  //     </div>
+  //   );
+  // };
 
   return (
     <>
@@ -252,7 +253,7 @@ const Profile = () => {
         </div>
       </div>
 
-      <Popup
+      {/* <Popup
         isOpen={isShowFollowers}
         handleClose={() => {
           setIsShowFollowers(false);
@@ -267,7 +268,10 @@ const Profile = () => {
           listFollower.map((item) => (
             <FollowerItem item={item} avatar={item.avatar} fullName={item.fullName} userName={item.userName} />
           ))}
-      </Popup>
+      </Popup> */}
+      {isShowFollowers && (
+        <ListUser data={listFollower} title={'Người theo dõi'} handleClose={() => setIsShowFollowers(false)} />
+      )}
 
       <Popup
         isOpen={isChangeAvatar}
@@ -295,7 +299,7 @@ const Profile = () => {
         </button>
       </Popup>
 
-      <Popup
+      {/* <Popup
         isOpen={isShowFollowing}
         handleClose={() => {
           setIsShowFollowing(false);
@@ -328,7 +332,11 @@ const Profile = () => {
               </button>
             </div>
           ))}
-      </Popup>
+      </Popup> */}
+
+      {isShowFollowing && (
+        <ListUser data={listFollowing} title={'Đang theo dõi'} handleClose={() => setIsShowFollowing(false)} />
+      )}
     </>
   );
 };

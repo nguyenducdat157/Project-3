@@ -66,6 +66,13 @@ export const removePostApi = createAsyncThunk('post/remove-comment', async (post
   }
 });
 
+export const getListUserLiked = createAsyncThunk('post/get-users-liked', async (postId) => {
+  try {
+    return await axiosInstance.get(`/api/post/get-users-liked/${postId}`);
+  } catch (error) {
+    return error;
+  }
+});
 
 const initialState = {
   loading: false,
@@ -102,6 +109,18 @@ const postSlice = createSlice({
     [`${getPostFriend.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.postOfFriend = action.payload.data;
+    },
+
+    [`${getPostById.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${getPostById.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${getPostById.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.post = action.payload.data;
     },
   },
 });

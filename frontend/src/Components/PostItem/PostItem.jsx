@@ -19,6 +19,8 @@ import { Link } from 'react-router-dom';
 import { listReportPost, PREVLINK } from '../../ultils/constants';
 import { showModalMessage } from '../../redux/message/message.slice';
 import { unFollowApi } from '../../redux/user/user.slice';
+import ListUser from '../../Components/ListUser/ListUser';
+import { getListUserLiked } from '../../redux/post/post.slice';
 const PostItem = (props) => {
   const [liked, setLiked] = useState(props.liked);
   const [numberLikes, setNumberLikes] = useState(props.likes);
@@ -32,6 +34,9 @@ const PostItem = (props) => {
   const history = useHistory();
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const socket = useSelector((state) => state.socket.socket.payload);
+  const [showListUser, setShowListUser] = useState(false);
+  const [listUserLiked, setListUserLiked] = useState([]);
+
   const handleReact = async () => {
     const res = await dispatch(reactApi(props.id));
     if (res.payload.response?.status === 404) {
@@ -123,7 +128,6 @@ const PostItem = (props) => {
       content: content,
     };
     const res = await dispatch(reportPostNotification(data));
-    // console.log(res);
     if (res?.payload?.data?.code === 0) {
       dispatch(
         showModalMessage({
@@ -152,56 +156,57 @@ const PostItem = (props) => {
   };
 
   return (
-    <div className="post__container">
-      {/* Header */}
-      <div className="post__header">
-        <Avatar
-          onClick={() => {
-            history.push({
-              pathname: `/profile-friend/${props.userId}`,
-            });
-          }}
-          style={{ cursor: 'pointer' }}
-          className="post__image"
-          src={`${PREVLINK}/${props.avatar}`}
-        />
-        <div
-          onClick={() => {
-            history.push({
-              pathname: `/profile-friend/${props.userId}`,
-            });
-          }}
-          style={{ cursor: 'pointer' }}
-          className="post__username"
-        >
-          {props.userName}
-        </div>
-        <div style={{ display: 'flex', margin: 'auto', justifyContent: 'flex-end', width: '70%' }}>
-          <img
-            src={edit}
-            alt="element"
-            width="20px"
+    <>
+      <div className="post__container">
+        {/* Header */}
+        <div className="post__header">
+          <Avatar
             onClick={() => {
-              setShowModal(true);
+              history.push({
+                pathname: `/profile-friend/${props.userId}`,
+              });
             }}
             style={{ cursor: 'pointer' }}
+            className="post__image"
+            src={`${PREVLINK}/${props.avatar}`}
           />
+          <div
+            onClick={() => {
+              history.push({
+                pathname: `/profile-friend/${props.userId}`,
+              });
+            }}
+            style={{ cursor: 'pointer' }}
+            className="post__username"
+          >
+            {props.userName}
+          </div>
+          <div style={{ display: 'flex', margin: 'auto', justifyContent: 'flex-end', width: '70%' }}>
+            <img
+              src={edit}
+              alt="element"
+              width="20px"
+              onClick={() => {
+                setShowModal(true);
+              }}
+              style={{ cursor: 'pointer' }}
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Image */}
-      <div>
-        <img src={props.postImage} alt="element" width="100%" style={{ maxHeight: '770px' }} />
-      </div>
-      {/* Analytics */}
-      <div>
-        <div style={{ marginLeft: '10px' }}>
-          {liked ? (
-            <img src={redlove} className="post_reactimage" alt="element" onClick={handleReact} />
-          ) : (
-            <img src={love} className="post_reactimage" alt="element" onClick={handleReact} />
-          )}
-          {/* <FontAwesomeIcon
+        {/* Image */}
+        <div>
+          <img src={props.postImage} alt="element" width="100%" style={{ maxHeight: '770px' }} />
+        </div>
+        {/* Analytics */}
+        <div>
+          <div style={{ marginLeft: '10px' }}>
+            {liked ? (
+              <img src={redlove} className="post_reactimage" alt="element" onClick={handleReact} />
+            ) : (
+              <img src={love} className="post_reactimage" alt="element" onClick={handleReact} />
+            )}
+            {/* <FontAwesomeIcon
             icon={faHeart}
             style={{ color: false ? 'red' : 'black', fontSize: '25px', margin: '8px' }}
             className="post_reactimage"
@@ -210,71 +215,6 @@ const PostItem = (props) => {
             }}
           />
           /> */}
-          <Link
-            to={{
-              pathname: `/post/${props.id}`,
-              state: {
-                postId: props.id,
-                liked: liked,
-                numberLikes: numberLikes,
-                followed: true,
-              },
-            }}
-          >
-            <img
-              src={comment}
-              alt="element"
-              className="post_reactimage"
-              // onClick={() => {
-              //   history.push(`/post/${props.id}`, { postId: props.id });
-              // }}
-            />
-          </Link>
-        </div>
-        <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>{numberLikes} người thích</div>
-      </div>
-      <div style={{ display: 'flex', margin: '10px 10px 0' }}>
-        <p
-          style={{ fontWeight: '600', margin: '0px 0px', cursor: 'pointer' }}
-          onClick={() => {
-            goToProfile(props?.userId);
-          }}
-        >
-          {props.userName} &nbsp;
-        </p>
-        <p style={{ margin: '0px 0px' }}>{props.title}</p>
-      </div>
-
-      {/* Comment Section */}
-      <div>
-        {commentList.map((item, index) =>
-          index < 2 ? (
-            <div style={{ display: 'flex' }}>
-              <span
-                className="post_comment"
-                style={{ fontWeight: '600', cursor: 'pointer' }}
-                onClick={() => {
-                  goToProfile(item.userId?._id);
-                }}
-              >
-                {item.userId?.userName} &nbsp;
-              </span>
-              <span className="post_comment" style={{ marginLeft: '-10px' }}>
-                {item.content}
-              </span>
-            </div>
-          ) : (
-            <span></span>
-          ),
-        )}
-        {CommentExtraList(commentExtra)}
-        {commentList.length + commentExtra.length >= 3 && (
-          <div
-            style={{ fontSize: '14px', margin: '10px' }}
-            // onClick={() => {
-            //   history.push(`/post/${props.id}`, { postId: props.id });
-            // }}
-          >
             <Link
               to={{
                 pathname: `/post/${props.id}`,
@@ -285,131 +225,211 @@ const PostItem = (props) => {
                   followed: true,
                 },
               }}
-              style={{ textDecoration: 'none', color: '#8e8e8e' }}
             >
-              Xem tất cả {commentList.length + commentExtra.length} bình luận
+              <img
+                src={comment}
+                alt="element"
+                className="post_reactimage"
+                // onClick={() => {
+                //   history.push(`/post/${props.id}`, { postId: props.id });
+                // }}
+              />
             </Link>
           </div>
-        )}
-        <div style={{ display: 'flex' }}>
-          <input
-            text="text"
-            className="post__commentbox"
-            placeholder="Add a comment..."
-            onChange={(e) => {
-              setCommentValue(e.target.value);
+          <div
+            onClick={async () => {
+              const result = await dispatch(getListUserLiked(props.id));
+              if (result.payload?.status === 200) {
+                setListUserLiked(result.payload?.data?.data?.likes);
+              }
+              setShowListUser(true);
             }}
-            value={commentValue}
-          />
-          <button className="button_add_comment" onClick={handleAddComment} disabled={!active}>
-            Đăng
-          </button>
+            style={{ fontWeight: 'bold', marginLeft: '20px  ' }}
+          >
+            {numberLikes} người thích
+          </div>
         </div>
-      </div>
-      {showModal && (
-        <Popup
-          isOpen={showModal}
-          handleClose={() => {
-            setShowModal(false);
-          }}
-          isIconClose={false}
-          isScroll={true}
-        >
-          {infoUser?.role === 1 && (
-            <>
-              <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
-                Xóa
+        <div style={{ display: 'flex', margin: '10px 10px 0' }}>
+          <p
+            style={{ fontWeight: '600', margin: '0px 0px', cursor: 'pointer' }}
+            onClick={() => {
+              goToProfile(props?.userId);
+            }}
+          >
+            {props.userName} &nbsp;
+          </p>
+          <p style={{ margin: '0px 0px' }}>{props.title}</p>
+        </div>
+
+        {/* Comment Section */}
+        <div>
+          {commentList.map((item, index) =>
+            index < 2 ? (
+              <div style={{ display: 'flex' }}>
+                <span
+                  className="post_comment"
+                  style={{ fontWeight: '600', cursor: 'pointer' }}
+                  onClick={() => {
+                    goToProfile(item.userId?._id);
+                  }}
+                >
+                  {item.userId?.userName} &nbsp;
+                </span>
+                <span className="post_comment" style={{ marginLeft: '-10px' }}>
+                  {item.content}
+                </span>
               </div>
-              <hr className="popup_report_hr" />
-            </>
+            ) : (
+              <span></span>
+            ),
           )}
-          <div
-            className="popup_report_text"
-            style={{ color: 'black', fontWeight: 'bold' }}
-            onClick={() => {
-              history.push({
-                pathname: `/post/${props.id}`,
-                state: {
-                  postId: props.id,
-                  liked: liked,
-                  numberLikes: numberLikes,
-                  followed: true,
-                },
-              });
-            }}
-          >
-            Đi tới bài viết
-          </div>
-          <hr className="popup_report_hr" />
-          <div
-            className="popup_report_text"
-            style={{ color: 'red', fontWeight: 'bold' }}
-            onClick={() => {
-              setShowModal(false);
-              setShowListReport(true);
-            }}
-          >
-            Báo cáo
-          </div>
-          <hr className="popup_report_hr" />
-          <div
-            className="popup_report_text"
-            style={{ color: 'red', fontWeight: 'bold' }}
-            onClick={() => {
-              handleUnFollow(props?.userId);
-            }}
-          >
-            Bỏ theo dõi
-          </div>
-          <hr className="popup_report_hr" />
-          <div
-            className="popup_report_text"
-            onClick={() => {
-              setShowModal(false);
-            }}
-          >
-            Hủy
-          </div>
-        </Popup>
-      )}
-      {showListReport && (
-        <Popup
-          isOpen={showListReport}
-          handleClose={() => {
-            setShowListReport(false);
-          }}
-          isIconClose={true}
-          isScroll={true}
-          title="Báo cáo"
-        >
-          <div className="popup_report_text" style={{ color: 'black', fontWeight: 'bold' }}>
-            Tại sao bạn muốn báo cáo nội dung này ?
-          </div>
-          <hr className="popup_report_hr" />
-          {listReportPost.map((content) => (
-            <>
-              <div
-                className="popup_report_text"
-                onClick={() => {
-                  handleReport(content);
+          {CommentExtraList(commentExtra)}
+          {commentList.length + commentExtra.length >= 3 && (
+            <div
+              style={{ fontSize: '14px', margin: '10px' }}
+              // onClick={() => {
+              //   history.push(`/post/${props.id}`, { postId: props.id });
+              // }}
+            >
+              <Link
+                to={{
+                  pathname: `/post/${props.id}`,
+                  state: {
+                    postId: props.id,
+                    liked: liked,
+                    numberLikes: numberLikes,
+                    followed: true,
+                  },
                 }}
+                style={{ textDecoration: 'none', color: '#8e8e8e' }}
               >
-                {content}
-              </div>
-              <hr className="popup_report_hr" />
-            </>
-          ))}
-          <div
-            className="popup_report_text"
-            onClick={() => {
+                Xem tất cả {commentList.length + commentExtra.length} bình luận
+              </Link>
+            </div>
+          )}
+          <div style={{ display: 'flex' }}>
+            <input
+              text="text"
+              className="post__commentbox"
+              placeholder="Add a comment..."
+              onChange={(e) => {
+                setCommentValue(e.target.value);
+              }}
+              value={commentValue}
+            />
+            <button className="button_add_comment" onClick={handleAddComment} disabled={!active}>
+              Đăng
+            </button>
+          </div>
+        </div>
+        {showModal && (
+          <Popup
+            isOpen={showModal}
+            handleClose={() => {
+              setShowModal(false);
+            }}
+            isIconClose={false}
+            isScroll={true}
+          >
+            {infoUser?.role === 1 && (
+              <>
+                <div className="popup_report_text" style={{ color: 'red', fontWeight: 'bold' }}>
+                  Xóa
+                </div>
+                <hr className="popup_report_hr" />
+              </>
+            )}
+            <div
+              className="popup_report_text"
+              style={{ color: 'black', fontWeight: 'bold' }}
+              onClick={() => {
+                history.push({
+                  pathname: `/post/${props.id}`,
+                  state: {
+                    postId: props.id,
+                    liked: liked,
+                    numberLikes: numberLikes,
+                    followed: true,
+                  },
+                });
+              }}
+            >
+              Đi tới bài viết
+            </div>
+            <hr className="popup_report_hr" />
+            <div
+              className="popup_report_text"
+              style={{ color: 'red', fontWeight: 'bold' }}
+              onClick={() => {
+                setShowModal(false);
+                setShowListReport(true);
+              }}
+            >
+              Báo cáo
+            </div>
+            <hr className="popup_report_hr" />
+            <div
+              className="popup_report_text"
+              style={{ color: 'red', fontWeight: 'bold' }}
+              onClick={() => {
+                handleUnFollow(props?.userId);
+              }}
+            >
+              Bỏ theo dõi
+            </div>
+            <hr className="popup_report_hr" />
+            <div
+              className="popup_report_text"
+              onClick={() => {
+                setShowModal(false);
+              }}
+            >
+              Hủy
+            </div>
+          </Popup>
+        )}
+        {showListReport && (
+          <Popup
+            isOpen={showListReport}
+            handleClose={() => {
               setShowListReport(false);
             }}
+            isIconClose={true}
+            isScroll={true}
+            title="Báo cáo"
           >
-            Hủy
-          </div>
-        </Popup>
-      )}
-    </div>
+            <div className="popup_report_text" style={{ color: 'black', fontWeight: 'bold' }}>
+              Tại sao bạn muốn báo cáo nội dung này ?
+            </div>
+            <hr className="popup_report_hr" />
+            {listReportPost.map((content) => (
+              <>
+                <div
+                  className="popup_report_text"
+                  onClick={() => {
+                    handleReport(content);
+                  }}
+                >
+                  {content}
+                </div>
+                <hr className="popup_report_hr" />
+              </>
+            ))}
+            <div
+              className="popup_report_text"
+              onClick={() => {
+                setShowListReport(false);
+              }}
+            >
+              Hủy
+            </div>
+          </Popup>
+        )}
+        {showListUser && (
+          <ListUser data={listUserLiked} title={'Lượt thích'} handleClose={() => setShowListUser(false)} />
+        )}
+      </div>
+    </>
   );
 };
 

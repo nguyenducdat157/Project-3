@@ -17,6 +17,7 @@ import { showModalMessage } from '../../redux/message/message.slice';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 import NotFound from '../NotFound';
+import ListUser from '../../Components/ListUser/ListUser';
 const useStyles = makeStyles(() => ({
   profileContainer: {
     width: '100%',
@@ -55,6 +56,10 @@ const ProfileFriend = (props) => {
   const history = useHistory();
   const [showModal, setShowModal] = useState(0);
   const [isFollowed, setIsFollowed] = useState(false);
+
+  // useEffect(() => {
+
+  // }, [props.match.params.id]);
 
   const handleFollow = async () => {
     await dispatch(followApi(infoFriend._id));
@@ -255,6 +260,7 @@ const ProfileFriend = (props) => {
                   </div>
                   <div
                     onClick={() => {
+                      if (infoFriend.status === 1) return;
                       setIsShowFollowers(true);
                     }}
                     style={{ cursor: 'pointer' }}
@@ -264,6 +270,7 @@ const ProfileFriend = (props) => {
                   </div>
                   <div
                     onClick={() => {
+                      if (infoFriend.status === 1) return;
                       setIsShowFollowing(true);
                     }}
                     style={{ cursor: 'pointer' }}
@@ -276,7 +283,7 @@ const ProfileFriend = (props) => {
               </div>
             </div>
 
-            {showPost() && (
+            {showPost() ? (
               <div className="profile-body">
                 {listPostForFriend &&
                   listPostForFriend?.length > 0 &&
@@ -291,10 +298,15 @@ const ProfileFriend = (props) => {
                     />
                   ))}
               </div>
+            ) : (
+              <div style={{ backgroudColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontWeight: 'bold' }}>Đây là tài khoản riêng tư</div>
+                <div>Hãy theo dõi để xem ảnh của họ</div>
+              </div>
             )}
           </div>
 
-          <Popup
+          {/* <Popup
             isOpen={isShowFollowers}
             handleClose={() => {
               setIsShowFollowers(false);
@@ -314,9 +326,17 @@ const ProfileFriend = (props) => {
                   userName={item?.userId.userName}
                 />
               ))}
-          </Popup>
+          </Popup> */}
 
-          <Popup
+          {isShowFollowers && (
+            <ListUser
+              data={infoFriend?.followers}
+              title={'Người theo dõi'}
+              handleClose={() => setIsShowFollowers(false)}
+            />
+          )}
+
+          {/* <Popup
             isOpen={isShowFollowing}
             handleClose={() => {
               setIsShowFollowing(false);
@@ -349,7 +369,14 @@ const ProfileFriend = (props) => {
                   </button>
                 </div>
               ))}
-          </Popup>
+          </Popup> */}
+          {isShowFollowing && (
+            <ListUser
+              data={infoFriend?.following}
+              title={'Đang theo dõi'}
+              handleClose={() => setIsShowFollowing(false)}
+            />
+          )}
           {showModal === 1 && (
             <Popup
               isOpen={showModal === 1}

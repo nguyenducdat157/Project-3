@@ -22,7 +22,10 @@ import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { showModalMessage } from '../../redux/message/message.slice';
 import { useHistory } from 'react-router';
 import NotFound from '../NotFound';
+import ListUser from '../../Components/ListUser/ListUser';
+import { getListUserLiked } from '../../redux/post/post.slice';
 const PostDetail = (props) => {
+  console.log('detail: ', props);
   const dispatch = useDispatch();
   const history = useHistory();
   const [liked, setLiked] = useState(props.location.state.liked);
@@ -38,6 +41,8 @@ const PostDetail = (props) => {
   const [commentId, setCommentId] = useState('');
   const [commentUserId, setCommentUserId] = useState('');
   const [showListReport, setShowListReport] = useState(false);
+  const [showListUser, setShowListUser] = useState(false);
+  const [listUserLiked, setListUserLiked] = useState([]);
 
   useEffect(() => {
     // window.location.reload();
@@ -358,7 +363,16 @@ const PostDetail = (props) => {
                         style={{ cursor: infoUser?.role === 1 ? 'auto' : '' }}
                       />
                     </div>
-                    <div style={{ fontWeight: 'bold', marginLeft: '20px  ' }}>
+                    <div
+                      onClick={async () => {
+                        const result = await dispatch(getListUserLiked(props.match?.params?.id));
+                        if (result.payload?.status === 200) {
+                          setListUserLiked(result.payload?.data?.data?.likes);
+                        }
+                        setShowListUser(true);
+                      }}
+                      style={{ fontWeight: 'bold', marginLeft: '20px  ', cursor: 'pointer' }}
+                    >
                       {numberLikes ? numberLikes : 0} người thích
                     </div>
                     <div className="post_detail_day_down">{getTimePost(post?.createdAt)} trước</div>
@@ -515,6 +529,9 @@ const PostDetail = (props) => {
         </>
       ) : (
         <NotFound />
+      )}
+      {showListUser && (
+        <ListUser data={listUserLiked} title={'Lượt thích'} handleClose={() => setShowListUser(false)} />
       )}
     </>
   );
