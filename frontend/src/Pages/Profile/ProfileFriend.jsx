@@ -1,18 +1,14 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import NavBar from '../../Components/NavBar/Navbar';
-import Grid from '@material-ui/core/Grid';
 import { useSelector, useDispatch } from 'react-redux';
 import './Profile.css';
 import { makeStyles } from '@material-ui/core/styles';
 import Popup from '../../Components/Popup/Popup';
 import { getFollowers, getFollowing } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
-import { getPostMe, getPostFriend } from '../../redux/post/post.slice';
-import love from '../../images/love.svg';
+import { getPostFriend } from '../../redux/post/post.slice';
 import edit from '../../images/threedot.svg';
-import comment from '../../images/comment.svg';
 import { getProfileFriend } from '../../redux/user/user.slice';
 import { useHistory } from 'react-router';
 import { followNotification, reportUserNotification } from '../../redux/notification/notification.slice';
@@ -52,7 +48,6 @@ const ProfileFriend = (props) => {
   const [isShowFollowers, setIsShowFollowers] = useState(false);
   const [isShowFollowing, setIsShowFollowing] = useState(false);
   const infoUser = useSelector((state) => state.auth.user.data.data);
-  const listFollower = useSelector((state) => state?.user?.followers?.data?.data);
   const listFollowing = useSelector((state) => state?.user?.following?.data?.data);
   const infoFriend = useSelector((state) => state.user.profileFriend?.data?.data);
   const socket = useSelector((state) => state.socket.socket.payload);
@@ -159,21 +154,21 @@ const ProfileFriend = (props) => {
   }, [listFollowing?.filter((i) => i._id === infoFriend?._id).length > 0]);
 
   const FollowerItem = (props) => {
-    const [followed, setFollowed] = useState(false);
-    const checkFollowed = (item) => {
-      const listFollowingId = listFollowing.map((item) => item._id);
-      return listFollowingId.includes(item._id);
-    };
+    // const [followed, setFollowed] = useState(false);
+    // const checkFollowed = (item) => {
+    //   const listFollowingId = listFollowing.map((item) => item._id);
+    //   return listFollowingId.includes(item._id);
+    // };
     return (
       <div className={classes.popup_follower}>
         <div className="pop_left">
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: 'flex', gridGap: '50px' }}>
             <img style={{ width: '40px' }} src={props.avatar} alt="element"></img>
             <div className="pop_name">
               <div className="pop_fullName">{props.fullName}</div>
               <div className="pop_userName">{props.userName}</div>
             </div>
-            {!checkFollowed(props.item) && !followed ? (
+            {/* {!checkFollowed(props.item) && !followed ? (
               <div
                 onClick={() => {
                   dispatch(followApi(props.item._id));
@@ -185,14 +180,16 @@ const ProfileFriend = (props) => {
               </div>
             ) : (
               ''
-            )}
+            )} */}
           </div>
         </div>
-        <button className="pop_btn">Xóa</button>
+        {/* <button className="pop_btn">Xóa</button> */}
       </div>
     );
   };
-  console.log(infoFriend);
+
+  console.log('infoFriend?.following?.userId: ', infoFriend?.following);
+
   return (
     <>
       {infoFriend?.status !== 2 || infoUser?.role === 1 ? (
@@ -307,10 +304,15 @@ const ProfileFriend = (props) => {
             minwidth="500px"
             isScroll={true}
           >
-            {listFollower &&
-              listFollower.length > 0 &&
-              listFollower.map((item) => (
-                <FollowerItem item={item} avatar={item.avatar} fullName={item.fullName} userName={item.userName} />
+            {infoFriend?.followers &&
+              infoFriend?.followers?.length > 0 &&
+              infoFriend?.followers?.map((item) => (
+                <FollowerItem
+                  item={item?.userId}
+                  avatar={item?.userId.avatar}
+                  fullName={item?.userId.fullName}
+                  userName={item?.userId.userName}
+                />
               ))}
           </Popup>
 
@@ -324,22 +326,22 @@ const ProfileFriend = (props) => {
             minwidth="500px"
             isScroll={true}
           >
-            {listFollowing &&
-              listFollowing.length > 0 &&
-              listFollowing.map((item) => (
+            {infoFriend?.following &&
+              infoFriend?.following?.length > 0 &&
+              infoFriend?.following?.map((item) => (
                 <div className={classes.popup_follower}>
                   <div className="pop_left">
                     <div style={{ display: 'flex' }}>
-                      <img style={{ width: '40px' }} src={item.avatar} alt="element"></img>
+                      <img style={{ width: '40px' }} src={item?.userId.avatar} alt="element"></img>
                       <div className="pop_name">
-                        <div className="pop_fullName">{item.fullName}</div>
-                        <div className="pop_userName">{item.userName}</div>
+                        <div className="pop_fullName">{item?.userId.fullName}</div>
+                        <div className="pop_userName">{item?.userId.userName}</div>
                       </div>
                     </div>
                   </div>
                   <button
                     onClick={() => {
-                      dispatch(unFollowApi(item._id));
+                      dispatch(unFollowApi(item?.userId._id));
                     }}
                     className="pop_btn"
                   >

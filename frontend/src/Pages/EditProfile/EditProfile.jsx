@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import NavBar from '../../Components/NavBar/Navbar';
-import Grid from '@material-ui/core/Grid';
 import './EditProfile.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { editProfile, replacePassword } from '../../redux/auth/auth.slice';
@@ -282,6 +281,7 @@ const EditProfile = () => {
                   id="account"
                   name="account"
                   value={0}
+                  // eslint-disable-next-line react/jsx-no-duplicate-props
                   style={{ margin: '0px 5px' }}
                   defaultChecked={infoUser?.status === 0 ? true : false}
                 />

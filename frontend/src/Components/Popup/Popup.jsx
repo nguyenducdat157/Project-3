@@ -21,7 +21,7 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, m
           },
 
           '& .body-modal-container': {
-            padding: '0 50px',
+            padding: '0px 50px 20px 50px',
             '@media (max-width: 767px)': {
               padding: '0 20px',
             },

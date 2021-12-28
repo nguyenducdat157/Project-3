@@ -5,7 +5,7 @@ import './Inbox.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { getListMessage, addMessage, getRooms } from '../../redux/chat/chat.slice';
 import { getProfileFriend } from '../../redux/user/user.slice';
-import RoomIcon from '@material-ui/icons/Room';
+// import RoomIcon from '@material-ui/icons/Room';
 const Inbox = (props) => {
   const dispatch = useDispatch();
   const listMessage = useSelector((state) => state.chat?.listMessage?.data?.data?.room);

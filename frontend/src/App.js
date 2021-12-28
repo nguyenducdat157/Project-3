@@ -1,7 +1,7 @@
 import './App.css';
 import LoginPage from './Pages/LoginPage/LoginPage';
 import HomePage from './Pages/HomePage/HomePage';
-import { BrowserRouter, Switch, Route, useHistory } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import RegisterPage from './Pages/LoginPage/RegisterPage';
 import SuggestDetail from './Pages/SuggestDetail/SuggestDetail';
 import Profile from './Pages/Profile/Profile';
@@ -18,7 +18,7 @@ import io from 'socket.io-client';
 import { HOST_URL } from './ultils/constants';
 import Dashboard from './Pages/Admin/Dashboard';
 import NotFound from './Pages/NotFound';
-import { getMe, logout } from './redux/auth/auth.slice';
+import { getMe } from './redux/auth/auth.slice';
 import ProtectedRoute from './Components/ProtectedRoute';
 const socket = io.connect(HOST_URL);
 
@@ -36,14 +36,13 @@ function App() {
 
   useEffect(() => {
     dispatch(getMe());
-  }, [])
-
+  }, []);
 
   return (
     <BrowserRouter>
       <Switch>
         <Route exact path="/login" component={LoginPage} />
-        <ProtectedRoute exact path="/" component={infoUser?.role === 1 ? Dashboard :HomePage} />
+        <ProtectedRoute exact path="/" component={infoUser?.role === 1 ? Dashboard : HomePage} />
         <Route exact path="/register" component={RegisterPage} />
         <ProtectedRoute exact path="/suggest-detail" component={SuggestDetail} />
         <ProtectedRoute exact path="/profile" component={infoUser?.role === 1 ? Dashboard : Profile} />

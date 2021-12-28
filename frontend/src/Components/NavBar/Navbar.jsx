@@ -12,7 +12,6 @@ import home from '../../images/home.svg';
 import react from '../../images/love.svg';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
-import pp from '../../images/avt-ins.jpg';
 import add from '../../images/add.png';
 import reactClick from '../../images/blacklove.png';
 import { useHistory } from 'react-router';
@@ -24,9 +23,8 @@ import { TextField } from '@material-ui/core';
 import CreatePost from '../CreatePost/CreatePost';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { getNotifications, readNotification } from '../../redux/notification/notification.slice';
+import { readNotification } from '../../redux/notification/notification.slice';
 import { HOST_URL, PREVLINK } from '../../ultils/constants';
-import { Link } from 'react-router-dom';
 import { logout } from '../../redux/auth/auth.slice';
 
 const useStyles = makeStyles((theme) => ({

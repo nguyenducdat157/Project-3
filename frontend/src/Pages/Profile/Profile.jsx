@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import NavBar from '../../Components/NavBar/Navbar';
-import Grid from '@material-ui/core/Grid';
 import { useSelector, useDispatch } from 'react-redux';
 import './Profile.css';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,8 +9,6 @@ import Popup from '../../Components/Popup/Popup';
 import { getFollowers, getFollowing } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { getPostMe } from '../../redux/post/post.slice';
-import love from '../../images/love.svg';
-import comment from '../../images/comment.svg';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import Avatar from 'react-avatar-edit';
 import { showModalMessage } from '../../redux/message/message.slice';

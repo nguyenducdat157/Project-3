@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
-import { HOST_URL, PREVLINK } from '../../ultils/constants';
+import { PREVLINK } from '../../ultils/constants';
 const ListReport = (props) => {
-  const socket = useSelector((state) => state.socket.socket.payload);
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const [notifications, setNotifications] = useState(props.notification);
 
@@ -61,7 +59,7 @@ const ListReport = (props) => {
               </strong>{' '}
               {noti?.content}
             </div>
-            <img src={`${PREVLINK}/${noti.post?.pictures[0]?.img}`} height="36" width="36" />
+            <img alt="element" src={`${PREVLINK}/${noti.post?.pictures[0]?.img}`} height="36" width="36" />
           </div>
         );
       } else {
@@ -87,7 +85,7 @@ const ListReport = (props) => {
               </strong>{' '}
               {noti?.content}
             </div>
-            <img src={`${PREVLINK}/${noti?.userReport?.avatar}`} height="36" width="36" />
+            <img alt="element" src={`${PREVLINK}/${noti?.userReport?.avatar}`} height="36" width="36" />
           </div>
         );
       }
