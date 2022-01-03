@@ -5,6 +5,7 @@ import './Inbox.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { getListMessage, addMessage, getRooms } from '../../redux/chat/chat.slice';
 import { getProfileFriend } from '../../redux/user/user.slice';
+import { updateCountMess } from '../../redux/chat/chat.slice';
 // import RoomIcon from '@material-ui/icons/Room';
 const Inbox = (props) => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const Inbox = (props) => {
       );
       const data = {
         idFriend: infoFriend._id,
+        idMe: infoUser._id,
       };
       socket?.emit('inbox_user', data);
       dispatch(getListMessage(infoFriend._id));
@@ -89,9 +91,11 @@ const Inbox = (props) => {
                         if (room?.users[0].user._id === infoUser._id) {
                           dispatch(getListMessage(room?.users[1].user._id));
                           dispatch(getProfileFriend(room?.users[1].user._id));
+                          dispatch(updateCountMess({ userId: room?.users[1].user._id, action: 'DELETE' }));
                         } else {
                           dispatch(getListMessage(room?.users[0].user._id));
                           dispatch(getProfileFriend(room?.users[0].user._id));
+                          dispatch(updateCountMess({ userId: room?.users[0].user._id, action: 'DELETE' }));
                         }
 
                         setActive(index);
@@ -137,10 +141,10 @@ const Inbox = (props) => {
                 <img
                   style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                   className="profile-avatar"
-                  src={`http://localhost:5000/public/${infoFriend.avatar}`}
+                  src={`http://localhost:5000/public/${infoFriend?.avatar}`}
                   alt="element"
                 ></img>
-                <div className="profile-user-name">{infoFriend.userName}</div>
+                <div className="profile-user-name">{infoFriend?.userName}</div>
               </div>
               <div className="chat">
                 <div ref={messagesEnd} className="chat_content">

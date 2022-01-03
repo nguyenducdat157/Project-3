@@ -61,14 +61,16 @@ const NavBar = () => {
   // const notifications = useSelector((state) => state.notification.notification?.data.data);
   const [notifications, setNotifications] = useState([]);
   const [hasNewNoti, setHasNewNoti] = useState(false);
-  const countNewMess = useSelector((state) => state.chat?.countNewMess);
+  const countNewMess = useSelector((state) => state.chat?.countNewMess?.length);
+
   const idFriend = useSelector((state) => state.chat?.idFriend);
 
   useEffect(() => {
     socket?.on('get_message', async (data) => {
       if (infoUser._id === data.idFriend) {
-        setIdFriend(data.idFriend);
-        dispatch(updateCountMess(1));
+        dispatch(setIdFriend(data.idMe));
+        console.log('idFriend: ', data.idFriend);
+        dispatch(updateCountMess({ userId: data.idMe, action: 'PUSH' }));
       }
     });
   }, [socket]);
@@ -94,7 +96,6 @@ const NavBar = () => {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
     }).then((response) => {
-      console.log(response);
       if (response.status === 200) {
         setNotifications(response.data.data);
       }
@@ -117,10 +118,8 @@ const NavBar = () => {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
     }).then((response) => {
-      console.log(response);
       if (response.status === 200) {
-        console.log(response);
-        setListUser(response.data.data);
+        setListUser(response?.data?.data);
       }
     });
   };
@@ -236,8 +235,6 @@ const NavBar = () => {
                     if (e.target.value === '') {
                       setListUser([]);
                     }
-
-                    // console.log('listUser: ', listUser);
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -282,7 +279,6 @@ const NavBar = () => {
                   src={Message}
                   onClick={() => {
                     history.push(`/inbox/${idFriend}`);
-                    dispatch(updateCountMess(0));
                   }}
                   alt="element"
                 ></img>

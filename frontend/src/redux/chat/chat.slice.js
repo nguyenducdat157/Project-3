@@ -27,11 +27,11 @@ export const getRooms = createAsyncThunk('chat/get-rooms', async () => {
 });
 
 const initialState = {
-  loading: false,
+  loading: true,
   error: '',
   listMessage: { code: 0, data: {} },
   rooms: { code: 0, data: {} },
-  countNewMess: 0,
+  countNewMess: [],
   idFriend: '',
 };
 
@@ -40,9 +40,14 @@ const chatSlice = createSlice({
   initialState: initialState,
   reducers: {
     updateCountMess(state, action) {
-      const count = action.payload;
-      if (count === 0) state.countNewMess = 0;
-      else state.countNewMess = state.countNewMess + 1;
+      const newArr = state.countNewMess;
+      console.log('action: ', action.payload);
+      const checkExists = newArr?.filter((item) => item.userId === action.payload?.userId);
+      if (checkExists.length === 0 && action.payload?.action === 'PUSH') state.countNewMess?.push(action.payload);
+      if (checkExists.length > 0 && action.payload?.action === 'DELETE') {
+        console.log('DELETE');
+        state.countNewMess = newArr?.filter((item) => item.userId !== action.payload?.userId);
+      }
     },
     setIdFriend(state, action) {
       state.idFriend = action.payload;
