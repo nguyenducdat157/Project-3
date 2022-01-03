@@ -26,6 +26,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { readNotification } from '../../redux/notification/notification.slice';
 import { HOST_URL, PREVLINK } from '../../ultils/constants';
 import { logout } from '../../redux/auth/auth.slice';
+import Message from '../../images/message.png';
+import { updateCountMess, setIdFriend } from '../../redux/chat/chat.slice';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -55,10 +57,21 @@ const NavBar = () => {
   const [toggleNoti, setToggleNoti] = useState(false);
   const [listUser, setListUser] = useState([]);
   const socket = useSelector((state) => state.socket.socket.payload);
-  const infoUser = useSelector((state) => state.auth.user.data.data);
+  const infoUser = useSelector((state) => state.auth?.user?.data?.data);
   // const notifications = useSelector((state) => state.notification.notification?.data.data);
   const [notifications, setNotifications] = useState([]);
   const [hasNewNoti, setHasNewNoti] = useState(false);
+  const countNewMess = useSelector((state) => state.chat?.countNewMess);
+  const idFriend = useSelector((state) => state.chat?.idFriend);
+
+  useEffect(() => {
+    socket?.on('get_message', async (data) => {
+      if (infoUser._id === data.idFriend) {
+        setIdFriend(data.idFriend);
+        dispatch(updateCountMess(1));
+      }
+    });
+  }, [socket]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -94,13 +107,6 @@ const NavBar = () => {
   const handleClose = () => {
     setIsOpenCreatePost(false);
   };
-
-  // socket?.on('getNoti', async (data) => {
-  //   if (infoUser.userName === data.userNameCreatePost) {
-  //     console.log('TTTTTTTTTTTTTT');
-  //     await fetchNotification();
-  //   }
-  // });
 
   const fetchDataUser = (name) => {
     axios({
@@ -166,8 +172,6 @@ const NavBar = () => {
       setHasNewNoti(true);
     }
   }, [notifications]);
-
-  // console.log('notification: ', notifications);
 
   return (
     <>
@@ -258,6 +262,7 @@ const NavBar = () => {
                   )}
                 />
               </Grid>
+
               <Grid item xs={3} className="navbar__img__container">
                 <a href="/">
                   <img className="navbar__img" alt="element" src={home} width="25px" height="25px" />
@@ -271,6 +276,32 @@ const NavBar = () => {
                   style={{ borderRadius: '1px' }}
                   onClick={addPost}
                 />
+                <img
+                  className="navbar__img"
+                  style={{ width: '25px', height: '25px' }}
+                  src={Message}
+                  onClick={() => {
+                    history.push(`/inbox/${idFriend}`);
+                    dispatch(updateCountMess(0));
+                  }}
+                  alt="element"
+                ></img>
+                {countNewMess > 0 && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      borderRadius: '32%',
+                      backgroundColor: 'red',
+                      padding: '1px 8px',
+                      color: 'white',
+                      right: '570px',
+                      top: '5px',
+                      fontSize: '14px',
+                    }}
+                  >
+                    {countNewMess}
+                  </div>
+                )}
                 {
                   <div className="dropdown" ref={refNoti}>
                     {!toggleNoti ? (
@@ -358,7 +389,7 @@ const NavBar = () => {
                 }
                 <div class="dropdown" ref={refAvatar}>
                   <Avatar
-                    src={`${PREVLINK}/${infoUser.avatar}`}
+                    src={`${PREVLINK}/${infoUser?.avatar}`}
                     className="navbar__img navbar__avatar"
                     style={{ maxWidth: '25px', maxHeight: '25px' }}
                     onClick={() => {

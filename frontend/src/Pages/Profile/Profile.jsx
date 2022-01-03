@@ -7,7 +7,7 @@ import './Profile.css';
 import { makeStyles } from '@material-ui/core/styles';
 import Popup from '../../Components/Popup/Popup';
 import { getFollowers, getFollowing } from '../../redux/user/user.slice';
-import { followApi, unFollowApi } from '../../redux/user/user.slice';
+// import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { getPostMe } from '../../redux/post/post.slice';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import Avatar from 'react-avatar-edit';

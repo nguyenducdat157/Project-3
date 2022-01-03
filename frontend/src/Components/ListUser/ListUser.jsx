@@ -2,7 +2,6 @@ import React from 'react';
 import Popup from '../../Components/Popup/Popup';
 import Avatar from '@material-ui/core/Avatar';
 import { PREVLINK } from '../../ultils/constants';
-import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 

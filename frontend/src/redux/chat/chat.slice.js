@@ -31,12 +31,23 @@ const initialState = {
   error: '',
   listMessage: { code: 0, data: {} },
   rooms: { code: 0, data: {} },
+  countNewMess: 0,
+  idFriend: '',
 };
 
 const chatSlice = createSlice({
   name: 'chat',
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    updateCountMess(state, action) {
+      const count = action.payload;
+      if (count === 0) state.countNewMess = 0;
+      else state.countNewMess = state.countNewMess + 1;
+    },
+    setIdFriend(state, action) {
+      state.idFriend = action.payload;
+    },
+  },
   extraReducers: {
     [`${getListMessage.pending}`]: (state) => {
       state.loading = true;
@@ -64,5 +75,6 @@ const chatSlice = createSlice({
     },
   },
 });
+export const { updateCountMess, setIdFriend } = chatSlice.actions;
 export const { reducer: chatReducer } = chatSlice;
 export default chatReducer;

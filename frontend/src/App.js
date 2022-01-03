@@ -50,6 +50,7 @@ function App() {
         <ProtectedRoute exact path="/admin" component={Dashboard} />
         <ProtectedRoute exact path="/profile-friend/:id" component={ProfileFriend} />
         <ProtectedRoute exact path="/inbox/:id" component={Inbox} />
+        {/* <ProtectedRoute exact path="/inbox" component={Inbox} /> */}
         <ProtectedRoute exact path="/edit-profile" component={EditProfile} />
         <Route path="*" component={NotFound} />
       </Switch>

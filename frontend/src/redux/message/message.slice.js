@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    data: '',
+  data: '',
   modal: {
     show: false,
     type: 'ERROR',
@@ -10,31 +10,31 @@ const initialState = {
 };
 
 const messageSlice = createSlice({
-    name: 'message',
-    initialState: initialState,
-    reducers: {
-        pushMessage: (state, action) => {
-            state.modal.msg = action.payload.msg
-        },
-
-        showModalMessage: (state, action) => {
-            return {
-                ...state,
-                modal: {
-                    ...action.payload,
-                    show: true
-                }
-            }
-        },
-
-        hideModalMessage: (state) => {
-            state.modal.show = false
-        } 
+  name: 'message',
+  initialState: initialState,
+  reducers: {
+    pushMessage: (state, action) => {
+      state.modal.msg = action.payload.msg;
     },
-    extraReducers: {},
-  });
-  
-  export const {pushMessage, showModalMessage, hideModalMessage} = messageSlice.actions;
 
-  export const { reducer: messageReducer } = messageSlice;
-  export default messageReducer;
+    showModalMessage: (state, action) => {
+      return {
+        ...state,
+        modal: {
+          ...action.payload,
+          show: true,
+        },
+      };
+    },
+
+    hideModalMessage: (state) => {
+      state.modal.show = false;
+    },
+  },
+  extraReducers: {},
+});
+
+export const { pushMessage, showModalMessage, hideModalMessage } = messageSlice.actions;
+
+export const { reducer: messageReducer } = messageSlice;
+export default messageReducer;
