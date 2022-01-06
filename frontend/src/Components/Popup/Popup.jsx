@@ -1,6 +1,6 @@
 import { Backdrop, Fade, makeStyles, Modal } from '@material-ui/core';
 import CloseIcon from '@mui/icons-material/Close';
-const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, minWidth, isScroll }) => {
+const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, minWidth, isScroll, height }) => {
   const useStyles = makeStyles((theme) => {
     return {
       mainModal: {
@@ -15,13 +15,16 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, m
           maxHeight: '100%',
           overflow: 'hidden',
           outline: 'none',
+          padding: isScroll ? '22px 0 0px' : '22px 0 55px',
+          height: height ? height : '',
           '@media (max-width: 767px)': {
             width: '400px',
             paddingTop: '13px',
           },
 
           '& .body-modal-container': {
-            padding: '0px 50px 20px 50px',
+            padding: isScroll ? '0px 50px' : '0 118px',
+
             '@media (max-width: 767px)': {
               padding: '0 20px',
             },
@@ -59,7 +62,7 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, m
       },
     };
   });
-  console.log('isIconClose: ', isIconClose);
+  // console.log('isIconClose: ', isIconClose);
   const classes = useStyles();
 
   return (
@@ -74,7 +77,7 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, m
       }}
     >
       <Fade in={isOpen} style={{ minWidth: minWidth }}>
-        <div style={isScroll ? { padding: '22px 0 0px' } : { padding: '22px 0 55px' }} className="modal-container">
+        <div className="modal-container">
           <div className="modal-header">
             <div className="modal-header-title">{title}</div>
             {isIconClose ? (
@@ -85,10 +88,7 @@ const Popup = ({ isOpen, handleClose, children, className, isIconClose, title, m
               <></>
             )}
           </div>
-          <div
-            style={isScroll ? { overflowY: 'auto', height: '400px' } : { padding: '0 118px' }}
-            className="body-modal-container"
-          >
+          <div style={height ? { height: '360px', overflowY: 'scroll' } : {}} className="body-modal-container">
             {children}
           </div>
         </div>

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema.Types;
 const notificationSchema = new mongoose.Schema(
   {
-    userId: {
+    userId: { // receiver
       type: ObjectId,
       ref: 'User',
     },

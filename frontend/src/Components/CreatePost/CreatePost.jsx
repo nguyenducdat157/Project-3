@@ -31,7 +31,7 @@ const CreatePost = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ title, pictures });
+    // console.log({ title, pictures });
     const formData = new FormData();
     formData.append('title', title);
     formData.append('pictures', pictures);
@@ -48,7 +48,7 @@ const CreatePost = (props) => {
         data: formData,
       })
         .then((response) => {
-          console.log(response);
+          // console.log(response);
           if (response.status === 201) {
             props.handleClose();
             dispatch(

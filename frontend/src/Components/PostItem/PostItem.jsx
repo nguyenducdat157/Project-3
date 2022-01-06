@@ -128,6 +128,16 @@ const PostItem = (props) => {
       content: content,
     };
     const res = await dispatch(reportPostNotification(data));
+    // console.log(res);
+    if (res.error?.message === 'Request failed with status code 404') {
+      dispatch(
+        showModalMessage({
+          type: 'ERROR',
+          msg: 'Bài viết không khả dụng!',
+        }),
+      );
+      return;
+    }
     if (res?.payload?.data?.code === 0) {
       dispatch(
         showModalMessage({

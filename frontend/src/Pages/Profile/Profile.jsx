@@ -115,7 +115,6 @@ const Profile = () => {
       data: formData,
     })
       .then((response) => {
-        console.log('response: ', response);
         if (response.status === 200) {
           setIsChangeAvatar(false);
           dispatch(getMe());

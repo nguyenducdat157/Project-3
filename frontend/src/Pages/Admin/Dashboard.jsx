@@ -138,7 +138,7 @@ export default function Dashboard() {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         setNotifications(response.data.data);
       }

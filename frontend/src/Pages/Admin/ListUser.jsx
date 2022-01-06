@@ -155,7 +155,7 @@ export default function ListUser() {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         const users = response.data.data.map((user) => createData(user));
         setUserList(users);
@@ -183,7 +183,7 @@ export default function ListUser() {
           if (res.status === 200) {
             const users = res.data.data.map((user) => createData(user));
             setUserList(users);
-            console.log(users);
+            // console.log(users);
           }
         })
         .catch((err) => {

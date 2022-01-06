@@ -80,7 +80,7 @@ const SuggestDetail = () => {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       }).then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.status === 200) {
           setListSuggest(response.data.data);
         }

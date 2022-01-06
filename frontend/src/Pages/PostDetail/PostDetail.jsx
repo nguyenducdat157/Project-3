@@ -25,7 +25,6 @@ import NotFound from '../NotFound';
 import ListUser from '../../Components/ListUser/ListUser';
 import { getListUserLiked } from '../../redux/post/post.slice';
 const PostDetail = (props) => {
-  console.log('detail: ', props);
   const dispatch = useDispatch();
   const history = useHistory();
   const [liked, setLiked] = useState(props.location.state.liked);
@@ -54,7 +53,7 @@ const PostDetail = (props) => {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         setPost(response.data.data);
       }
@@ -170,6 +169,15 @@ const PostDetail = (props) => {
       content: content,
     };
     const res = await dispatch(reportPostNotification(data));
+    if (res.error?.message === 'Request failed with status code 404') {
+      dispatch(
+        showModalMessage({
+          type: 'ERROR',
+          msg: 'Bài viết không khả dụng!',
+        }),
+      );
+      return;
+    }
     if (res?.payload?.data?.code === 0) {
       dispatch(
         showModalMessage({
@@ -221,7 +229,7 @@ const PostDetail = (props) => {
       });
     }
   };
-  console.log(post?.status);
+  // console.log(post?.status);
   return (
     <>
       {post?.status === 0 ? (

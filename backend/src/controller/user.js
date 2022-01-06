@@ -352,8 +352,8 @@ module.exports.editProfile = async (req, res) => {
     const checkExistsEmail = await User.findOne({ email: req.body.email });
     const checkExistsUserName = await User.findOne({ userName: req.body.userName });
     if (
-      (checkExistsEmail.id !== currentId && checkExistsEmail) ||
-      (checkExistsUserName.id !== currentId && checkExistsUserName)
+      (checkExistsEmail && checkExistsEmail.id !== currentId ) ||
+      (checkExistsUserName && checkExistsUserName.id !== currentId)
     ) {
       return res.status(404).json({ code: 2, error: 'User already exists' });
     }

@@ -61,7 +61,7 @@ const EditProfile = () => {
     };
 
     const res = await dispatch(editProfile(body));
-    console.log('res: ', res);
+    // console.log('res: ', res);
     if (res?.payload?.status === 200) {
       dispatch(
         showModalMessage({
@@ -153,12 +153,12 @@ const EditProfile = () => {
       return;
     }
     if (res?.payload?.status === 200) {
-      dispatch(
-        showModalMessage({
-          type: 'SUCCESS',
-          msg: 'Thay đổi mật khẩu thành công, Vui lòng đăng nhập lại!',
-        }),
-      );
+      // dispatch(
+      //   showModalMessage({
+      //     type: 'SUCCESS',
+      //     msg: 'Thay đổi mật khẩu thành công, Vui lòng đăng nhập lại!',
+      //   }),
+      // );
       dispatch(logout());
       localStorage.removeItem('persist:root');
       localStorage.removeItem('token');

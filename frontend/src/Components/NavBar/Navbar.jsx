@@ -55,7 +55,7 @@ const NavBar = () => {
   const [toggleNoti, setToggleNoti] = useState(false);
   const [listUser, setListUser] = useState([]);
   const socket = useSelector((state) => state.socket.socket.payload);
-  const infoUser = useSelector((state) => state.auth.user.data.data);
+  const infoUser = useSelector((state) => state.auth?.user?.data?.data);
   // const notifications = useSelector((state) => state.notification.notification?.data.data);
   const [notifications, setNotifications] = useState([]);
   const [hasNewNoti, setHasNewNoti] = useState(false);
@@ -111,7 +111,7 @@ const NavBar = () => {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
     }).then((response) => {
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         console.log(response);
         setListUser(response.data.data);
@@ -145,7 +145,7 @@ const NavBar = () => {
 
   const keyPress = (e) => {
     if (e.keyCode === 13) {
-      console.log('value', e.target.value);
+      // console.log('value', e.target.value);
     }
   };
 
@@ -328,6 +328,7 @@ const NavBar = () => {
                                     } else {
                                       history.push(`/profile-friend/${noti.otherUser?._id}`);
                                     }
+                                    window.location.reload();
                                   }}
                                 >
                                   <Avatar
@@ -358,7 +359,7 @@ const NavBar = () => {
                 }
                 <div class="dropdown" ref={refAvatar}>
                   <Avatar
-                    src={`${PREVLINK}/${infoUser.avatar}`}
+                    src={`${PREVLINK}/${infoUser?.avatar}`}
                     className="navbar__img navbar__avatar"
                     style={{ maxWidth: '25px', maxHeight: '25px' }}
                     onClick={() => {

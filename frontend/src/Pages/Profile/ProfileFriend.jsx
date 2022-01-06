@@ -125,10 +125,19 @@ const ProfileFriend = (props) => {
 
   const handleReport = async (content) => {
     const data = {
-      userId: infoFriend._id,
+      userId: infoFriend?._id,
       content: content,
     };
     const res = await dispatch(reportUserNotification(data));
+    if (res.error?.message === 'Request failed with status code 404') {
+      dispatch(
+        showModalMessage({
+          type: 'ERROR',
+          msg: 'Tài khoản này không tồn tại!',
+        }),
+      );
+      return;
+    }
     if (res?.payload?.data?.code === 0) {
       dispatch(
         showModalMessage({
@@ -193,7 +202,7 @@ const ProfileFriend = (props) => {
     );
   };
 
-  console.log('infoFriend?.following?.userId: ', infoFriend?.following);
+  // console.log('infoFriend?.following?.userId: ', infoFriend?.following);
 
   return (
     <>
@@ -299,9 +308,22 @@ const ProfileFriend = (props) => {
                   ))}
               </div>
             ) : (
-              <div style={{ backgroudColor: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ fontWeight: 'bold' }}>Đây là tài khoản riêng tư</div>
-                <div>Hãy theo dõi để xem ảnh của họ</div>
+              <div
+                style={{
+                  backgroudColor: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '400px',
+                  textAlign: 'center',
+                  lineHeight: '21px',
+                }}
+              >
+                <div>
+                  <strong>Đây là tài khoản riêng tư</strong>
+                  <br />
+                  Hãy theo dõi để xem ảnh của họ
+                </div>
               </div>
             )}
           </div>

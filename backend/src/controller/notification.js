@@ -152,12 +152,12 @@ module.exports.reportPost = async (req, res) => {
       return res.status(404).json({ status: 'User Not Found' });
     }
     // const nameUserLiked = userLiked.userName;
-    const post = await Post.findOne({ _id: idPost });
+    const post = await Post.findOne({ _id: idPost, status: 0 });
     if (!post) {
-      return res.status(404).json({ status: 'Post Not Found' });
+      return res.status(404).json({ code: 0, message: 'Post Not Found!' });
     }
     const owner = await User.findOne({role: 1});
-    console.log(owner);
+    // console.log(owner);
 
     const notification = new Notification({
       otherUser: req.user._id,
@@ -194,12 +194,12 @@ module.exports.reportUser = async (req, res) => {
       return res.status(404).json({ status: 'User Not Found' });
     }
     // const nameUserLiked = userLiked.userName;
-    const user = await User.findOne({ _id: idUser });
+    const user = await User.findOne({ _id: idUser, status: { $ne: 2 } });
     if (!user) {
       return res.status(404).json({ status: 'User Report Not Found' });
     }
     const owner = await User.findOne({role: 1});
-    console.log(owner);
+    // console.log(owner);
 
     const notification = new Notification({
       otherUser: req.user._id,

@@ -8,7 +8,7 @@ const ListReport = (props) => {
   const infoUser = useSelector((state) => state.auth.user.data.data);
   const [notifications, setNotifications] = useState(props.notification);
 
-  console.log(notifications);
+  // console.log(notifications);
 
   const useStyles = makeStyles({
     reportItems: {

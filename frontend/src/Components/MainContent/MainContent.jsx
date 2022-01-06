@@ -25,7 +25,7 @@ const MainContent = () => {
           Authorization: 'Bearer ' + localStorage.getItem('token'),
         },
       }).then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.status === 200) {
           setListPost(response.data.data);
         }
@@ -35,7 +35,7 @@ const MainContent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(listPost);
+  // console.log(listPost);
 
   return (
     <div>

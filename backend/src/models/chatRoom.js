@@ -16,7 +16,7 @@ const chatRoomSchema = new mongoose.Schema(
     ],
     users: [{ user: { type: ObjectId, ref: 'User' } }],
 
-    createAt: Date,
+    // createAt: Date,
   },
   { timestamps: true },
 );

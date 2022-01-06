@@ -20,6 +20,7 @@ const ListUser = (props) => {
         title={props.title}
         isIconClose={true}
         minWidth="400px"
+        height="400px"
         isScroll={true}
       >
         {props.data &&
@@ -38,12 +39,12 @@ const ListUser = (props) => {
                   }}
                   style={{ display: 'flex', columnGap: '20px' }}
                 >
-                  <Avatar style={{ width: '40px' }} src={`${PREVLINK}/${item.userId.avatar}`} alt="element"></Avatar>
+                  <Avatar style={{ width: '40px' }} src={`${PREVLINK}/${item.userId?.avatar}`} alt="element"></Avatar>
                   <div className="pop_name">
                     <div style={{ fontWeight: 'bold' }} className="pop_fullName">
-                      {item.userId.fullName}
+                      {item.userId?.fullName}
                     </div>
-                    <div className="pop_userName">{item.userId.userName}</div>
+                    <div className="pop_userName">{item.userId?.userName}</div>
                   </div>
                 </div>
               ) : (
