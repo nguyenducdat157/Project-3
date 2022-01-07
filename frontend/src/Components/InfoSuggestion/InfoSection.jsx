@@ -6,14 +6,14 @@ import { PREVLINK } from '../../ultils/constants';
 import { useHistory } from 'react-router';
 
 const InfoSection = () => {
-  const infoUser = useSelector((state) => state.auth?.user?.data?.data);
+  const infoUser = useSelector((state) => state?.auth?.user?.data?.data);
   const history = useHistory();
   return (
     <div>
       <div className="info__container">
         <Avatar src={`${PREVLINK}/${infoUser?.avatar}`} className="info__image" />
         <div className="info_content">
-          <a style={{ color: 'black', textDecoration: 'none' }} href="http://localhost:3000/profile">
+          <a style={{ color: 'black', textDecoration: 'none' }} href="/profile">
             <div className="info_username">{infoUser?.userName}</div>
           </a>
           <div className="info_description">{infoUser?.fullName}</div>

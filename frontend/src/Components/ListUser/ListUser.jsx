@@ -1,14 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
+import './ListUser.css';
 import Popup from '../../Components/Popup/Popup';
 import Avatar from '@material-ui/core/Avatar';
 import { PREVLINK } from '../../ultils/constants';
-import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const ListUser = (props) => {
   const history = useHistory();
   const infoUser = useSelector((state) => state.auth.user.data.data);
+  const [searchValue, setSearchValue] = useState('');
+  const { data, isSearch } = props;
+  const [listUser, setListUser] = useState(data);
+
+  const handleSearch = (e) => {
+    setSearchValue(e.target.value);
+    setListUser(
+      data?.filter((ele) => ele.userName?.includes(e.target.value) || ele.fullName?.includes(e.target.value)),
+    );
+  };
 
   return (
     <>
@@ -23,14 +33,23 @@ const ListUser = (props) => {
         height="400px"
         isScroll={true}
       >
-        {props.data &&
-          props.data.length > 0 &&
-          props.data.map((item) => (
+        {isSearch && (
+          <div className="listUser_search_container">
+            <strong>Tới: </strong>
+            <input className="listUser_input" placeholder="Tìm kiếm..." value={searchValue} onChange={handleSearch} />
+            <hr className="popup_report_hr" />
+          </div>
+        )}
+        {listUser &&
+          listUser.length > 0 &&
+          listUser.map((item) => (
             <div style={{ padding: '20px', cursor: 'pointer' }} className="pop_left">
               {item?.userId !== undefined ? (
                 <div
                   onClick={() => {
-                    if (item?.userId?._id === infoUser?._id) {
+                    if (isSearch) {
+                      history.push(`/inbox/${item._id}`);
+                    } else if (item?.userId?._id === infoUser?._id) {
                       history.push(`/profile`);
                     } else {
                       history.push(`/profile-friend/${item?.userId._id}`);
@@ -52,7 +71,9 @@ const ListUser = (props) => {
                   <Avatar style={{ width: '40px' }} src={`${PREVLINK}/${item.avatar}`} alt="element"></Avatar>
                   <div
                     onClick={() => {
-                      if (item?.userId?._id === infoUser?._id) {
+                      if (isSearch) {
+                        history.push(`/inbox/${item._id}`);
+                      } else if (item?.userId?._id === infoUser?._id) {
                         history.push(`/profile`);
                       } else {
                         history.push(`/profile-friend/${item._id}`);
@@ -70,7 +91,7 @@ const ListUser = (props) => {
               )}
             </div>
           ))}
-        {props.data && props.data.length === 0 && (
+        {listUser && listUser.length === 0 && (
           <div
             style={{
               height: '100%',

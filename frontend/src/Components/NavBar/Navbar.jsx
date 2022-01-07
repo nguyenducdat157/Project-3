@@ -25,7 +25,9 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { readNotification } from '../../redux/notification/notification.slice';
 import { HOST_URL, PREVLINK } from '../../ultils/constants';
-import { logout } from '../../redux/auth/auth.slice';
+import { getMe, logout } from '../../redux/auth/auth.slice';
+import Message from '../../images/message.png';
+import { updateCountMess, setIdFriend } from '../../redux/chat/chat.slice';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -59,6 +61,19 @@ const NavBar = () => {
   // const notifications = useSelector((state) => state.notification.notification?.data.data);
   const [notifications, setNotifications] = useState([]);
   const [hasNewNoti, setHasNewNoti] = useState(false);
+  const countNewMess = useSelector((state) => state.chat?.countNewMess?.length);
+
+  const idFriend = useSelector((state) => state.chat?.idFriend);
+
+  useEffect(() => {
+    socket?.on('get_message', async (data) => {
+      if (infoUser._id === data.idFriend) {
+        dispatch(setIdFriend(data.idMe));
+        console.log('idFriend: ', data.idFriend);
+        dispatch(updateCountMess({ userId: data.idMe, action: 'PUSH' }));
+      }
+    });
+  }, [socket]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -81,7 +96,6 @@ const NavBar = () => {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
     }).then((response) => {
-      console.log(response);
       if (response.status === 200) {
         setNotifications(response.data.data);
       }
@@ -95,13 +109,6 @@ const NavBar = () => {
     setIsOpenCreatePost(false);
   };
 
-  // socket?.on('getNoti', async (data) => {
-  //   if (infoUser.userName === data.userNameCreatePost) {
-  //     console.log('TTTTTTTTTTTTTT');
-  //     await fetchNotification();
-  //   }
-  // });
-
   const fetchDataUser = (name) => {
     axios({
       method: 'get',
@@ -111,10 +118,8 @@ const NavBar = () => {
         Authorization: 'Bearer ' + localStorage.getItem('token'),
       },
     }).then((response) => {
-      // console.log(response);
       if (response.status === 200) {
-        console.log(response);
-        setListUser(response.data.data);
+        setListUser(response?.data?.data);
       }
     });
   };
@@ -151,6 +156,10 @@ const NavBar = () => {
 
   useEffect(() => {
     fetchNotification();
+    // dispatch(getMe());
+    // if (infoUser?.status === 2) {
+    //   handleLogout();
+    // }
   }, []);
 
   useEffect(() => {
@@ -166,8 +175,6 @@ const NavBar = () => {
       setHasNewNoti(true);
     }
   }, [notifications]);
-
-  // console.log('notification: ', notifications);
 
   return (
     <>
@@ -232,8 +239,6 @@ const NavBar = () => {
                     if (e.target.value === '') {
                       setListUser([]);
                     }
-
-                    // console.log('listUser: ', listUser);
                   }}
                   renderInput={(params) => (
                     <TextField
@@ -258,6 +263,7 @@ const NavBar = () => {
                   )}
                 />
               </Grid>
+
               <Grid item xs={3} className="navbar__img__container">
                 <a href="/">
                   <img className="navbar__img" alt="element" src={home} width="25px" height="25px" />
@@ -271,6 +277,19 @@ const NavBar = () => {
                   style={{ borderRadius: '1px' }}
                   onClick={addPost}
                 />
+                <div className="dropdown">
+                  <img
+                    className="navbar__img"
+                    style={{ width: '24px', height: '24px' }}
+                    src={Message}
+                    onClick={() => {
+                      // history.push(`/inbox/${idFriend}`);
+                      history.push(`/inbox/default`);
+                    }}
+                    alt="element"
+                  ></img>
+                  {countNewMess > 0 && <div className="navbar__number__noti">{countNewMess}</div>}
+                </div>
                 {
                   <div className="dropdown" ref={refNoti}>
                     {!toggleNoti ? (

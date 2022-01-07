@@ -6,9 +6,10 @@ const shortid = require('shortid');
 module.exports.addMessage = async (req, res) => {
   try {
     const currentId = req.user._id;
-    const user = await User.findOne({ _id: currentId });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    const user = await User.findOne({ _id: currentId, status: { $ne: 2 } });
+    const user2 = await User.findOne({_id: req.body.receiver, status: { $ne: 2 }})
+    if (!user || !user2) {
+      return res.status(404).json({ message: 'User not found or this account was blocked' });
     }
     const users = [currentId, req.body.receiver];
     const findChatRoom = await Message.findOne({
@@ -112,7 +113,7 @@ module.exports.getChatRoom = async (req, res) => {
       $or: [{ 'users.user': user._id }, { 'users.user': user._id }],
     }).populate({
       path: 'users',
-      populate: { path: 'user', select: ['userName', 'avatar', 'active', 'updatedAt'] },
+      populate: { path: 'user', select: ['userName', 'avatar', 'active', 'updatedAt', 'status']},
     });
     if (!rooms) return res.status(404).json({ error: 'Room not found' });
     return res.status(200).json({ code: 0, data: rooms });

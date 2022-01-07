@@ -221,7 +221,7 @@ module.exports.getAllUserFollower = async (req, res) => {
     } else {
       listFollower = user.followers;
       for (let i = 0; i < listFollower.length; i++) {
-        const userFollowedMe = await User.findOne({ _id: listFollower[i].userId });
+        const userFollowedMe = await User.findOne({ _id: listFollower[i].userId, status: { $ne: 2 } });
         if (userFollowedMe) result.push(userFollowedMe);
       }
     }
@@ -242,7 +242,7 @@ module.exports.getAllUserFollowing = async (req, res) => {
     } else {
       listFollowing = user.following;
       for (let i = 0; i < listFollowing.length; i++) {
-        const userFollowedMe = await User.findOne({ _id: listFollowing[i].userId });
+        const userFollowedMe = await User.findOne({ _id: listFollowing[i].userId, status: { $ne: 2 } });
         if (userFollowedMe) result.push(userFollowedMe);
       }
     }

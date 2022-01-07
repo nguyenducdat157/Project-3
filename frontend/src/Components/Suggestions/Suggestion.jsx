@@ -6,7 +6,7 @@ import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { followNotification } from '../../redux/notification/notification.slice';
-import { HOST_URL } from '../../ultils/constants';
+import { HOST_URL, PREVLINK } from '../../ultils/constants';
 
 const Suggestion = () => {
   const history = useHistory();
@@ -53,7 +53,7 @@ const Suggestion = () => {
 
     return (
       <div className="suggestions__friends">
-        <Avatar src={props.imageSrc} className="suggestions__image" />
+        <Avatar src={props.avatar} className="suggestions__image" />
         <a className="suggestions__username" href={`/profile-friend/${props.id}`}>
           {props.username}
         </a>
@@ -87,7 +87,7 @@ const Suggestion = () => {
           {listSuggest &&
             listSuggest.length > 0 &&
             listSuggest.map((item, index) => (
-              <SuggestItem key={index} id={item._id} avatar={item.avatar} username={item.userName} />
+              <SuggestItem key={index} id={item._id} avatar={`${PREVLINK}${item.avatar}`} username={item.userName} />
             ))}
         </div>
       </div>

@@ -171,7 +171,7 @@
 .noti__component:last-child {
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
-  border-bottom: none;
+  /* border-bottom: none; */
 }
 .dropdown__diamond {
   background: #fff;

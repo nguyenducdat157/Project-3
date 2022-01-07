@@ -251,7 +251,7 @@ const PostDetail = (props) => {
                 </div>
                 <div className="post_detail_comment_container">
                   <div className="post_detail_header">
-                    <Avatar className="post__image" src={post?.postBy?.avatar} />
+                    <Avatar className="post__image" src={PREVLINK + post?.postBy?.avatar} />
                     <div
                       className="post_detail_username"
                       onClick={() => {
@@ -304,7 +304,7 @@ const PostDetail = (props) => {
                   </div>
                   <div className="post_detail_list_comment">
                     <div className="post_detail_user_comment">
-                      <Avatar className="post__image" src={post?.postBy?.avatar} />
+                      <Avatar className="post__image" src={PREVLINK + post?.postBy?.avatar} />
                       <div
                         className="post_detail_username"
                         style={{ marginLeft: '10px', marginTop: '10px', cursor: 'pointer' }}
@@ -320,7 +320,7 @@ const PostDetail = (props) => {
                     {post.comments?.length > 0 &&
                       post.comments.map((comment, index) => (
                         <div className="post_detail_user_comment" style={{ marginTop: '10px' }} key={index}>
-                          <Avatar className="post__image" src={comment?.userId?.avatar} />
+                          <Avatar className="post__image" src={PREVLINK + comment?.userId?.avatar} />
                           <div className="post_detail_content_commnet">
                             <b onClick={() => goToProfile(comment?.userId?._id)} style={{ cursor: 'pointer' }}>
                               {comment?.userId?.userName}

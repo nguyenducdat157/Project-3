@@ -22,7 +22,7 @@ import { getMe } from './redux/auth/auth.slice';
 import ProtectedRoute from './Components/ProtectedRoute';
 const socket = io.connect(HOST_URL);
 
-function App() {
+function App(props) {
   const dispatch = useDispatch();
   const infoUser = useSelector((state) => state?.auth?.user?.data?.data);
 
@@ -36,7 +36,7 @@ function App() {
 
   useEffect(() => {
     dispatch(getMe());
-  }, []);
+  }, [props.location]);
 
   return (
     <BrowserRouter>
@@ -50,6 +50,7 @@ function App() {
         <ProtectedRoute exact path="/admin" component={Dashboard} />
         <ProtectedRoute exact path="/profile-friend/:id" component={ProfileFriend} />
         <ProtectedRoute exact path="/inbox/:id" component={Inbox} />
+        {/* <ProtectedRoute exact path="/inbox" component={Inbox} /> */}
         <ProtectedRoute exact path="/edit-profile" component={EditProfile} />
         <Route path="*" component={NotFound} />
       </Switch>

@@ -13,6 +13,7 @@ const SignIn = (props) => {
   const [isActive, setIsActive] = useState(false);
 
   const handleLogin = async () => {
+    localStorage.clear();
     const body = {
       email: email,
       password: password,
@@ -21,7 +22,7 @@ const SignIn = (props) => {
     if (res?.payload?.data?.code === 0) {
       await localStorage.setItem('token', res.payload.data.token);
       await history.push('/');
-    } else if (res.payload.response.status === 403) {
+    } else if (res.payload?.response?.status === 403) {
       dispatch(
         showModalMessage({
           type: 'ERROR',
