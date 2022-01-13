@@ -221,9 +221,15 @@ const NavBar = () => {
                       <div
                         className="search__dropdown_item"
                         onClick={() => {
-                          history.push({
-                            pathname: `/profile-friend/${option._id}`,
-                          });
+                          if(option._id === infoUser._id) {
+                            history.push({
+                              pathname: `/profile`,
+                            });
+                          } else {
+                            history.push({
+                              pathname: `/profile-friend/${option._id}`,
+                            }); 
+                          }
                         }}
                       >
                         <Avatar src={`${PREVLINK}/${infoUser.avatar}`} className="search__dropdown_item_avatar" />

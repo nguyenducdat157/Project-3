@@ -235,11 +235,10 @@ const Profile = () => {
             <div className="profile-full-name">{infoUser.fullName}</div>
           </div>
         </div>
-
-        <div className="profile-body">
-          {listPostForMe &&
-            listPostForMe?.length > 0 &&
-            listPostForMe.map((item) => (
+        {(listPostForMe &&
+            listPostForMe?.length > 0) ?
+          <div className="profile-body">
+            {listPostForMe.map((item) => (
               <ShowPicture
                 likes={item.likes.length}
                 comments={item.comments.length}
@@ -249,7 +248,11 @@ const Profile = () => {
                 userId={item?.postBy}
               />
             ))}
-        </div>
+          </div> : 
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '50vh', fontSize: '28px'}}>
+              <p>Chưa có bài viết</p>
+          </div>
+        }
       </div>
 
       {/* <Popup

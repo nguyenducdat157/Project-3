@@ -293,20 +293,25 @@ const ProfileFriend = (props) => {
             </div>
 
             {showPost() ? (
-              <div className="profile-body">
-                {listPostForFriend &&
-                  listPostForFriend?.length > 0 &&
-                  listPostForFriend?.map((item) => (
-                    <ShowPicture
-                      likes={item.likes.length}
-                      comments={item.comments.length}
-                      picture={item.pictures[0].img}
-                      id={item?._id}
-                      liked={item.likes.find((i) => i.userId === infoUser._id) ? true : false}
-                      userId={item?.postBy}
-                    />
-                  ))}
-              </div>
+                (listPostForFriend &&
+                  listPostForFriend?.length > 0) ?
+                  <div className="profile-body">
+                  {
+                    listPostForFriend?.map((item) => (
+                      <ShowPicture
+                        likes={item.likes.length}
+                        comments={item.comments.length}
+                        picture={item.pictures[0].img}
+                        id={item?._id}
+                        liked={item.likes.find((i) => i.userId === infoUser._id) ? true : false}
+                        userId={item?.postBy}
+                      />
+                    ))
+                  }
+                  </div> : 
+                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '50vh', fontSize: '28px'}}>
+                    <p>Chưa có bài viết</p>
+                  </div>
             ) : (
               <div
                 style={{

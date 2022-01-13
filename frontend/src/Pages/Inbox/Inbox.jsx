@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import NavBar from '../../Components/NavBar/Navbar';
 import Grid from '@material-ui/core/Grid';
+import { format, register } from 'timeago.js';
 import './Inbox.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { getListMessage, addMessage, getRooms } from '../../redux/chat/chat.slice';
@@ -11,6 +12,7 @@ import sendMessage from '../../images/sendMessage.jpg';
 import { useHistory } from 'react-router-dom';
 import ListUser from '../../Components/ListUser/ListUser';
 import { showModalMessage } from '../../redux/message/message.slice';
+import { localeFunc } from '../../ultils/constants';
 // import RoomIcon from '@material-ui/icons/Room';
 const Inbox = (props) => {
   const dispatch = useDispatch();
@@ -27,7 +29,7 @@ const Inbox = (props) => {
   const [idFriend, setIdFriend] = useState('');
   const [active, setActive] = useState(0);
   const [isShowPopupListUser, setIsShowPopupListUser] = useState(false);
-
+  register('my-locale', localeFunc);
   console.log(rooms);
 
   const [inputText, setInputText] = useState('');
@@ -42,6 +44,9 @@ const Inbox = (props) => {
   };
 
   const keyPress = async (e) => {
+    if(inputText === "") {
+      return;
+    }
     if (e.keyCode === 13) {
       const response = await dispatch(
         addMessage({
@@ -150,7 +155,8 @@ const Inbox = (props) => {
                             <div style={{ color: 'silver' }}>
                               Hoạt động{' '}
                               {/* {Math.abs(difference(new Date(Date.now()), new Date(room?.users[1].user.updatedAt)))} phút */}
-                              {getTimePost(room?.users[1].user?.updatedAt)} trước
+                              {/* {getTimePost(room?.users[1].user?.updatedAt)} trước */}
+                              {format(room?.users[1].user?.updatedAt, 'my-locale')}
                             </div>
                           )}
                         </div>

@@ -14,10 +14,11 @@ import {
 } from '../../redux/notification/notification.slice';
 import { followNotification } from '../../redux/notification/notification.slice';
 import './postDetail.css';
-import { HOST_URL, listReportPost, PREVLINK } from '../../ultils/constants';
+import { HOST_URL, listReportPost, localeFunc, PREVLINK } from '../../ultils/constants';
 import axios from 'axios';
 import Popup from '../../Components/Popup/Popup';
 import { getTimePost } from '../../ultils/fucntions';
+import { format, register } from 'timeago.js';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { showModalMessage } from '../../redux/message/message.slice';
 import { useHistory } from 'react-router';
@@ -42,6 +43,7 @@ const PostDetail = (props) => {
   const [showListReport, setShowListReport] = useState(false);
   const [showListUser, setShowListUser] = useState(false);
   const [listUserLiked, setListUserLiked] = useState([]);
+  register('my-locale', localeFunc);
 
   useEffect(() => {
     // window.location.reload();
@@ -316,7 +318,7 @@ const PostDetail = (props) => {
                       </div>
                       <div className="post_detail_content_commnet">{post?.title}</div>
                     </div>
-                    <div className="post_detail_day">{getTimePost(post?.createdAt)}</div>
+                    <div className="post_detail_day">{format(post?.createdAt, 'my-locale')}</div>
                     {post.comments?.length > 0 &&
                       post.comments.map((comment, index) => (
                         <div className="post_detail_user_comment" style={{ marginTop: '10px' }} key={index}>
@@ -383,7 +385,7 @@ const PostDetail = (props) => {
                     >
                       {numberLikes ? numberLikes : 0} người thích
                     </div>
-                    <div className="post_detail_day_down">{getTimePost(post?.createdAt)} trước</div>
+                    <div className="post_detail_day_down">{format(post?.createdAt, 'my-locale')}</div>
                   </div>
                   {/* Comment Section */}
                   <div>
