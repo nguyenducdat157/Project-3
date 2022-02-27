@@ -36,7 +36,8 @@ const Inbox = (props) => {
   const messagesEnd = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEnd.current.scrollIntoView({ behavior: 'smooth' });
+    const scroll = messagesEnd.current.scrollHeight - messagesEnd.current.clientHeight;
+    messagesEnd.current.scrollTo(0, scroll);
   };
 
   const handleChangeInput = (e) => {
@@ -44,14 +45,14 @@ const Inbox = (props) => {
   };
 
   const keyPress = async (e) => {
-    if(inputText === "") {
+    if (inputText === '' || inputText.trim() === '') {
       return;
     }
     if (e.keyCode === 13) {
       const response = await dispatch(
         addMessage({
           receiver: infoFriend._id,
-          content: inputText,
+          content: inputText.trim(),
         }),
       );
 
@@ -86,6 +87,10 @@ const Inbox = (props) => {
   }, [socket]);
 
   useEffect(() => {
+    scrollToBottom();
+  }, [listMessage]);
+
+  useEffect(() => {
     dispatch(getListMessage(props.match.params.id));
     dispatch(getProfileFriend(props.match.params.id));
     dispatch(getRooms());
@@ -102,140 +107,147 @@ const Inbox = (props) => {
     <>
       <NavBar />
 
-      <Grid container>
-        <Grid item xs={3}></Grid>
-        <Grid item xs={6}>
-          <div className="inbox_box">
-            <div className="inbox_listChat">
-              <div className="listChat_header">{infoUser.userName}</div>
-              <div className="listChat_content">
-                {rooms &&
-                  rooms?.length > 0 &&
-                  rooms.map((room, index) => (
-                    <div
-                      onClick={() => {
-                        if (room?.users[0].user._id === infoUser._id) {
-                          dispatch(getListMessage(room?.users[1].user._id));
-                          dispatch(getProfileFriend(room?.users[1].user._id));
-                          dispatch(updateCountMess({ userId: room?.users[1].user._id, action: 'DELETE' }));
-                          history.push(`/inbox/${room?.users[1].user._id}`);
-                        } else {
-                          dispatch(getListMessage(room?.users[0].user._id));
-                          dispatch(getProfileFriend(room?.users[0].user._id));
-                          dispatch(updateCountMess({ userId: room?.users[0].user._id, action: 'DELETE' }));
-                          history.push(`/inbox/${room?.users[0].user._id}`);
-                        }
+      {/* <Grid container> */}
+      {/* <Grid item xs={2}></Grid> */}
+      {/* <div style={{display: 'flex', width: '100%', maxWidth: '950px'}}> */}
+      <div className="inbox_box">
+        <div className="inbox_listChat">
+          <div className="listChat_header">{infoUser.userName}</div>
+          <div className="listChat_content">
+            {rooms &&
+              rooms?.length > 0 &&
+              rooms.map((room, index) => (
+                <div
+                  onClick={() => {
+                    if (room?.users[0].user._id === infoUser._id) {
+                      dispatch(getListMessage(room?.users[1].user._id));
+                      dispatch(getProfileFriend(room?.users[1].user._id));
+                      dispatch(updateCountMess({ userId: room?.users[1].user._id, action: 'DELETE' }));
+                      history.push(`/inbox/${room?.users[1].user._id}`);
+                    } else {
+                      dispatch(getListMessage(room?.users[0].user._id));
+                      dispatch(getProfileFriend(room?.users[0].user._id));
+                      dispatch(updateCountMess({ userId: room?.users[0].user._id, action: 'DELETE' }));
+                      history.push(`/inbox/${room?.users[0].user._id}`);
+                    }
 
-                        setActive(index);
-                      }}
-                      className={index === active ? 'room_active' : 'room_element'}
-                    >
-                      <img
-                        style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-                        className="room-avatar"
-                        src={`http://localhost:5000/public/${
-                          room?.users[0].user?._id === infoUser?._id
-                            ? room?.users[1].user?.avatar
-                            : room?.users[0].user?.avatar
-                        }`}
-                        alt="element"
-                      ></img>
-                      <div className="room_userName">
-                        <div className="room_userName">
-                          {room?.users[0].user?._id === infoUser?._id
-                            ? room?.users[1].user?.userName
-                            : room?.users[0].user?.userName}
-                        </div>
-                        <div className="room_active_text">
-                          {room?.users[1].user?.active ? (
-                            <ul className="active_user">
-                              <li>Đang hoạt động</li>
-                            </ul>
-                          ) : (
-                            <div style={{ color: 'silver' }}>
-                              Hoạt động{' '}
-                              {/* {Math.abs(difference(new Date(Date.now()), new Date(room?.users[1].user.updatedAt)))} phút */}
-                              {/* {getTimePost(room?.users[1].user?.updatedAt)} trước */}
-                              {format(room?.users[1].user?.updatedAt, 'my-locale')}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-            <div className="box_data">
-              {!isDefalut && (
-                <div className="header">
+                    setActive(index);
+                  }}
+                  className={index === active ? 'room_active' : 'room_element'}
+                >
                   <img
                     style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-                    className="profile-avatar"
-                    src={`http://localhost:5000/public/${infoFriend?.avatar}`}
+                    className="room-avatar"
+                    src={`http://localhost:5000/public/${
+                      room?.users[0].user?._id === infoUser?._id
+                        ? room?.users[1].user?.avatar
+                        : room?.users[0].user?.avatar
+                    }`}
                     alt="element"
                   ></img>
-                  <div
-                    className="profile-user-name"
-                    onClick={() => {
-                      history.push(`/profile-friend/${infoFriend?._id}`);
-                    }}
-                  >
-                    &nbsp;{infoFriend?.userName}
-                  </div>
-                </div>
-              )}
-
-              <div className="chat">
-                <div ref={messagesEnd} className="chat_content">
-                  {isDefalut && (
-                    <div className="chat_default">
-                      <img src={sendMessage} height={96} width={96} />
-                      <div style={{ fontSize: '26px' }}>Tin nhắn của bạn</div>
-                      <button className="inbox_btn_send" onClick={() => setIsShowPopupListUser(true)}>
-                        Gửi tin nhắn
-                      </button>
-
-                      {isShowPopupListUser && (
-                        <ListUser
-                          data={listFriend()}
-                          isSearch={true}
-                          title={'Gửi tin nhắn'}
-                          handleClose={() => setIsShowPopupListUser(false)}
-                        />
+                  <div className="room_userName">
+                    <div className="room_userName">
+                      {room?.users[0].user?._id === infoUser?._id
+                        ? room?.users[1].user?.userName
+                        : room?.users[0].user?.userName}
+                    </div>
+                    <div className="room_active_text">
+                      {room?.users[1].user?._id !== infoUser._id ? (
+                        room?.users[1].user?.active ? (
+                          <ul className="active_user">
+                            <li>Đang hoạt động</li>
+                          </ul>
+                        ) : (
+                          <div style={{ color: 'silver' }}>
+                            Hoạt động {format(room?.users[1].user?.updatedAt, 'my-locale')}
+                          </div>
+                        )
+                      ) : room?.users[0].user?.active ? (
+                        <ul className="active_user">
+                          <li>Đang hoạt động</li>
+                        </ul>
+                      ) : (
+                        <div style={{ color: 'silver' }}>
+                          Hoạt động {format(room?.users[0].user?.updatedAt, 'my-locale')}
+                        </div>
                       )}
                     </div>
-                  )}
-                  {!isDefalut &&
-                    listMessage &&
-                    listMessage.length > 0 &&
-                    listMessage.map((item, index) =>
-                      infoUser._id === item.sender ? (
-                        <div className="inbox_element">
-                          <div className="inbox_content_sender">{item.content}</div>
-                        </div>
-                      ) : (
-                        <div className="inbox_element">
-                          <div className="inbox_content_receiver">{item.content}</div>
-                        </div>
-                      ),
-                    )}
+                  </div>
                 </div>
-                {!isDefalut && (
-                  <input
-                    onChange={handleChangeInput}
-                    value={inputText}
-                    className="chat_input"
-                    placeholder="Nhắn tin..."
-                    type="text"
-                    onKeyDown={keyPress}
-                  ></input>
-                )}
+              ))}
+          </div>
+        </div>
+        <div className="box_data">
+          {!isDefalut && (
+            <div className="header">
+              <img
+                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                className="profile-avatar"
+                src={`http://localhost:5000/public/${infoFriend?.avatar}`}
+                alt="element"
+              ></img>
+              <div
+                className="profile-user-name"
+                onClick={() => {
+                  history.push(`/profile-friend/${infoFriend?._id}`);
+                }}
+              >
+                &nbsp;{infoFriend?.userName}
               </div>
             </div>
+          )}
+
+          <div className="chat">
+            <div ref={messagesEnd} className="chat_content">
+              {isDefalut && (
+                <div className="chat_default">
+                  <img src={sendMessage} height={96} width={96} />
+                  <div style={{ fontSize: '26px' }}>Tin nhắn của bạn</div>
+                  <button className="inbox_btn_send" onClick={() => setIsShowPopupListUser(true)}>
+                    Gửi tin nhắn
+                  </button>
+
+                  {isShowPopupListUser && (
+                    <ListUser
+                      data={listFriend()}
+                      isSearch={true}
+                      title={'Gửi tin nhắn'}
+                      handleClose={() => setIsShowPopupListUser(false)}
+                    />
+                  )}
+                </div>
+              )}
+              {!isDefalut &&
+                listMessage &&
+                listMessage.length > 0 &&
+                listMessage.map((item, index) =>
+                  infoUser._id === item.sender ? (
+                    <div className="inbox_element">
+                      <div className="inbox_content_sender">{item.content}</div>
+                    </div>
+                  ) : (
+                    <div className="inbox_element">
+                      <div className="inbox_content_receiver">{item.content}</div>
+                    </div>
+                  ),
+                )}
+            </div>
+            {!isDefalut && (
+              <input
+                onChange={handleChangeInput}
+                value={inputText}
+                className="chat_input"
+                placeholder="Nhắn tin..."
+                type="text"
+                onKeyDown={keyPress}
+              ></input>
+            )}
           </div>
-        </Grid>
-        <Grid item xs={3}></Grid>
-      </Grid>
+        </div>
+      </div>
+      {/* </div> */}
+      {/* <Grid item xs={2}></Grid> */}
+      {/* </Grid> */}
     </>
   );
 };

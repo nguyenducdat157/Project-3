@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
     },
     followers: [{ userId: { type: ObjectId, ref: 'User' } }],
     following: [{ userId: { type: ObjectId, ref: 'User' } }],
+    requests: [{type: ObjectId, ref: 'User'}],
     notifications: [{ notificationId: { type: ObjectId, ref: 'Notification' } }],
     posts: [{ postId: { type: ObjectId, ref: 'Post' } }],
     role: {

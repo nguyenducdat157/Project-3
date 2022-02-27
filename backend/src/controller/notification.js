@@ -226,3 +226,32 @@ module.exports.reportUser = async (req, res) => {
     });
   }
 };
+
+
+module.exports.acceptFollowNotification = async (req, res) => {
+  try {
+    const idUserAccepted = req.params.idUser;
+    const currentUser = await User.findOne({ _id: req.user._id });
+    if (!currentUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const notification = new Notification({
+      otherUser: req.user._id,
+      userId: idUserAccepted,
+      content: `đã chấp nhận yêu cầu theo dõi của bạn`,
+      status: 0,
+    });
+    const createNotification = await notification.save();
+    if (createNotification) {
+      await User.findOneAndUpdate(
+        { _id: idUserAccepted },
+        { $push: { notifications: { notificationId: createNotification._id } } },
+      );
+      return res.status(200).json({ code: 0, data: notification });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
+    });
+  }
+};

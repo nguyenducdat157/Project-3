@@ -1,5 +1,5 @@
 const User = require('../models/user.js');
-
+const mongoose = require('mongoose');
 module.exports.follow = async (req, res) => {
   try {
     const idFriend = req.params.id;
@@ -11,30 +11,48 @@ module.exports.follow = async (req, res) => {
     if (checkExistUser) {
       return res.status(404).json({ code: 0, message: 'User already followed' });
     }
-    const condition1 = { _id: req.user._id };
-    const update1 = {
-      $push: {
-        following: {
-          userId: idFriend,
-        },
-      },
-    };
-    const condition2 = { _id: idFriend };
-    const update2 = {
-      $push: {
-        followers: {
-          userId: req.user._id,
-        },
-      },
-    };
-    const res1 = await User.findOneAndUpdate(condition1, update1);
-    const res2 = await User.findOneAndUpdate(condition2, update2);
 
-    const result = await User.findOne(condition1);
+    if(checkUserBlock.status === 1) {
+      const condition = { _id: idFriend };
+      const update = { // update danh sách followers của người được follow
+        $push: {
+          requests: req.user._id,
+        },
+      };
 
-    if (res1 && res2) {
-      return res.status(200).json({ code: 0, message: 'follow success', data: result.following });
+      const res = await User.findOneAndUpdate(condition, update);
+
+      if(res) {
+        return res.status(201).json({ code: 0, message: 'request follow successfully',});
+      }
+
+    } else {
+      const condition1 = { _id: req.user._id };
+      const update1 = { // update danh sách following của người đi follow
+        $push: {
+          following: {
+            userId: idFriend, 
+          },
+        },
+      };
+      const condition2 = { _id: idFriend };
+      const update2 = { // update danh sách followers của người được follow
+        $push: {
+          followers: {
+            userId: req.user._id, 
+          },
+        },
+      };
+      const res1 = await User.findOneAndUpdate(condition1, update1);
+      const res2 = await User.findOneAndUpdate(condition2, update2);
+
+      const result = await User.findOne(condition1);
+
+      if (res1 && res2) {
+        return res.status(200).json({ code: 0, message: 'follow success', data: result.following });
+      }
     }
+    
   } catch (err) {
     return res.status(500).json({ error: 'Server error' });
   }
@@ -128,9 +146,9 @@ module.exports.getListUserSuggestion = async (req, res) => {
           });
         }
       }
-      result = await User.find({ _id: { $in: Array.from(mySet) }, status: { $ne: 2 }, role: 0 });
+      result = await User.find({ _id: { $in: Array.from(mySet) }, status: 0, role: 0 });
     } else {
-      result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 }, role: 0 });
+      result = await User.find({ _id: { $ne: currentId }, status: 0, role: 0 });
     }
     return res.status(200).json({ code: 0, data: result.sort(() => Math.random() - Math.random()).slice(0, 5) });
   } catch (err) {
@@ -153,13 +171,18 @@ module.exports.allUserSuggest = async (req, res) => {
       });
       list.push(req.user._id);
 
-      result = await User.find({ _id: { $nin: list }, status: { $ne: 2 }, role: 0 });
+      result = await (await User.find({ _id: { $nin: list }, status: { $ne: 2 }, role: 0 }));
+      
     } else {
       result = await User.find({ _id: { $ne: currentId }, status: { $ne: 2 }, role: 0 });
     }
+
+    const resultFinal = result.filter(ele => ele.requests.some((item) => {
+      return item.equals(currentId)
+    }) === false)
     return res.status(200).json({
       code: 0,
-      data: result,
+      data: resultFinal,
     });
   } catch (err) {
     return res.status(500).json({ code: 1, message: 'Server error' });
@@ -326,12 +349,19 @@ module.exports.getMe = async (req, res) => {
 module.exports.getProfileFriend = async (req, res) => {
   try {
     const idFriend = req.params.id;
+    const exFriend = await User.findOne({_id: idFriend});
+    if(exFriend.status === null) {
+      return res.status(500).json({ code: 1, error: 'Status is null'});
+    }
     const friend = await User.findOne({ _id: idFriend })
       .populate({
         path: 'followers',
-        populate: { path: 'userId', select: ['fullName', 'userName', 'avatar'] },
+        populate: { path: 'userId', select: ['fullName', 'userName', 'avatar', 'status'] },
       })
-      .populate({ path: 'following', populate: { path: 'userId', select: ['fullName', 'userName', 'avatar'] } });
+      .populate({ path: 'following', populate: { path: 'userId', select: ['fullName', 'userName', 'avatar', 'status'] } });
+      friend.following = friend.following.filter((ele) => (ele.userId.status === 0));
+      friend.followers = friend.followers.filter((ele) => (ele.userId.status === 0));
+      
     if (!friend) {
       return res.status(404).json({ code: 1, error: 'User not found' });
     }
@@ -381,11 +411,100 @@ module.exports.logout = async (req, res) => {
       return res.status(404).json({ code: 1, error: 'User not found' });
     }
     const logout = await User.findOneAndUpdate({ _id: currentId }, { active: false });
+    console.log(logout.userName);
     if (logout) {
-      const res = await User.findOne({ _id: currentId });
-      return res.status(200).json({ code: 0, data: res });
+      const userLogout = await User.findOne({ _id: currentId });
+      return res.status(200).json({ code: 0, data: userLogout });
     }
   } catch (err) {
     return res.status(500).json({ code: 1, error: err.message });
+  }
+};
+
+
+module.exports.acceptFollow = async (req, res) => {
+  try {
+    const idFriend = req.params.id;
+    const checkUserBlock = await User.findOne({ _id: req.params.id, status: { $ne: 2 } });
+    if (!checkUserBlock) {
+      return res.status(404).json({ code: 1, message: 'User not found!' });
+    }
+
+    const checkExistUser = await User.findOne({ _id: req.user._id, 'followers.userId': idFriend });
+    if (checkExistUser) {
+      return res.status(404).json({ code: 1, message: 'User already in list followers' });
+    }
+
+    const checkInListRequest = await User.findOne({ _id: req.user._id, 'requests': idFriend });
+    if(!checkInListRequest) {
+      return res.status(404).json({ code: 1, message: 'Not found Request!' });
+    }
+
+    const condition1 = { _id: req.user._id };
+    const update1 = {
+      $push: {
+        followers: {
+          userId: idFriend,
+        },
+      },
+      $pull: {
+        requests: idFriend,
+      }
+    };
+
+    const condition2 = { _id: idFriend };
+    const update2 = { // update danh sách following của người đi follow
+        $push: {
+          following: {
+            userId: req.user._id, 
+          },
+        },
+    };
+
+    
+    const res1 = await User.findOneAndUpdate(condition1, update1);
+    const res2 = await User.findOneAndUpdate(condition2, update2);
+
+    if (res1 && res2) {
+      return res.status(200).json({ code: 0, message: 'accept follow success', data: res1.followers });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+module.exports.removeRequest = async (req, res) => {
+  try {
+    const idFriend = req.params.id;
+    const checkUserBlock = await User.findOne({ _id: idFriend, status: { $ne: 2 } });
+    if (!checkUserBlock) {
+      return res.status(404).json({ code: 1, message: 'User not found!' });
+    }
+
+    const checkHaveRequest = checkUserBlock.requests.map(ele => ele.toString()).find((id) => req.user._id === id);
+    if(!checkHaveRequest) {
+      return res.status(404).json({ code: 1, message: 'Not found Request!' });
+    }
+    const currentId = req.user._id;
+    const condition = {
+      _id: idFriend,
+    };
+    const update= {
+      $pull: {
+        requests: currentId
+      },
+    };
+    const result = await User.findOneAndUpdate(condition, update);
+
+    if (result) {
+      return res.status(200).json({
+        code: 0,
+        message: 'remove Request success!',
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Server error' });
   }
 };

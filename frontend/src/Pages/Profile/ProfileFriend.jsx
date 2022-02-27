@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import './Profile.css';
 import { makeStyles } from '@material-ui/core/styles';
 import Popup from '../../Components/Popup/Popup';
-import { getFollowers, getFollowing } from '../../redux/user/user.slice';
+import { getFollowers, getFollowing, removeRequestApi } from '../../redux/user/user.slice';
 import { followApi, unFollowApi } from '../../redux/user/user.slice';
 import { getPostFriend } from '../../redux/post/post.slice';
 import edit from '../../images/threedot.svg';
@@ -63,7 +63,6 @@ const ProfileFriend = (props) => {
 
   const handleFollow = async () => {
     await dispatch(followApi(infoFriend._id));
-
     dispatch(followNotification(infoFriend._id));
     setIsFollowed(true);
 
@@ -77,6 +76,12 @@ const ProfileFriend = (props) => {
   const handleUnFollow = async () => {
     setIsFollowed(false);
     await dispatch(unFollowApi(infoFriend._id));
+  };
+
+  const handlRemoveRequest = async () => {
+    await dispatch(removeRequestApi(infoFriend._id));
+    await dispatch(getProfileFriend(props.match.params.id));
+    setIsFollowed(false);
   };
 
   const showPost = () => {
@@ -159,13 +164,25 @@ const ProfileFriend = (props) => {
     const fetchData = async () => {
       dispatch(getFollowers());
       dispatch(getFollowing());
-      dispatch(getProfileFriend(props.match.params.id));
+      const result = await dispatch(getProfileFriend(props.match.params.id));
+      console.log('resutl', result);
       dispatch(getPostFriend(props.match.params.id));
       listFollowing?.filter((i) => i._id === infoFriend?._id).length > 0 ? setIsFollowed(true) : setIsFollowed(false);
     };
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listFollowing?.filter((i) => i._id === infoFriend?._id).length > 0]);
+  }, [listFollowing?.filter((i) => i._id === infoFriend?._id).length > 0, isFollowed, props.match.params.id]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     dispatch(getFollowers());
+  //     dispatch(getFollowing());
+  //     dispatch(getProfileFriend(props.match.params.id));
+  //     dispatch(getPostFriend(props.match.params.id));
+  //     listFollowing?.filter((i) => i._id === infoFriend?._id).length > 0 ? setIsFollowed(true) : setIsFollowed(false);
+  //   };
+  //   fetchData();
+  // }, [isFollowed]);
 
   const FollowerItem = (props) => {
     // const [followed, setFollowed] = useState(false);
@@ -202,7 +219,7 @@ const ProfileFriend = (props) => {
     );
   };
 
-  // console.log('infoFriend?.following?.userId: ', infoFriend?.following);
+  console.log('infoFriend?.following?.userId: ', infoFriend);
 
   return (
     <>
@@ -237,12 +254,34 @@ const ProfileFriend = (props) => {
                         Nhắn tin
                       </button>
                       {isFollowed ? (
+                        infoFriend?.status === 1 &&
+                        infoFriend?.requests?.length &&
+                        infoFriend?.requests?.includes(infoUser._id) ? (
+                          <button
+                            className="followed"
+                            onClick={handlRemoveRequest}
+                            style={{ marginTop: '0px', marginLeft: '20px', width: '120px' }}
+                          >
+                            Đã yêu cầu
+                          </button>
+                        ) : (
+                          <button
+                            className="followed"
+                            onClick={handleUnFollow}
+                            style={{ marginTop: '0px', marginLeft: '20px', width: '120px' }}
+                          >
+                            Hủy theo dõi
+                          </button>
+                        )
+                      ) : infoFriend.status === 1 &&
+                        infoFriend?.requests?.length &&
+                        infoFriend?.requests?.includes(infoUser._id) ? (
                         <button
                           className="followed"
-                          onClick={handleUnFollow}
+                          onClick={handlRemoveRequest}
                           style={{ marginTop: '0px', marginLeft: '20px', width: '120px' }}
                         >
-                          Hủy theo dõi
+                          Đã yêu cầu
                         </button>
                       ) : (
                         <button
@@ -269,7 +308,7 @@ const ProfileFriend = (props) => {
                   </div>
                   <div
                     onClick={() => {
-                      if (infoFriend.status === 1) return;
+                      if (infoFriend?.status === 1 && !isFollowed) return;
                       setIsShowFollowers(true);
                     }}
                     style={{ cursor: 'pointer' }}
@@ -279,7 +318,7 @@ const ProfileFriend = (props) => {
                   </div>
                   <div
                     onClick={() => {
-                      if (infoFriend.status === 1) return;
+                      if (infoFriend?.status === 1 && !isFollowed) return;
                       setIsShowFollowing(true);
                     }}
                     style={{ cursor: 'pointer' }}
@@ -293,25 +332,33 @@ const ProfileFriend = (props) => {
             </div>
 
             {showPost() ? (
-                (listPostForFriend &&
-                  listPostForFriend?.length > 0) ?
-                  <div className="profile-body">
-                  {
-                    listPostForFriend?.map((item) => (
-                      <ShowPicture
-                        likes={item.likes.length}
-                        comments={item.comments.length}
-                        picture={item.pictures[0].img}
-                        id={item?._id}
-                        liked={item.likes.find((i) => i.userId === infoUser._id) ? true : false}
-                        userId={item?.postBy}
-                      />
-                    ))
-                  }
-                  </div> : 
-                  <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '50vh', fontSize: '28px'}}>
-                    <p>Chưa có bài viết</p>
-                  </div>
+              listPostForFriend && listPostForFriend?.length > 0 ? (
+                <div className="profile-body">
+                  {listPostForFriend?.map((item) => (
+                    <ShowPicture
+                      likes={item.likes.length}
+                      comments={item.comments.length}
+                      picture={item.pictures[0].img}
+                      id={item?._id}
+                      liked={item.likes.find((i) => i.userId === infoUser._id) ? true : false}
+                      userId={item?.postBy}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: '50vh',
+                    fontSize: '28px',
+                  }}
+                >
+                  <p>Chưa có bài viết</p>
+                </div>
+              )
             ) : (
               <div
                 style={{

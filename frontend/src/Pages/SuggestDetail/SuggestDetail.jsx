@@ -4,10 +4,10 @@ import Grid from '@material-ui/core/Grid';
 import './SuggestDetail.css';
 import { Avatar } from '@material-ui/core';
 import NavBar from '../../Components/NavBar/Navbar';
-import { followApi, unFollowApi } from '../../redux/user/user.slice';
+import { followApi, removeRequestApi, unFollowApi } from '../../redux/user/user.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { followNotification } from '../../redux/notification/notification.slice';
-import { HOST_URL } from '../../ultils/constants';
+import { HOST_URL, PREVLINK } from '../../ultils/constants';
 import { useHistory } from 'react-router';
 
 const SuggestDetail = () => {
@@ -18,10 +18,12 @@ const SuggestDetail = () => {
 
   const SuggestItem = (props) => {
     const [followed, setFollowed] = useState(false);
+    console.log(props.id, followed);
+
     const handleFollow = async () => {
       await dispatch(followApi(props.id));
-      setFollowed(true);
       await dispatch(followNotification(props.id));
+      setFollowed(true);
       const data = {
         idUser: props.id,
         userNameCreatePost: props.userName,
@@ -32,12 +34,20 @@ const SuggestDetail = () => {
       await dispatch(unFollowApi(props.id));
       setFollowed(false);
     };
-    console.log('key: ', props.id);
+
+    const handlRemoveRequest = async () => {
+      await dispatch(removeRequestApi(props.id));
+      setFollowed(false);
+    };
+
+    // useEffect(() => {
+    //   listFollowing?.filter((i) => i._id === props.id).length > 0 ? setFollowed(true) : setFollowed(false);
+    // }, [listFollowing?.filter((i) => i._id === props.id).length > 0]);
     return (
       <div key={props.key} className="element">
         <div className="data">
           <Avatar
-            src={props.avatar}
+            src={PREVLINK + props.avatar}
             className="suggestions__image__detail"
             onClick={() => {
               history.push(`/profile-friend/${props.id}`);
@@ -56,14 +66,24 @@ const SuggestDetail = () => {
             <div className="followers">có {props.followers.length} người theo dõi</div>
           </div>
         </div>
-        {!followed && (
+        {/* {!followed && (
           <button className="follow" onClick={handleFollow}>
             Theo dõi
           </button>
-        )}
-        {followed && (
-          <button className="followed" onClick={handleUnFollow}>
-            Hủy theo dõi
+        )} */}
+        {followed ? (
+          props.status === 1 ? (
+            <button className="followed" onClick={handlRemoveRequest}>
+              Đã yêu cầu
+            </button>
+          ) : (
+            <button className="followed" onClick={handleUnFollow}>
+              Hủy theo dõi
+            </button>
+          )
+        ) : (
+          <button className="follow" onClick={handleFollow}>
+            Theo dõi
           </button>
         )}
       </div>
@@ -89,6 +109,7 @@ const SuggestDetail = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  console.log(listSuggest);
   return (
     <>
       <NavBar />
@@ -118,6 +139,7 @@ const SuggestDetail = () => {
                   fullName={item.fullName}
                   avatar={item.avatar}
                   followers={item.followers}
+                  status={item.status}
                 />
               ))}
           </div>

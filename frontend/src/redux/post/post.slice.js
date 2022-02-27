@@ -74,12 +74,22 @@ export const getListUserLiked = createAsyncThunk('post/get-users-liked', async (
   }
 });
 
+
+export const deletePostApi = createAsyncThunk('post/delete-post', async (postId) => {
+  try {
+    return await axiosInstance.post(`/api/post/delete-post/${postId}`);
+  } catch (error) {
+    return error;
+  }
+});
+
 const initialState = {
   loading: false,
   error: '',
   post: { code: 0, data: {} },
   postOfMe: { code: 0, data: {} },
   postOfFriend: { code: 0, data: {} },
+  postDelete: { code: 0, data: {}}
 };
 
 const postSlice = createSlice({
@@ -121,6 +131,18 @@ const postSlice = createSlice({
     [`${getPostById.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.post = action.payload.data;
+    },
+
+    [`${deletePostApi.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${deletePostApi.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${deletePostApi.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.postDelete = action.payload.data;
     },
   },
 });
