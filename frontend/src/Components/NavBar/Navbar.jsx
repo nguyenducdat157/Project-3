@@ -68,8 +68,9 @@ const NavBar = () => {
   useEffect(() => {
     socket?.on('get_message', async (data) => {
       if (infoUser._id === data.idFriend) {
+        console.log('data: ', data);
+        console.log('countNewMess: ', countNewMess);
         dispatch(setIdFriend(data.idMe));
-        console.log('idFriend: ', data.idFriend);
         dispatch(updateCountMess({ userId: data.idMe, action: 'PUSH' }));
       }
     });
@@ -221,14 +222,14 @@ const NavBar = () => {
                       <div
                         className="search__dropdown_item"
                         onClick={() => {
-                          if(option._id === infoUser._id) {
+                          if (option._id === infoUser._id) {
                             history.push({
                               pathname: `/profile`,
                             });
                           } else {
                             history.push({
                               pathname: `/profile-friend/${option._id}`,
-                            }); 
+                            });
                           }
                         }}
                       >
