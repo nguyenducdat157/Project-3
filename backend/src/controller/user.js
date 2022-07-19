@@ -1,5 +1,6 @@
 const User = require('../models/user.js');
 
+// follow user
 module.exports.follow = async (req, res) => {
   try {
     const idFriend = req.params.id;
@@ -40,6 +41,7 @@ module.exports.follow = async (req, res) => {
   }
 };
 
+// unfollow
 module.exports.unFollow = async (req, res) => {
   try {
     const idFriend = req.params.id;
@@ -85,6 +87,7 @@ module.exports.unFollow = async (req, res) => {
   }
 };
 
+// get list user id suggested
 module.exports.getListUserSuggestion = async (req, res) => {
   try {
     // const currentId = req.user._id;
@@ -165,7 +168,7 @@ module.exports.allUserSuggest = async (req, res) => {
     return res.status(500).json({ code: 1, message: 'Server error' });
   }
 };
-
+// search user by name
 module.exports.searchUser = async (req, res) => {
   try {
     const name = req.query.name;
@@ -210,6 +213,7 @@ module.exports.searchUser = async (req, res) => {
   }
 };
 
+// get all followers
 module.exports.getAllUserFollower = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -231,6 +235,7 @@ module.exports.getAllUserFollower = async (req, res) => {
   }
 };
 
+// get all following
 module.exports.getAllUserFollowing = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -261,6 +266,7 @@ module.exports.getAllUser = async (req, res) => {
   }
 };
 
+// block user
 module.exports.BlockUser = async (req, res) => {
   try {
     const userUpdate = await User.findOneAndUpdate({ _id: req.params.id }, { status: 2 });
@@ -274,6 +280,7 @@ module.exports.BlockUser = async (req, res) => {
   }
 };
 
+// unblock
 module.exports.UnBlockUser = async (req, res) => {
   try {
     const userUpdate = await User.findOneAndUpdate({ _id: req.params.id }, { status: 0 });
@@ -286,6 +293,7 @@ module.exports.UnBlockUser = async (req, res) => {
     return res.status(500).json({ code: 1, error: 'Server error' });
   }
 };
+// change avatar
 module.exports.changeAvatar = async (req, res) => {
   try {
     let pictures = [];
@@ -312,6 +320,7 @@ module.exports.changeAvatar = async (req, res) => {
   }
 };
 
+// get all info my profile
 module.exports.getMe = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -323,6 +332,7 @@ module.exports.getMe = async (req, res) => {
   }
 };
 
+// get profile of friend
 module.exports.getProfileFriend = async (req, res) => {
   try {
     const idFriend = req.params.id;
@@ -341,6 +351,7 @@ module.exports.getProfileFriend = async (req, res) => {
   }
 };
 
+// edit my profile
 module.exports.editProfile = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -352,7 +363,7 @@ module.exports.editProfile = async (req, res) => {
     const checkExistsEmail = await User.findOne({ email: req.body.email });
     const checkExistsUserName = await User.findOne({ userName: req.body.userName });
     if (
-      (checkExistsEmail && checkExistsEmail.id !== currentId ) ||
+      (checkExistsEmail && checkExistsEmail.id !== currentId) ||
       (checkExistsUserName && checkExistsUserName.id !== currentId)
     ) {
       return res.status(404).json({ code: 2, error: 'User already exists' });
@@ -373,6 +384,7 @@ module.exports.editProfile = async (req, res) => {
   }
 };
 
+// logout
 module.exports.logout = async (req, res) => {
   try {
     const currentId = req.user._id;

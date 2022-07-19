@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
+// login
 module.exports.signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -11,7 +12,7 @@ module.exports.signIn = async (req, res) => {
       return res.status(404).json({
         error: 'User not found',
       });
-    } else if(user.status === 2) {
+    } else if (user.status === 2) {
       return res.status(403).json({
         error: 'Account is block',
       });
@@ -58,12 +59,14 @@ module.exports.signIn = async (req, res) => {
   }
 };
 
+// register account
 module.exports.signUp = async (req, res) => {
   try {
     const { fullName, userName, email, password } = req.body;
     const user = await User.findOne({
       $or: [{ email: email }, { userName: userName }],
     });
+    // check user and password is existed
     if (user)
       return res.status(400).json({
         code: 1,
@@ -100,6 +103,7 @@ module.exports.signUp = async (req, res) => {
   }
 };
 
+// replace password
 module.exports.replacePassword = async (req, res) => {
   try {
     const { password, newPassword } = req.body;

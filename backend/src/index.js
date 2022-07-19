@@ -59,19 +59,22 @@ app.use((req, res) => {
 
 const server = http.createServer(app);
 
+// define socket
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    // origin: 'http://localhost:8000',
     method: ['GET', 'POST'],
   },
 });
 
 io.on('connection', (socket) => {
   console.log(`${socket.id} connecting`);
+  // disconnect
   socket.on('disconnect', () => {
     console.log('user disconnected: ', socket.id);
   });
 
+  // emit event like-post and emit data with event getNoti
   socket.on('like_post', (data) => {
     io.emit('getNoti', data);
   });

@@ -3,11 +3,12 @@ const ChatRoom = require('../models/chatRoom.js');
 const User = require('../models/user.js');
 const shortid = require('shortid');
 
+// add message to chat room. Only chat two persons, not room is have more than 2 peoples.
 module.exports.addMessage = async (req, res) => {
   try {
     const currentId = req.user._id;
     const user = await User.findOne({ _id: currentId, status: { $ne: 2 } });
-    const user2 = await User.findOne({_id: req.body.receiver, status: { $ne: 2 }})
+    const user2 = await User.findOne({ _id: req.body.receiver, status: { $ne: 2 } });
     if (!user || !user2) {
       return res.status(404).json({ message: 'User not found or this account was blocked' });
     }
@@ -78,6 +79,7 @@ module.exports.addMessage = async (req, res) => {
   }
 };
 
+// get list messages in chat room(room include 2 persons)
 module.exports.getListMessage = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -101,19 +103,21 @@ module.exports.getListMessage = async (req, res) => {
   }
 };
 
+// get all chat room have this user
 module.exports.getChatRoom = async (req, res) => {
   try {
+    // get user_id
     const currentId = req.user._id;
     const user = await User.findOne({ _id: currentId });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-
+    // find all chat rooms by user_id
     const rooms = await ChatRoom.find({
       $or: [{ 'users.user': user._id }, { 'users.user': user._id }],
     }).populate({
       path: 'users',
-      populate: { path: 'user', select: ['userName', 'avatar', 'active', 'updatedAt', 'status']},
+      populate: { path: 'user', select: ['userName', 'avatar', 'active', 'updatedAt', 'status'] },
     });
     if (!rooms) return res.status(404).json({ error: 'Room not found' });
     return res.status(200).json({ code: 0, data: rooms });

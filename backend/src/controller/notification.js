@@ -2,6 +2,7 @@ const Post = require('../models/post.js');
 const User = require('../models/user.js');
 const Notification = require('../models/notification.js');
 
+// add notification to db when user like picture
 module.exports.likeNotification = async (req, res) => {
   try {
     const idPost = req.params.idPost;
@@ -41,6 +42,7 @@ module.exports.likeNotification = async (req, res) => {
   }
 };
 
+// add notification when user comment to post of friend
 module.exports.commentNotification = async (req, res) => {
   try {
     const idPost = req.params.idPost;
@@ -80,6 +82,7 @@ module.exports.commentNotification = async (req, res) => {
   }
 };
 
+// add data notification when user follow other user
 module.exports.followNotification = async (req, res) => {
   try {
     const idUserFollowed = req.params.idUser;
@@ -108,6 +111,7 @@ module.exports.followNotification = async (req, res) => {
   }
 };
 
+// get notification by user_id.
 module.exports.getNotifications = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -117,7 +121,7 @@ module.exports.getNotifications = async (req, res) => {
         select: ['pictures', ['likes'], 'status'],
       })
       .populate({
-        path: 'userReport'
+        path: 'userReport',
       })
       .populate({ path: 'otherUser', select: ['userName', 'avatar'] })
       .sort({ createdAt: -1 });
@@ -132,6 +136,7 @@ module.exports.getNotifications = async (req, res) => {
   }
 };
 
+// mark notification is read
 module.exports.readNotification = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -144,6 +149,7 @@ module.exports.readNotification = async (req, res) => {
   }
 };
 
+// add notification when user report the post of other user.
 module.exports.reportPost = async (req, res) => {
   try {
     const idPost = req.params.idPost;
@@ -156,7 +162,7 @@ module.exports.reportPost = async (req, res) => {
     if (!post) {
       return res.status(404).json({ code: 0, message: 'Post Not Found!' });
     }
-    const owner = await User.findOne({role: 1});
+    const owner = await User.findOne({ role: 1 });
     // console.log(owner);
 
     const notification = new Notification({
@@ -185,7 +191,7 @@ module.exports.reportPost = async (req, res) => {
   }
 };
 
-
+// add notification when user report other user
 module.exports.reportUser = async (req, res) => {
   try {
     const idUser = req.params.idUser;
@@ -198,7 +204,7 @@ module.exports.reportUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ status: 'User Report Not Found' });
     }
-    const owner = await User.findOne({role: 1});
+    const owner = await User.findOne({ role: 1 });
     // console.log(owner);
 
     const notification = new Notification({

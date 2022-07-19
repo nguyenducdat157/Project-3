@@ -1,6 +1,7 @@
 const Post = require('../models/post.js');
 const User = require('../models/user.js');
 
+// create new post
 module.exports.createPost = (req, res) => {
   try {
     const { title } = req.body;
@@ -31,6 +32,7 @@ module.exports.createPost = (req, res) => {
   }
 };
 
+// get post by id_post
 module.exports.getPostById = async (req, res) => {
   const idPost = req.params.id;
   if (idPost) {
@@ -51,6 +53,7 @@ module.exports.getPostById = async (req, res) => {
   }
 };
 
+// get all post of user.
 module.exports.getPosts = async (req, res) => {
   const user = await User.findOne({ _id: req.user._id }).populate({
     path: 'following',
@@ -84,6 +87,7 @@ module.exports.getPosts = async (req, res) => {
   }
 };
 
+// remove post by id
 module.exports.removePost = async (req, res) => {
   try {
     const idPost = req.params.id;
@@ -102,6 +106,7 @@ module.exports.removePost = async (req, res) => {
   }
 };
 
+// like post
 module.exports.likePost = async (req, res) => {
   try {
     const postId = req.params.postId;
@@ -137,6 +142,7 @@ module.exports.likePost = async (req, res) => {
   }
 };
 
+// comment post
 module.exports.addComment = async (req, res) => {
   try {
     const postId = req.params.postId;
@@ -162,6 +168,7 @@ module.exports.addComment = async (req, res) => {
   }
 };
 
+// remove comment of post
 module.exports.removeComment = async (req, res) => {
   try {
     const update = {
@@ -183,6 +190,8 @@ module.exports.removeComment = async (req, res) => {
     console.log(err);
   }
 };
+
+// get all post by me
 module.exports.getPostForMe = async (req, res) => {
   try {
     const currentId = req.user._id;
@@ -200,6 +209,7 @@ module.exports.getPostForMe = async (req, res) => {
   }
 };
 
+// gte all post of friend
 module.exports.getPostForFriend = async (req, res) => {
   try {
     const idFriend = req.params.id;
@@ -217,6 +227,7 @@ module.exports.getPostForFriend = async (req, res) => {
   }
 };
 
+// get list user id liked
 module.exports.getListUserLiked = async (req, res) => {
   try {
     const idPost = req.params.id;

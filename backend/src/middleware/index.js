@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
+// user must login, then user can doing function
 exports.requireSignIn = (req, res, next) => {
   if (req.headers.authorization) {
     // console.log(req.headers.authorization);
@@ -13,13 +14,13 @@ exports.requireSignIn = (req, res, next) => {
   next();
 };
 
+// check role admin
 exports.isAdmin = (req, res, next) => {
-  if(req.user.role === 1) {
-    next()
-  }
-  else {
+  if (req.user.role === 1) {
+    next();
+  } else {
     return res.status(403).json({
-      message: 'You are not admin'
-    })
+      message: 'You are not admin',
+    });
   }
-}
+};
