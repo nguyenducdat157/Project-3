@@ -25,6 +25,14 @@ export const followNotification = createAsyncThunk('notification/follow', async 
   }
 });
 
+export const acceptFollowNotificaion = createAsyncThunk('notification/accept-follow', async (idUser) => {
+  try {
+    return await axiosInstance.post(`/api/notification/accept-follow/${idUser}`);
+  } catch (error) {
+    throw error;
+  }
+});
+
 export const readNotification = createAsyncThunk('notification/read', async () => {
   try {
     return await axiosInstance.post(`/api/notification/read-notification`);

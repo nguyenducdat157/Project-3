@@ -34,5 +34,10 @@ router.post('/remove-comment', requireSignIn, controller.removeComment);
 router.get('/get-post-for-me', requireSignIn, controller.getPostForMe);
 router.get('/get-post-for-friend/:id', requireSignIn, controller.getPostForFriend);
 router.get('/get-users-liked/:id', requireSignIn, controller.getListUserLiked);
+router.get('/get-post-deleted', requireSignIn, controller.getPostDeleted);
+
+router.post('/delete-post/:id', requireSignIn, controller.deletePost);
+
+router.post('/delete-capacity', requireSignIn, controller.deleteCapacity);
 
 module.exports = router;

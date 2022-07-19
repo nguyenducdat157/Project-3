@@ -96,6 +96,11 @@ io.on('connection', (socket) => {
   socket.on('report_user', (data) => {
     io.emit('getNoti', data);
   });
+
+  socket.on('accept_follow_user', (data) => {
+    console.log('accept_follow');
+    io.emit('getNoti', data);
+  })
 });
 
 server.listen(PORT, () => {

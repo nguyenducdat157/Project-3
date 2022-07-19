@@ -1,7 +1,10 @@
 .inbox_box {
-  margin-top: 100px;
+  padding-top: 80px;
   display: flex;
-  border: 1px solid #e4e4eb;
+  max-width: 940px;
+  width: 100%;
+  border-bottom: 1px solid #e4e4eb;
+  margin: auto;
 }
 .room_element {
   display: flex;
@@ -43,6 +46,8 @@
 .inbox_listChat {
   width: 40%;
   background-color: #fff;
+  border-top: 1px solid #e4e4eb;
+  border-left: 1px solid #e4e4eb;
 }
 .listChat_header {
   border-bottom: 1px solid #e4e4eb;
@@ -58,6 +63,8 @@
   width: 60%;
   background-color: #fff;
   border-left: 1px solid #e4e4eb;
+  border-top: 1px solid #e4e4eb;
+  border-right: 1px solid #e4e4eb;
 }
 .header {
   display: flex;

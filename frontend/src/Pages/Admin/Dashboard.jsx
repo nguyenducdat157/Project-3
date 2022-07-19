@@ -18,6 +18,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import PeopleIcon from '@material-ui/icons/People';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import DeleteSharpIcon from '@material-ui/icons/DeleteSharp';
 import ListUser from './ListUser';
 import { useState } from 'react';
 import { useHistory } from 'react-router';
@@ -26,6 +27,7 @@ import axios from 'axios';
 import { HOST_URL } from '../../ultils/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { readNotification } from '../../redux/notification/notification.slice';
+import ListPostDeleted from './ListPostDeleted';
 const drawerWidth = 280;
 
 const useStyles = makeStyles((theme) => ({
@@ -245,6 +247,17 @@ export default function Dashboard() {
             <ListItem
               button
               onClick={() => {
+                setTab(3);
+              }}
+            >
+              <ListItemIcon>
+                <DeleteSharpIcon />
+              </ListItemIcon>
+              <ListItemText primary="Bài viết đã xóa" />
+            </ListItem>
+            <ListItem
+              button
+              onClick={() => {
                 logout();
               }}
             >
@@ -260,6 +273,7 @@ export default function Dashboard() {
         <div className={classes.appBarSpacer} />
         {tab === 1 && <ListUser />}
         {tab === 2 && <ListReport notification={notifications} />}
+        {tab === 3 && <ListPostDeleted />}
       </main>
     </div>
   );

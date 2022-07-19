@@ -33,6 +33,23 @@ export const unFollowApi = createAsyncThunk('user/un-follow', async (params) => 
   }
 });
 
+export const acceptFollowApi = createAsyncThunk('user/accept-follow', async (params) => {
+  try {
+    return await axiosInstance.post(`/api/user/accept-follow/${params}`);
+  } catch (error) {
+    throw error;
+  }
+});
+
+export const removeRequestApi = createAsyncThunk('user/remove-request', async (params) => {
+  try {
+    return await axiosInstance.post(`/api/user/remove-request/${params}`);
+  } catch (error) {
+    throw error;
+  }
+});
+
+
 export const searchUser = createAsyncThunk('user/search', async (query) => {
   try {
     return await axiosInstance.get(`/api/user/search?name=${query}`);
@@ -200,6 +217,19 @@ const userSlice = createSlice({
     [`${followApi.fulfilled}`]: (state, action) => {
       state.loading = false;
       state.following = action.payload
+    },
+
+    //accept request follow
+    [`${acceptFollowApi.pending}`]: (state) => {
+      state.loading = true;
+    },
+    [`${acceptFollowApi.rejected}`]: (state, action) => {
+      state.loading = false;
+      state.error = action.error;
+    },
+    [`${acceptFollowApi.fulfilled}`]: (state, action) => {
+      state.loading = false;
+      state.followers = action.payload
     },
   },
 });

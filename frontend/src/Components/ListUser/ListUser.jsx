@@ -5,6 +5,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { PREVLINK } from '../../ultils/constants';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const ListUser = (props) => {
   const history = useHistory();
@@ -40,8 +41,8 @@ const ListUser = (props) => {
             <hr className="popup_report_hr" />
           </div>
         )}
-        {listUser &&
-          listUser.length > 0 &&
+        {(listUser &&
+          listUser.length > 0) ?
           listUser.map((item) => (
             <div style={{ padding: '20px', cursor: 'pointer' }} className="pop_left">
               {item?.userId !== undefined ? (
@@ -90,7 +91,11 @@ const ListUser = (props) => {
                 </div>
               )}
             </div>
-          ))}
+          )) :
+          <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
+               <CircularProgress />
+          </div> 
+         }
         {listUser && listUser.length === 0 && (
           <div
             style={{

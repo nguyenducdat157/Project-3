@@ -249,7 +249,7 @@ const Profile = () => {
               />
             ))}
           </div> : 
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '50vh', fontSize: '28px'}}>
+          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '50vh', fontSize: '28px'}}>
               <p>Chưa có bài viết</p>
           </div>
         }

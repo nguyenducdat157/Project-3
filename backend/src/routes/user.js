@@ -21,6 +21,10 @@ router.post('/follow/:id', requireSignIn, controller.follow);
 
 router.post('/un-follow/:id', requireSignIn, controller.unFollow);
 
+router.post('/accept-follow/:id', requireSignIn, controller.acceptFollow);
+
+router.post('/remove-request/:id', requireSignIn, controller.removeRequest);
+
 router.get('/get-user-suggest', requireSignIn, controller.getListUserSuggestion);
 
 router.get('/get-all-suggest', requireSignIn, controller.allUserSuggest);
@@ -46,5 +50,6 @@ router.get('/profile-friend/:id', requireSignIn, controller.getProfileFriend);
 router.post('/edit-profile', requireSignIn, controller.editProfile);
 
 router.post('/logout', requireSignIn, controller.logout);
+
 
 module.exports = router;

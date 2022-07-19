@@ -1,5 +1,6 @@
 const Post = require('../models/post.js');
 const User = require('../models/user.js');
+const Notification = require('../models/notification.js');
 
 // create new post
 module.exports.createPost = (req, res) => {
@@ -241,5 +242,96 @@ module.exports.getListUserLiked = async (req, res) => {
     return res.status(200).json({ code: 0, data: listUserLiked });
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+};
+
+
+module.exports.getPostDeleted = async (req, res) => {
+  Post.find({ status: 1 })
+    .populate('postBy', ['userName', 'avatar', 'status'])
+    // .populate({ path: 'comments', populate: { path: 'userId', select: 'userName' } })
+    // .where('postBy.status').ne(2)
+    .sort('-updatedAt')
+    .then((posts) => {
+      // console.log(posts);
+      res.status(200).json({
+        code: 0,
+        data: posts,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json({ error: 'Server error' });
+    });
+};
+
+
+module.exports.deletePost = async (req, res) => {
+  try {
+    const idPost = req.params.id;
+
+    Notification.deleteMany({ post: idPost }).then(function(){
+      console.log("Notification deleted"); // Success
+    }).catch(function(error){
+        console.log(error); // Failure
+    });
+
+    const userUpdate = await User.findOneAndUpdate({'posts.postId': idPost}, { $pull: {posts: {postId: idPost}}});
+
+    if(!userUpdate) {
+      return res.status(404).json({ code: 0, message: 'User Not Found!' });
+    }
+    const deletePost = await Post.findOneAndRemove({ _id: idPost });
+    if (!deletePost) {
+      return res.status(404).json({ code: 0, message: 'Post Not Found!' });
+    }
+    if (deletePost) {
+      return res.status(200).json({
+        code: 0,
+        message: 'Delete Forever post success',
+      });
+    }
+
+  } catch (err) {
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+module.exports.deleteCapacity = async (req, res) => {
+  try {
+
+    let listPost = await Post.find({status: 1});
+    if(listPost.length > 10) {
+      listPost = listPost.slice(0,10);
+    }
+
+    listPost.map(async (post) => {
+      const idPost = post._id;
+
+      Notification.deleteMany({ post: idPost }).then(function(){
+        console.log("Notification deleted"); // Success
+      }).catch(function(error){
+          console.log(error); // Failure
+      });
+  
+      const userUpdate = await User.findOneAndUpdate({'posts.postId': idPost}, { $pull: {posts: {postId: idPost}}});
+  
+      if(!userUpdate) {
+        return res.status(404).json({ code: 0, message: 'User Not Found!' });
+      }
+      const deletePost = await Post.findOneAndRemove({ _id: idPost });
+      if (!deletePost) {
+        return res.status(404).json({ code: 0, message: 'Post Not Found!' });
+      }
+    })
+    
+    return res.status(200).json({
+      code: 0,
+      message: 'Delete Capacity post success',
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: 'Server error' });
   }
 };

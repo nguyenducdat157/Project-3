@@ -25,6 +25,7 @@ import { useHistory } from 'react-router';
 import NotFound from '../NotFound';
 import ListUser from '../../Components/ListUser/ListUser';
 import { getListUserLiked } from '../../redux/post/post.slice';
+import CircularProgress from '@material-ui/core/CircularProgress';
 const PostDetail = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -43,6 +44,7 @@ const PostDetail = (props) => {
   const [showListReport, setShowListReport] = useState(false);
   const [showListUser, setShowListUser] = useState(false);
   const [listUserLiked, setListUserLiked] = useState([]);
+  const [loading, setLoading] = useState(true);
   register('my-locale', localeFunc);
 
   useEffect(() => {
@@ -58,6 +60,7 @@ const PostDetail = (props) => {
       // console.log(response);
       if (response.status === 200) {
         setPost(response.data.data);
+        setLoading(false);
       }
     });
   }, [commentChange]);
@@ -234,7 +237,16 @@ const PostDetail = (props) => {
   // console.log(post?.status);
   return (
     <>
-      {post?.status === 0 ? (
+      {loading ? 
+        <>
+          <NavBar />
+          <div style={{height: '100px', width: '100%', margin: 'auto'}}>
+          </div>
+          <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
+          <CircularProgress />
+          </div>
+        </> :
+      (post?.status === 0 || infoUser.role === 1) ? (
         <>
           <NavBar />
           <div>

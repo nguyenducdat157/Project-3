@@ -23,11 +23,13 @@ import { TextField } from '@material-ui/core';
 import CreatePost from '../CreatePost/CreatePost';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { readNotification } from '../../redux/notification/notification.slice';
+import { acceptFollowNotificaion, readNotification } from '../../redux/notification/notification.slice';
 import { HOST_URL, PREVLINK } from '../../ultils/constants';
 import { getMe, logout } from '../../redux/auth/auth.slice';
 import Message from '../../images/message.png';
 import { updateCountMess, setIdFriend } from '../../redux/chat/chat.slice';
+import { acceptFollowApi } from '../../redux/user/user.slice';
+import { showModalMessage } from '../../redux/message/message.slice';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -164,9 +166,13 @@ const NavBar = () => {
   }, []);
 
   useEffect(() => {
+    console.log('Notification');
     socket?.on('getNoti', async (data) => {
-      if (infoUser.userName === data.userNameCreatePost) {
+      if (infoUser?.userName === data?.userNameCreatePost) {
         await fetchNotification();
+      }
+      if (infoUser.status === 1) {
+        await dispatch(getMe());
       }
     });
   }, [socket]);
@@ -177,6 +183,30 @@ const NavBar = () => {
     }
   }, [notifications]);
 
+  const handleAccept = async (idUser, userName) => {
+    const res = await dispatch(acceptFollowApi(idUser));
+
+    console.log(res);
+
+    if (!res.payload) {
+      dispatch(
+        showModalMessage({
+          type: 'ERROR',
+          msg: 'Có lỗi xảy ra, có thể người gửi đã xóa yêu cầu này!',
+        }),
+      );
+      return;
+    }
+
+    if (res?.payload?.data?.code === 0) {
+      await dispatch(acceptFollowNotificaion(idUser));
+      const data = {
+        idUser: idUser,
+        userNameCreatePost: userName,
+      };
+      socket?.emit('accept_follow_user', data);
+    }
+  };
   return (
     <>
       <div style={{ zIndex: '999', width: '100%', position: 'fixed' }}>
@@ -233,7 +263,7 @@ const NavBar = () => {
                           }
                         }}
                       >
-                        <Avatar src={`${PREVLINK}/${infoUser.avatar}`} className="search__dropdown_item_avatar" />
+                        <Avatar src={`${PREVLINK}/${option.avatar}`} className="search__dropdown_item_avatar" />
                         <div>
                           <p className="search__dropdown_item_username">{option.userName}</p>
                           <p className="search__dropdown_item_fullname">{option.fullName}</p>
@@ -361,9 +391,10 @@ const NavBar = () => {
                                     src={`${PREVLINK}/${noti.otherUser?.avatar}`}
                                     style={{ marginRight: '10px' }}
                                   />
-                                  <div style={{ fontWeight: '600' }}>{noti.otherUser?.userName}&nbsp;</div>
-                                  <div>{noti.content}</div>
-                                  {noti.post?.pictures[0]?.img && (
+                                  <div>
+                                    <strong>{noti.otherUser?.userName}</strong>&nbsp;{noti.content}
+                                  </div>
+                                  {noti.post?.pictures[0]?.img ? (
                                     <img
                                       src={`${PREVLINK}/${noti.post?.pictures[0]?.img}`}
                                       alt="element"
@@ -371,6 +402,19 @@ const NavBar = () => {
                                       height="30px"
                                       style={{ marginLeft: 'auto' }}
                                     />
+                                  ) : (
+                                    infoUser?.requests?.length > 0 &&
+                                    infoUser?.requests.includes(noti.otherUser?._id) && (
+                                      <button
+                                        className="btn_accept"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAccept(noti.otherUser?._id, noti.otherUser?.userName);
+                                        }}
+                                      >
+                                        Xác nhận
+                                      </button>
+                                    )
                                   )}
                                 </div>
                               );
